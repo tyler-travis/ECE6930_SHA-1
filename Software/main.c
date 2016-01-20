@@ -15,6 +15,7 @@
 //	Function Prototypes
 //********************************************************************
 
+void SHA1(char* message);
 void prepMessage(void);
 void shaIteration(uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t e);
 void printSHA(void); 
@@ -46,7 +47,7 @@ void prepMessage(void)
 
 }
 
-void shaIteration(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e)
+void shaIteration(uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t e)
 {
 
 }
