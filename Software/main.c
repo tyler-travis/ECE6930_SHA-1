@@ -18,7 +18,7 @@
 //********************************************************************
 
 void SHA1(char* message, uint32_t hash_buffer[5]);
-void prepMessage(void);
+void prepMessage(char* message, uint32_t** chunks, uint64_t message_size_bits);
 void shaIteration(uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t e);
 void printSHA(void); 
 
@@ -77,8 +77,21 @@ void SHA1(char* message, uint32_t hash_buffer[5])
     prepMessage(message, chunks, message_size_bits);
 }
 
-void prepMessage(void)
+void prepMessage(char* message, uint32_t** chunks, uint64_t message_size_bits)
 {
+	uint32_t numChunks = (message_size_bits/512) + (message_size_bits % 512);
+	uint16_t i = 0;
+	uint16_t j = 0;
+
+	for(i = 0; i < numChunks; i++){
+		for(j = 0; j < 16; j++){
+			//chunks[i][j] = message[0*j]<<23 | message[1*j]<<15 | message[2*j]<<7 | message[3*j];
+			memcpy(chunks[i], *message[(j*4)+(i*64)], sizeof(uint32_t)); 
+		}
+		
+	}
+
+
 
 }
 
