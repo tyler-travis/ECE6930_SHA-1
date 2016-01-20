@@ -72,18 +72,24 @@ void SHA1(char* message, uint32_t hash_buffer[5])
     uint64_t message_size_bytes = sizeof(message);
     uint64_t message_size_bits = message_size_bytes*8;
 
-    // Initialize the 
-    uint32_t chunks[message_size_bytes/16 + message_size_bytes % 16][16];
+    // Initialize the chunks array (+1 for 448 & 64 bits) 
+    uint32_t chunks[((message_size_bytes/16) + (message_size_bytes % 16)) + 1][16];
 
     prepMessage(message, chunks, message_size_bits);
 }
 
 void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bits)
 {
-	uint32_t numChunks = (message_size_bits/512) + (message_size_bits % 512);
+	//Calculate # of chunks
+	uint32_t leftOver = (message_size_bits % 512);
+	uint32_t numChunks = (message_size_bits/512) + leftOver;
+
+	uint16_t numPadding = 0;
+	
 	uint16_t i = 0;
 	uint16_t j = 0;
 
+	//Split message into 512 bit chunks
 	for(i = 0; i < numChunks; i++){
 		for(j = 0; j < 16; j++){
 			//chunks[i][j] = message[0*j]<<23 | message[1*j]<<15 | message[2*j]<<7 | message[3*j];
@@ -92,7 +98,19 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 		
 	}
 
+	//Find out how many bits need to be padded to the message to make the size 448 mod 512
+	numWordsPadding = (448 - leftOver)/32;
 
+	//First padding begins with 1 then 0's
+	chunks[numChunks+1][0] = 0x80000000;	
+
+	//Fill up remaining words of padding
+	for(i = 1; i < numWordsPadding; i++){
+		chunks[numChunks+1][i] = 0;
+	}
+
+	//Add 64 bit message length to spots chunks[numChunks+1][14] and chunks[numChunks+1][15] 
+	//TO DO
 
 }
 
