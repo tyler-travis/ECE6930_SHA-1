@@ -84,7 +84,8 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 	uint32_t leftOver = (message_size_bits % 512);
 	uint32_t numChunks = (message_size_bits/512) + leftOver;
 
-	uint16_t numPadding = 0;
+	uint16_t numBytesPadding = 0;
+	uint16_t numWordsPadding = 0;
 	
 	uint16_t i = 0;
 	uint16_t j = 0;
@@ -98,16 +99,19 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 		
 	}
 
+	//448 bits = 56 bytes
+	//64 bits = 8 bytes
+
 	//Find out how many bits need to be padded to the message to make the size 448 mod 512
-	numWordsPadding = (448 - leftOver)/32;
+	numBytesPadding = (448 - leftOver)/8;
 
 	//First padding begins with 1 then 0's
-	chunks[numChunks+1][0] = 0x80000000;	
+	//chunks[numChunks+1][0] = 0x80000000;	
 
-	//Fill up remaining words of padding
-	for(i = 1; i < numWordsPadding; i++){
-		chunks[numChunks+1][i] = 0;
-	}
+	//Fill up remaining padding with 0's
+	//for(i = 1; i < numWordsPadding; i++){
+	//	chunks[numChunks+1][i] = 0;
+	//}
 
 	//Add 64 bit message length to spots chunks[numChunks+1][14] and chunks[numChunks+1][15] 
 	//TO DO
