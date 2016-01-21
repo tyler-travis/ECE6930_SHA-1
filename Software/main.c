@@ -80,6 +80,13 @@ void SHA1(char* message, uint32_t hash_buffer[5], uint32_t message_size)
     uint64_t message_size_bytes = message_size;
     uint64_t message_size_bits = message_size_bytes*8;
     uint64_t number_of_chunks = (message_size_bytes/64) + 1;
+
+    // Tyler -- Can we set the correct number of chunks here depending
+    // on the size of the "message_size" variable?
+    //
+    // I think that thing you were talking about for only initializing
+    // your variables at the top of a function applied only to the
+    // microcontroller we used in ECE 3710.
     
     uint16_t i;
 
@@ -172,8 +179,12 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 
 void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
 {
+    // Array to store the extended value
     uint32_t w[80];
+
+    // Iterator variable
     uint16_t i;
+
     // Values for computation during the iteration
     uint32_t a, b, c, d, e, f, k, temp;
 
@@ -200,7 +211,7 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     // Main Loop
     for(i = 0; i < 80; ++i)
     {
-        // Get the k and f value depending on which index we are on
+        // Get the k and f value depending on which iteration we are on
         if(i >= 0 && i <= 19)
         {
             f = (b & c) | (~b & d);
