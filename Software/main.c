@@ -18,10 +18,10 @@
 //	Function Prototypes
 //********************************************************************
 
-void SHA1(char* message, uint32_t hash_buffer[5]);
+void SHA1(char* message, uint32_t hash_buffer[5], uint32_t message_size);
 void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bits);
 void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16]);
-void printSHA(void); 
+void printSHA(uint32_t hash_buffer[5]); 
 
 uint32_t rotl(uint32_t value, uint16_t shift);
 
@@ -45,11 +45,16 @@ int main(int argc, char** argv)
     char* message = malloc(fsize);
     fread(message, fsize, 1, fp);
 
+    printf("Input Message: %s\n", message);
+    printf("Input Message size: %lu\n\n", fsize);
+
     // Initialize hash_buffer
     uint32_t hash_buffer[5];
 
     // Call SHA1 algorithm
-    SHA1(message, hash_buffer);
+    SHA1(message, hash_buffer, fsize);
+
+    printSHA(hash_buffer);
 
 	//End program
     fclose(fp);
@@ -61,7 +66,7 @@ int main(int argc, char** argv)
 //	Function Definitions
 //********************************************************************
 
-void SHA1(char* message, uint32_t hash_buffer[5])
+void SHA1(char* message, uint32_t hash_buffer[5], uint32_t message_size)
 {
     // Initial values for the hash_buffer
     hash_buffer[0] = 0x67452301;  // h0
@@ -71,9 +76,10 @@ void SHA1(char* message, uint32_t hash_buffer[5])
     hash_buffer[4] = 0xC3D2E1F0;  // h4
 
     // Get the size of the message
-    uint64_t message_size_bytes = sizeof(message);
+    uint64_t message_size_bytes = message_size;
     uint64_t message_size_bits = message_size_bytes*8;
     uint64_t number_of_chunks = (message_size_bytes/64) + 1;
+    printf("%llu %llu %llu\n", message_size_bytes, message_size_bits, number_of_chunks);
     
     uint16_t i;
 
@@ -127,9 +133,10 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 	printf("The message size in bits: %d \n", (int)message_size_bits);
 	printf("The message size in bytes: %d \n", (int)(message_size_bits/8));
 
-	for(i = 0; i < (message_size_bits/8); i++){
-		printf("%c", message[i]);
-	}
+    printf("Message: %s\n", message);
+	//for(i = 0; i < (message_size_bits/8); i++){
+		//printf("%c", message[i]);
+	//}
 
 	//PRINT THE DATA OF ALL THE CHUNKS BY WORDS
 	printf("\n\n");
@@ -231,9 +238,9 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     hash_buffer[4] += e;
 }
 
-void printSHA(void)
+void printSHA(uint32_t hash_buffer[5])
 {
-
+    printf("SHA-1: %X%X%X%X%X\n", hash_buffer[0], hash_buffer[1], hash_buffer[2], hash_buffer[3], hash_buffer[4]);
 }
 
 // Does a rotation to the left on value by shift
