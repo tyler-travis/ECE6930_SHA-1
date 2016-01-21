@@ -133,6 +133,7 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 
 	//PRINT THE DATA OF ALL THE CHUNKS BY WORDS
 	printf("\n\n");
+	printf("Number of chunks: %d \n", numChunks);
 	
 	for(i = 0; i < numChunks; i++){
 		for(j = 0; j < 16; j++){
