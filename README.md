@@ -13,3 +13,11 @@ git commit -m "message"
 
 git push origin master
 
+## Make
+
+cd Software/
+
+cmake .
+
+make
+
