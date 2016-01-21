@@ -54,6 +54,7 @@ int main(int argc, char** argv)
     // Call SHA1 algorithm
     SHA1(message, hash_buffer, fsize);
 
+    printf("Message: %s\n", message);
     printSHA(hash_buffer);
 
 	//End program
@@ -79,7 +80,6 @@ void SHA1(char* message, uint32_t hash_buffer[5], uint32_t message_size)
     uint64_t message_size_bytes = message_size;
     uint64_t message_size_bits = message_size_bytes*8;
     uint64_t number_of_chunks = (message_size_bytes/64) + 1;
-    printf("%llu %llu %llu\n", message_size_bytes, message_size_bits, number_of_chunks);
     
     uint16_t i;
 
@@ -173,6 +173,7 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
 {
     uint32_t w[80];
     uint16_t i;
+    // Values for computation during the iteration
     uint32_t a, b, c, d, e, f, k, temp;
 
     // Break chunk into 16 32-bit words
