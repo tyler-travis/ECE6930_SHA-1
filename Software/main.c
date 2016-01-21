@@ -79,7 +79,7 @@ void SHA1(char* message, uint32_t hash_buffer[5], uint32_t message_size)
     uint64_t message_size_bytes = message_size;
     uint64_t message_size_bits = message_size_bytes*8;
     uint64_t number_of_chunks = (message_size_bytes/64) + 1;
-    printf("%llu %llu %llu\n", message_size_bytes, message_size_bits, number_of_chunks);
+    //printf("%llu %llu %llu\n", message_size_bytes, message_size_bits, number_of_chunks);
     
     uint16_t i;
 
@@ -119,8 +119,9 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 	//Split message into 512 bit chunks
 	for(i = 0; i < numChunks; i++){
 		for(j = 0; j < 16; j++){
-			//chunks[i][j] = message[0*j]<<23 | message[1*j]<<15 | message[2*j]<<7 | message[3*j];
-			memcpy(chunks[i], message + (j*4)+(i*64), sizeof(uint32_t)); 
+			chunks[i][j] = message[(0*j)+(i*64)]<<24 | message[(1*j)+(i*64)]<<16 | message[(2*j)+(i*64)]<<8 | message[(3*j)+(i*64)];
+			//memcpy(chunks[i], message + ((j*4)+(i*64)), sizeof(uint32_t));
+			//printf("Message at %d: %c \n", ((j*4)+(i*64)), message[((j*4)+(i*64))]); 
 		}
 	}
 
