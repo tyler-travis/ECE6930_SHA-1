@@ -72,17 +72,25 @@ void SHA1(char* message, uint32_t hash_buffer[5])
     uint64_t message_size_bytes = sizeof(message);
     uint64_t message_size_bits = message_size_bytes*8;
 
-    // Initialize the chunks array (+1 for 448 & 64 bits) 
-    uint32_t chunks[((message_size_bytes/16) + (message_size_bytes % 16)) + 1][16];
+    // Initialize the chunks array 
+    uint32_t chunks[((message_size_bytes/64) + 1)][16];
 
     prepMessage(message, chunks, message_size_bits);
 }
 
 void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bits)
 {
+	//512 bits = 64 bytes
+	//		   = 16 words 
+	//448 bits = 56 bytes
+	//		   = 14 words
+	//64 bits = 8 bytes
+	//		  = 2 words
+	//32 bits = 4 bytes
+
 	//Calculate # of chunks
 	uint32_t leftOver = (message_size_bits % 512);
-	uint32_t numChunks = (message_size_bits/512) + leftOver;
+	uint32_t numChunks = (message_size_bits/512) + 1;
 
 	uint16_t numBytesPadding = 0;
 	uint16_t numWordsPadding = 0;
@@ -96,11 +104,34 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 			//chunks[i][j] = message[0*j]<<23 | message[1*j]<<15 | message[2*j]<<7 | message[3*j];
 			memcpy(chunks[i], message + (j*4)+(i*64), sizeof(uint32_t)); 
 		}
-		
 	}
 
-	//448 bits = 56 bytes
-	//64 bits = 8 bytes
+	//################################
+	//	FOR DEBUGGING
+	//################################
+	
+	//PRINT THE ORIGINAL MESSAGE
+	printf("\n");
+	printf("The message size in bits: %d \n", (int)message_size_bits);
+	printf("The message size in bytes: %d \n", (int)(message_size_bits/8));
+
+	for(i = 0; i < (message_size_bits/8); i++){
+		printf("%c", message[i]);
+	}
+
+	//PRINT THE DATA OF ALL THE CHUNKS BY WORDS
+	printf("\n\n");
+	
+	for(i = 0; i < numChunks; i++){
+		for(j = 0; j < 16; j++){
+			printf("%X", chunks[i][j]);
+		}
+	}
+
+	printf("\n\n");
+
+	//################################
+	//################################
 
 	//Find out how many bits need to be padded to the message to make the size 448 mod 512
 	numBytesPadding = (448 - leftOver)/8;
