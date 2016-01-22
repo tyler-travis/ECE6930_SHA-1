@@ -153,7 +153,7 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 		//		*right hand side has been verified with above printf() statements
 		//---------------------------------------------------------------------------------------------------------------------------
 
-		chunks[numChunks-1][j] | (((message[i + ((numChunks-1)*64)]) | 0x00000000) << offset);
+		chunks[numChunks-1][j] |= (((message[i + ((numChunks-1)*64)]) | 0x00000000) << offset);
 		printf("Chunk after byte: %x \n", chunks[numChunks-1][j]);
 
 		//Reset offset for new word, else decrease offset to next byte position
