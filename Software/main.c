@@ -54,7 +54,7 @@ int main(int argc, char** argv)
     // Call SHA1 algorithm
     SHA1(message, hash_buffer, fsize);
 
-    printf("Message: %s\n", message);
+    printf("\n\nMessage: %s\n", message);
     printSHA(hash_buffer);
 
 	//End program
@@ -92,12 +92,25 @@ void SHA1(char* message, uint32_t hash_buffer[5], uint32_t message_size)
     uint64_t number_of_chunks = (message_size_bytes/64) + addChunk;
     
     uint16_t i;
+    uint16_t j;
 
     // Initialize the chunks array 
     uint32_t chunks[number_of_chunks][16];
 
     // Prep the message into 512-bit chunks (16 32-bit words)
     prepMessage(message, chunks, message_size_bits, number_of_chunks, leftOverBits, addChunk);
+
+	//################################
+	//	FOR DEBUGGING
+	//################################
+    printf("Message AFTER prep: \n");
+    for(i = 0; i < number_of_chunks; i++){
+    	for(j = 0; j < 16; j++){
+    		printf("%08X", chunks[i][j]);
+    	}
+    }
+	//################################
+	//################################    
 
     // This manipulates the bytes as defined by SHA-1
     for(i = 0; i < number_of_chunks; ++i)
