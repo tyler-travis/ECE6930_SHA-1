@@ -21,3 +21,6 @@ cmake .
 
 make
 
+## VALIDATE RESULTS
+
+$ sha1sum <filename>
