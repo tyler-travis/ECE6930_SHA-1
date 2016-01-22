@@ -19,7 +19,7 @@
 //********************************************************************
 
 void SHA1(char* message, uint32_t hash_buffer[5], uint32_t message_size);
-void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bits);
+void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bits, uint32_t numChunks, uint32_t leftOverBits, uint8_t addChunk);
 void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16]);
 void printSHA(uint32_t hash_buffer[5]); 
 
@@ -79,14 +79,17 @@ void SHA1(char* message, uint32_t hash_buffer[5], uint32_t message_size)
     // Get the size of the message
     uint64_t message_size_bytes = message_size;
     uint64_t message_size_bits = message_size_bytes*8;
-    uint64_t number_of_chunks = (message_size_bytes/64) + 1;
+    uint32_t leftOverBits = message_size_bits % 512;
+    uint8_t addChunk = 0;
 
-    // Tyler -- Can we set the correct number of chunks here depending
-    // on the size of the "message_size" variable?
-    //
-    // I think that thing you were talking about for only initializing
-    // your variables at the top of a function applied only to the
-    // microcontroller we used in ECE 3710.
+    if(leftOverBits < 448){
+    	addChunk = 1;
+    }
+    else{
+    	addChunk = 2;
+    }
+
+    uint64_t number_of_chunks = (message_size_bytes/64) + addChunk;
     
     uint16_t i;
 
@@ -94,7 +97,7 @@ void SHA1(char* message, uint32_t hash_buffer[5], uint32_t message_size)
     uint32_t chunks[number_of_chunks][16];
 
     // Prep the message into 512-bit chunks (16 32-bit words)
-    prepMessage(message, chunks, message_size_bits);
+    prepMessage(message, chunks, message_size_bits, number_of_chunks, leftOverBits, addChunk);
 
     // This manipulates the bytes as defined by SHA-1
     for(i = 0; i < number_of_chunks; ++i)
@@ -103,7 +106,7 @@ void SHA1(char* message, uint32_t hash_buffer[5], uint32_t message_size)
     }
 }
 
-void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bits)
+void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bits, uint32_t numChunks, uint32_t leftOverBits, uint8_t addChunk)
 {
 	//512 bits = 64 bytes
 	//		   = 16 words 
@@ -113,23 +116,55 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 	//		  = 2 words
 	//32 bits = 4 bytes
 
-	//Calculate # of chunks
-	uint32_t leftOver = (message_size_bits % 512);
-	uint32_t numChunks = (message_size_bits/512) + 1;
-
 	uint16_t numBytesPadding = 0;
 	uint16_t numWordsPadding = 0;
 	
 	uint16_t i = 0;
 	uint16_t j = 0;
 
-	//Split message into 512 bit chunks
-	for(i = 0; i < numChunks; i++){
+	uint8_t offset = 24;
+
+	//Split message into 512 bit chunks excluding last chunk
+	for(i = 0; i < (numChunks - addChunk); i++){
 		for(j = 0; j < 16; j++){
 			chunks[i][j] = message[(0*j)+(i*64)]<<24 | message[(1*j)+(i*64)]<<16 | message[(2*j)+(i*64)]<<8 | message[(3*j)+(i*64)];
 			//memcpy(chunks[i], message + ((j*4)+(i*64)), sizeof(uint32_t));
 			//printf("Message at %d: %c \n", ((j*4)+(i*64)), message[((j*4)+(i*64))]); 
 		}
+	}
+
+
+	//Fill in last chunk of message bits
+	j = 0;
+	for(i = 0; i < (leftOverBits/8); i++){
+		//Set word to 0x00000000
+		if(offset == 24){
+			chunks[numChunks-1][j] = 0;			
+		}
+
+		//Add byte to word in correct position
+		printf("Adding byte: %x \n", message[i + ((numChunks-1)*64)]);
+		printf("Message OR w/0x00000000: %x \n", ((message[i + ((numChunks-1)*64)]) | 0x00000000));
+		printf("After left shift by %d: %x \n", offset, (((message[i + ((numChunks-1)*64)]) | 0x00000000) << offset));
+
+		//---------------------------------------------------------------------------------------------------------------------------
+		// Everything is working except for the last OR | of chunks[numChunks-1][j] with the right hand side
+		//		
+		//		*right hand side has been verified with above printf() statements
+		//---------------------------------------------------------------------------------------------------------------------------
+
+		chunks[numChunks-1][j] | (((message[i + ((numChunks-1)*64)]) | 0x00000000) << offset);
+		printf("Chunk after byte: %x \n", chunks[numChunks-1][j]);
+
+		//Reset offset for new word, else decrease offset to next byte position
+		if(offset == 0){
+			offset = 24;
+			j++;
+		}
+		else{
+			offset = offset - 8;	
+		}
+		 
 	}
 
 	//################################
@@ -138,8 +173,10 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 	
 	//PRINT THE ORIGINAL MESSAGE
 	printf("\n");
-	printf("The message size in bits: %d \n", (int)message_size_bits);
 	printf("The message size in bytes: %d \n", (int)(message_size_bits/8));
+	printf("The message size in bits: %d \n", (int)message_size_bits);
+	printf("# of leftover bits: %d \n", (int)leftOverBits);
+	
 
 	for(i = 0; i < (message_size_bits/8); i++){
 		printf("%c", message[i]);
@@ -153,6 +190,7 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 		for(j = 0; j < 16; j++){
 			printf("%X", chunks[i][j]);
 		}
+		printf("\n\n");
 	}
 
 	printf("\n\n");
@@ -161,7 +199,7 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 	//################################
 
 	//Find out how many bits need to be padded to the message to make the size 448 mod 512
-	numBytesPadding = (448 - leftOver)/8;
+	//numBytesPadding = (448 - leftOver)/8;
 
 
 	//First padding begins with 1 then 0's
