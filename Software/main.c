@@ -18,6 +18,7 @@
 //  3. Look into using some of the Intel Intrinsic functions.
 //  4. Optimize the SHA_Iteration function to better use the boolean
 //     expressions.
+//	5. pthreads
 //
 //********************************************************************
 
@@ -198,14 +199,17 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
                 numBytesPadding = 56 - (leftOverBits/8);
                 printf("# padding: %d \n", numBytesPadding);
 
+
                 for(i = 0; i < numBytesPadding; i++){
+                    
+                    //Set word to 0x00000000
+        			if(offset == 24){
+            			chunks[numChunks-addChunk][j] = 0;
+        			}
+
                     if(i == 0){
                         //First byte is 0x80
                         chunks[numChunks-1][j] |= (0x80 << offset);
-                    }
-                    else
-                    {
-                        chunks[numChunks-1][j] &= (0x00 << offset);
                     }
 
                     if(offset == 0){
@@ -224,16 +228,21 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
             {
                 //Calculate bytes of padding
                 numBytesPadding = 64 - (leftOverBits/8);
+                printf("# padding: %d \n", numBytesPadding);
 
                 for(i = 0; i < numBytesPadding; i++){
+                    
+                    //Set word to 0x00000000
+        			if(offset == 24){
+            			chunks[numChunks-addChunk][j] = 0;
+        			}
+
                     if(i == 0){
                         //First byte is 0x80
                         chunks[numChunks-2][j] |= (0x80 << offset);
                     }
-                    else
-                    {
-                        chunks[numChunks-2][j] &= (0x00 << offset);
-                    }
+
+                    //printf("Current word: %08X \n", chunks[numChunks-2][j]);
 
                     if(offset == 0){
                         offset = 24;
