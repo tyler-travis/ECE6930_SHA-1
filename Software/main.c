@@ -117,7 +117,6 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 	//32 bits = 4 bytes
 
 	uint16_t numBytesPadding = 0;
-	uint16_t numWordsPadding = 0;
 	
 	uint16_t i = 0;
 	uint16_t j = 0;
@@ -129,7 +128,6 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 		for(j = 0; j < 16; j++){
 			chunks[i][j] = message[(0*j)+(i*64)]<<24 | message[(1*j)+(i*64)]<<16 | message[(2*j)+(i*64)]<<8 | message[(3*j)+(i*64)];
 			//memcpy(chunks[i], message + ((j*4)+(i*64)), sizeof(uint32_t));
-			//printf("Message at %d: %c \n", ((j*4)+(i*64)), message[((j*4)+(i*64))]); 
 		}
 	}
 
@@ -139,22 +137,11 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 	for(i = 0; i < (leftOverBits/8); i++){
 		//Set word to 0x00000000
 		if(offset == 24){
-			chunks[numChunks-1][j] = 0;			
+			chunks[numChunks-addChunk][j] = 0;			
 		}
 
 		//Add byte to word in correct position
-		printf("Adding byte: %x \n", message[i + ((numChunks-1)*64)]);
-		printf("Message OR w/0x00000000: %x \n", ((message[i + ((numChunks-1)*64)]) | 0x00000000));
-		printf("After left shift by %d: %x \n", offset, (((message[i + ((numChunks-1)*64)]) | 0x00000000) << offset));
-
-		//---------------------------------------------------------------------------------------------------------------------------
-		// Everything is working except for the last OR | of chunks[numChunks-1][j] with the right hand side
-		//		
-		//		*right hand side has been verified with above printf() statements
-		//---------------------------------------------------------------------------------------------------------------------------
-
-		chunks[numChunks-1][j] |= (((message[i + ((numChunks-1)*64)]) | 0x00000000) << offset);
-		printf("Chunk after byte: %x \n", chunks[numChunks-1][j]);
+		chunks[numChunks-addChunk][j] |= (((message[i + ((numChunks-addChunk)*64)]) | 0x00000000) << offset);
 
 		//Reset offset for new word, else decrease offset to next byte position
 		if(offset == 0){
@@ -166,6 +153,87 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 		}
 		 
 	}
+
+	//--------------------------------
+	//	PADDING
+	//--------------------------------
+	printf("Offset: %d \n", offset);
+	printf("Byte number %d \n", j);
+
+	//Different methods for leftOverBits >= 448 and leftOverBits < 448
+	switch(addChunk)
+	{
+		case 1:
+		{
+			//Calculate bytes of padding
+			numBytesPadding = 56 - (leftOverBits/8);
+			printf("# padding: %d \n", numBytesPadding);
+
+			for(i = 0; i < numBytesPadding; i++){
+				if(i == 0){
+					//First byte is 0x80
+					chunks[numChunks-1][j] |= (0x80 << offset);
+				}
+				else
+				{
+					chunks[numChunks-1][j] &= (0x00 << offset);	
+				}
+
+				if(offset == 0){
+					offset = 24;
+					j++;
+				}
+				else{
+					offset = offset - 8;	
+				}
+			}
+
+			break;
+			
+		} //end of case 1
+		case 2:
+		{
+			//Calculate bytes of padding
+			numBytesPadding = 64 - (leftOverBits/8);
+
+			for(i = 0; i < numBytesPadding; i++){
+				if(i == 0){
+					//First byte is 0x80
+					chunks[numChunks-2][j] |= (0x80 << offset);
+				}
+				else
+				{
+					chunks[numChunks-2][j] &= (0x00 << offset);	
+				}
+
+				if(offset == 0){
+					offset = 24;
+					j++;
+				}
+				else{
+					offset = offset - 8;	
+				}
+			}
+
+			//Add 448 bits to last chunk
+			for(i = 0; i < 14; i++){
+				chunks[numChunks-1][i] = 0;
+			}
+
+			break;
+
+		} //end of case 2
+	} //end of switch
+
+	//--------------------------------
+	//	APPEND 64-bit message length
+	//--------------------------------
+
+	//MSW
+	chunks[numChunks-1][14] = message_size_bits >> 32;
+	//LSW
+	chunks[numChunks-1][15] = message_size_bits & 0x00000000FFFFFFFF; 
+	 
 
 	//################################
 	//	FOR DEBUGGING
@@ -188,7 +256,7 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 	
 	for(i = 0; i < numChunks; i++){
 		for(j = 0; j < 16; j++){
-			printf("%X", chunks[i][j]);
+			printf("%08X", chunks[i][j]);
 		}
 		printf("\n\n");
 	}
@@ -197,21 +265,6 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 
 	//################################
 	//################################
-
-	//Find out how many bits need to be padded to the message to make the size 448 mod 512
-	//numBytesPadding = (448 - leftOver)/8;
-
-
-	//First padding begins with 1 then 0's
-	//chunks[numChunks+1][0] = 0x80000000;	
-
-	//Fill up remaining padding with 0's
-	//for(i = 1; i < numWordsPadding; i++){
-	//	chunks[numChunks+1][i] = 0;
-	//}
-
-	//Add 64 bit message length to spots chunks[numChunks+1][14] and chunks[numChunks+1][15] 
-	//TO DO
 
 }
 
