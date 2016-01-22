@@ -345,10 +345,11 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
 void printSHA(uint32_t hash_buffer[5])
 {
     printf("SHA-1: %X%X%X%X%X\n", hash_buffer[0], hash_buffer[1], hash_buffer[2], hash_buffer[3], hash_buffer[4]);
+    //printf("SHA-1: %X%X%X%X%X\n", hash_buffer[4], hash_buffer[3], hash_buffer[2], hash_buffer[1], hash_buffer[0]);
 }
 
 // Does a rotation to the left on value by shift
 uint32_t rotl(uint32_t value, uint16_t shift)
 {
-    return ((value << shift) | (value >> (32 - shift)));
+    return (value << shift) | (value >> (32 - shift));
 }
