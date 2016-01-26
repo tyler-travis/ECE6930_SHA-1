@@ -157,8 +157,8 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
     for(i = 0; i < (numChunks - addChunk); i++){
         for(j = 0; j < 16; j++){
             chunks[i][j] = message[(0*j)+(i*64)]<<24 | message[(1*j)+(i*64)]<<16 | message[(2*j)+(i*64)]<<8 | message[(3*j)+(i*64)];
-            //memcpy(chunks[i], message + ((j*4)+(i*64)), sizeof(uint32_t));
         }
+        //memcpy(chunks[i], message + ((j*4)+(i*64)), sizeof(uint32_t));
     }
 
 
@@ -201,11 +201,11 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 
 
                 for(i = 0; i < numBytesPadding; i++){
-                    
+
                     //Set word to 0x00000000
-        			if(offset == 24){
-            			chunks[numChunks-addChunk][j] = 0;
-        			}
+                    if(offset == 24){
+                        chunks[numChunks-addChunk][j] = 0;
+                    }
 
                     if(i == 0){
                         //First byte is 0x80
@@ -231,11 +231,11 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
                 printf("# padding: %d \n", numBytesPadding);
 
                 for(i = 0; i < numBytesPadding; i++){
-                    
+
                     //Set word to 0x00000000
-        			if(offset == 24){
-            			chunks[numChunks-addChunk][j] = 0;
-        			}
+                    if(offset == 24){
+                        chunks[numChunks-addChunk][j] = 0;
+                    }
 
                     if(i == 0){
                         //First byte is 0x80
