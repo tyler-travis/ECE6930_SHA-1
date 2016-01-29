@@ -19,6 +19,7 @@
 //  4. Optimize the SHA_Iteration function to better use the boolean
 //     expressions.
 //	5. pthreads
+//	6. Figure out how to do the SHA-1 XOR optimazations
 //
 //********************************************************************
 
@@ -318,17 +319,98 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     uint32_t a, b, c, d, e, f, k, temp;
 
     // Break chunk into 16 32-bit words
-    for(i = 0; i < 16; ++i)
+    /*for(i = 0; i < 16; ++i)
     {
         w[i] = chunk[i];
-    }
+    }*/
+    w[0] = chunk[0];
+    w[1] = chunk[1];
+    w[2] = chunk[2];
+    w[3] = chunk[3];
+    w[4] = chunk[4];
+    w[5] = chunk[5];
+    w[6] = chunk[6];
+    w[7] = chunk[7];
+    w[8] = chunk[8];
+    w[9] = chunk[9];
+    w[10] = chunk[10];
+    w[11] = chunk[11];
+    w[12] = chunk[12];
+    w[13] = chunk[13];
+    w[14] = chunk[14];
+    w[15] = chunk[15];
+
+    w[16] = rotl((w[13] ^ w[8] ^ w[2] ^ w[0]), 1);
+    w[17] = rotl((w[14] ^ w[9] ^ w[3] ^ w[1]), 1);
+    w[18] = rotl((w[15] ^ w[10] ^ w[4] ^ w[2]), 1);
+    w[19] = rotl((w[16] ^ w[11] ^ w[5] ^ w[3]), 1);
+    w[20] = rotl((w[17] ^ w[12] ^ w[6] ^ w[4]), 1);
+    w[21] = rotl((w[18] ^ w[13] ^ w[7] ^ w[5]), 1);
+    w[22] = rotl((w[19] ^ w[14] ^ w[8] ^ w[6]), 1);
+    w[23] = rotl((w[20] ^ w[15] ^ w[9] ^ w[7]), 1);
+    w[24] = rotl((w[21] ^ w[16] ^ w[10] ^ w[8]), 1);
+    w[25] = rotl((w[22] ^ w[17] ^ w[11] ^ w[9]), 1);
+    w[26] = rotl((w[23] ^ w[18] ^ w[12] ^ w[10]), 1);
+    w[27] = rotl((w[24] ^ w[19] ^ w[13] ^ w[11]), 1);
+    w[28] = rotl((w[25] ^ w[20] ^ w[14] ^ w[12]), 1);
+    w[29] = rotl((w[26] ^ w[21] ^ w[15] ^ w[13]), 1);
+    w[30] = rotl((w[27] ^ w[22] ^ w[16] ^ w[14]), 1);
+    w[31] = rotl((w[28] ^ w[23] ^ w[17] ^ w[15]), 1);
+    w[32] = rotl((w[29] ^ w[24] ^ w[18] ^ w[16]), 1);
+    w[33] = rotl((w[30] ^ w[25] ^ w[19] ^ w[17]), 1);
+    w[34] = rotl((w[31] ^ w[26] ^ w[20] ^ w[18]), 1);
+    w[35] = rotl((w[32] ^ w[27] ^ w[21] ^ w[19]), 1);
+    w[36] = rotl((w[33] ^ w[28] ^ w[22] ^ w[20]), 1);
+    w[37] = rotl((w[34] ^ w[29] ^ w[23] ^ w[21]), 1);
+    w[38] = rotl((w[35] ^ w[30] ^ w[24] ^ w[22]), 1);
+    w[39] = rotl((w[36] ^ w[31] ^ w[25] ^ w[23]), 1);
+    w[40] = rotl((w[37] ^ w[32] ^ w[26] ^ w[24]), 1);
+    w[41] = rotl((w[38] ^ w[33] ^ w[27] ^ w[25]), 1);
+    w[42] = rotl((w[39] ^ w[34] ^ w[28] ^ w[26]), 1);
+    w[43] = rotl((w[40] ^ w[35] ^ w[29] ^ w[27]), 1);
+    w[44] = rotl((w[41] ^ w[36] ^ w[30] ^ w[28]), 1);
+    w[45] = rotl((w[42] ^ w[37] ^ w[31] ^ w[29]), 1);
+    w[46] = rotl((w[43] ^ w[38] ^ w[32] ^ w[30]), 1);
+    w[47] = rotl((w[44] ^ w[39] ^ w[33] ^ w[31]), 1);
+    w[48] = rotl((w[45] ^ w[40] ^ w[34] ^ w[32]), 1);
+    w[49] = rotl((w[46] ^ w[41] ^ w[35] ^ w[33]), 1);
+    w[50] = rotl((w[47] ^ w[42] ^ w[36] ^ w[34]), 1);
+    w[51] = rotl((w[48] ^ w[43] ^ w[37] ^ w[35]), 1);
+    w[52] = rotl((w[49] ^ w[44] ^ w[38] ^ w[36]), 1);
+    w[53] = rotl((w[50] ^ w[45] ^ w[39] ^ w[37]), 1);
+    w[54] = rotl((w[51] ^ w[46] ^ w[40] ^ w[38]), 1);
+    w[55] = rotl((w[52] ^ w[47] ^ w[41] ^ w[39]), 1);
+    w[56] = rotl((w[53] ^ w[48] ^ w[42] ^ w[40]), 1);
+    w[57] = rotl((w[54] ^ w[49] ^ w[43] ^ w[41]), 1);
+    w[58] = rotl((w[55] ^ w[50] ^ w[44] ^ w[42]), 1);
+    w[59] = rotl((w[56] ^ w[51] ^ w[45] ^ w[43]), 1);
+    w[60] = rotl((w[57] ^ w[52] ^ w[46] ^ w[44]), 1);
+    w[61] = rotl((w[58] ^ w[53] ^ w[47] ^ w[45]), 1);
+    w[62] = rotl((w[59] ^ w[54] ^ w[48] ^ w[46]), 1);
+    w[63] = rotl((w[60] ^ w[55] ^ w[49] ^ w[47]), 1);
+    w[64] = rotl((w[61] ^ w[56] ^ w[50] ^ w[48]), 1);
+    w[65] = rotl((w[62] ^ w[57] ^ w[51] ^ w[49]), 1);
+    w[66] = rotl((w[63] ^ w[58] ^ w[52] ^ w[50]), 1);
+    w[67] = rotl((w[64] ^ w[59] ^ w[53] ^ w[51]), 1);
+    w[68] = rotl((w[65] ^ w[60] ^ w[54] ^ w[52]), 1);
+    w[69] = rotl((w[66] ^ w[61] ^ w[55] ^ w[53]), 1);
+    w[70] = rotl((w[67] ^ w[62] ^ w[56] ^ w[54]), 1);
+    w[71] = rotl((w[68] ^ w[63] ^ w[57] ^ w[55]), 1);
+    w[72] = rotl((w[69] ^ w[64] ^ w[58] ^ w[56]), 1);
+    w[73] = rotl((w[70] ^ w[65] ^ w[59] ^ w[57]), 1);
+    w[74] = rotl((w[71] ^ w[66] ^ w[60] ^ w[58]), 1);
+    w[75] = rotl((w[72] ^ w[67] ^ w[61] ^ w[59]), 1);
+    w[76] = rotl((w[73] ^ w[68] ^ w[62] ^ w[60]), 1);
+    w[77] = rotl((w[74] ^ w[69] ^ w[63] ^ w[61]), 1);
+    w[78] = rotl((w[75] ^ w[70] ^ w[64] ^ w[62]), 1);
+    w[79] = rotl((w[76] ^ w[71] ^ w[65] ^ w[63]), 1);
 
     // Extend the 16 32-bit words into 80 32-bit words
-    for(i = 16; i < 80; ++i)
+    /*for(i = 16; i < 80; ++i)
     {
         // Rotate to the left by one
         w[i] = rotl((w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16]), 1);
-    }
+    }*/
 
     // Initialize hash value for this chunk
     a = hash_buffer[0];
@@ -338,7 +420,7 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     e = hash_buffer[4];
 
     // Main Loop
-    for(i = 0; i < 80; ++i)
+    /*for(i = 0; i < 80; ++i)
     {
         // Get the k and f value depending on which iteration we are on
         if(i >= 0 && i <= 19)
@@ -370,7 +452,734 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
         b = a;
         a = temp;
 
-    }
+    }*/
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[0];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[1];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[2];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[3];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[4];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[5];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[6];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[7];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[8];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[9];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[10];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[11];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[12];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[13];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[14];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[15];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[16];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[17];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[18];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = (b & c) | (~b & d);
+    k = 0x5A827999;
+    temp = rotl(a, 5) + f + e + k + w[19];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    // -----------------------------------------
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[20];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[21];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[22];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[23];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[24];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[25];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[26];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[27];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[28];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[29];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[30];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[31];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[32];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[33];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[34];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[35];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[36];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[37];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[38];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0x6ED9EBA1;
+    temp = rotl(a, 5) + f + e + k + w[39];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    // -----------------------
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[40];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[41];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[42];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[43];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[44];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[45];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[46];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[47];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[48];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[49];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[50];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[51];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[52];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[53];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[54];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[55];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[56];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[57];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[58];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+    
+    f = (b & c) | (b & d) | (c & d);
+    k = 0x8F1BBCDC;
+    temp = rotl(a, 5) + f + e + k + w[59];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    // ------------------------------------
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[60];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[61];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[62];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[63];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[64];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[65];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[66];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[67];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[68];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[69];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[70];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[71];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[72];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[73];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[74];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[75];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[76];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[77];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[78];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    f = b ^ c ^ d;
+    k = 0xCA62C1D6;
+    temp = rotl(a, 5) + f + e + k + w[79];
+    e = d;
+    d = c;
+    c = rotl(b, 30);
+    b = a;
+    a = temp;
+
+    // -----------------------------
 
     // Put the new values into the hash_buffer
     hash_buffer[0] += a;
