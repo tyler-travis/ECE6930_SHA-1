@@ -319,10 +319,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     uint32_t a, b, c, d, e, f, k, temp;
 
     // Break chunk into 16 32-bit words
-    /*for(i = 0; i < 16; ++i)
-    {
-        w[i] = chunk[i];
-    }*/
     w[0] = chunk[0];
     w[1] = chunk[1];
     w[2] = chunk[2];
@@ -340,6 +336,7 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     w[14] = chunk[14];
     w[15] = chunk[15];
 
+    // Extend the 16 32-bit words into 80 32-bit words
     w[16] = rotl((w[13] ^ w[8] ^ w[2] ^ w[0]), 1);
     w[17] = rotl((w[14] ^ w[9] ^ w[3] ^ w[1]), 1);
     w[18] = rotl((w[15] ^ w[10] ^ w[4] ^ w[2]), 1);
@@ -405,12 +402,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     w[78] = rotl((w[75] ^ w[70] ^ w[64] ^ w[62]), 1);
     w[79] = rotl((w[76] ^ w[71] ^ w[65] ^ w[63]), 1);
 
-    // Extend the 16 32-bit words into 80 32-bit words
-    /*for(i = 16; i < 80; ++i)
-    {
-        // Rotate to the left by one
-        w[i] = rotl((w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16]), 1);
-    }*/
 
     // Initialize hash value for this chunk
     a = hash_buffer[0];
@@ -420,39 +411,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     e = hash_buffer[4];
 
     // Main Loop
-    /*for(i = 0; i < 80; ++i)
-    {
-        // Get the k and f value depending on which iteration we are on
-        if(i >= 0 && i <= 19)
-        {
-            f = (b & c) | (~b & d);
-            k = 0x5A827999;
-        }
-        else if( i >= 20 && i <= 39)
-        {
-            f = b ^ c ^ d;
-            k = 0x6ED9EBA1;
-        }
-        else if( i >= 40 && i <= 59)
-        {
-            f = (b & c) | (b & d) | (c & d);
-            k = 0x8F1BBCDC;
-        }
-        else if( i >= 60 && i <= 79)
-        {
-            f = b ^ c ^ d;
-            k = 0xCA62C1D6;
-        }
-
-        // Store the values in the correct location
-        temp = rotl(a, 5) + f + e + k + w[i];
-        e = d;
-        d = c;
-        c = rotl(b, 30);
-        b = a;
-        a = temp;
-
-    }*/
     f = (b & c) | (~b & d);
     k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[0];
@@ -463,7 +421,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[1];
     e = d;
     d = c;
@@ -472,7 +429,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[2];
     e = d;
     d = c;
@@ -481,7 +437,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[3];
     e = d;
     d = c;
@@ -490,7 +445,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[4];
     e = d;
     d = c;
@@ -499,7 +453,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[5];
     e = d;
     d = c;
@@ -508,7 +461,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[6];
     e = d;
     d = c;
@@ -517,7 +469,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[7];
     e = d;
     d = c;
@@ -526,7 +477,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[8];
     e = d;
     d = c;
@@ -535,7 +485,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[9];
     e = d;
     d = c;
@@ -544,7 +493,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[10];
     e = d;
     d = c;
@@ -553,7 +501,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[11];
     e = d;
     d = c;
@@ -562,7 +509,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[12];
     e = d;
     d = c;
@@ -571,7 +517,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[13];
     e = d;
     d = c;
@@ -580,7 +525,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[14];
     e = d;
     d = c;
@@ -589,7 +533,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[15];
     e = d;
     d = c;
@@ -598,7 +541,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[16];
     e = d;
     d = c;
@@ -607,7 +549,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[17];
     e = d;
     d = c;
@@ -616,7 +557,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[18];
     e = d;
     d = c;
@@ -625,7 +565,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = (b & c) | (~b & d);
-    k = 0x5A827999;
     temp = rotl(a, 5) + f + e + k + w[19];
     e = d;
     d = c;
@@ -645,7 +584,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[21];
     e = d;
     d = c;
@@ -654,7 +592,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[22];
     e = d;
     d = c;
@@ -663,7 +600,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[23];
     e = d;
     d = c;
@@ -672,7 +608,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[24];
     e = d;
     d = c;
@@ -681,7 +616,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[25];
     e = d;
     d = c;
@@ -690,7 +624,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[26];
     e = d;
     d = c;
@@ -699,7 +632,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[27];
     e = d;
     d = c;
@@ -708,7 +640,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[28];
     e = d;
     d = c;
@@ -717,7 +648,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[29];
     e = d;
     d = c;
@@ -726,7 +656,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[30];
     e = d;
     d = c;
@@ -735,7 +664,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[31];
     e = d;
     d = c;
@@ -744,7 +672,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[32];
     e = d;
     d = c;
@@ -753,7 +680,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[33];
     e = d;
     d = c;
@@ -762,7 +688,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[34];
     e = d;
     d = c;
@@ -771,7 +696,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[35];
     e = d;
     d = c;
@@ -780,7 +704,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[36];
     e = d;
     d = c;
@@ -789,7 +712,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[37];
     e = d;
     d = c;
@@ -798,7 +720,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[38];
     e = d;
     d = c;
@@ -807,7 +728,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0x6ED9EBA1;
     temp = rotl(a, 5) + f + e + k + w[39];
     e = d;
     d = c;
@@ -827,7 +747,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[41];
     e = d;
     d = c;
@@ -836,7 +755,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[42];
     e = d;
     d = c;
@@ -845,7 +763,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[43];
     e = d;
     d = c;
@@ -854,7 +771,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[44];
     e = d;
     d = c;
@@ -863,7 +779,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[45];
     e = d;
     d = c;
@@ -872,7 +787,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[46];
     e = d;
     d = c;
@@ -881,7 +795,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[47];
     e = d;
     d = c;
@@ -890,7 +803,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[48];
     e = d;
     d = c;
@@ -899,7 +811,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[49];
     e = d;
     d = c;
@@ -908,7 +819,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[50];
     e = d;
     d = c;
@@ -917,7 +827,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[51];
     e = d;
     d = c;
@@ -926,7 +835,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[52];
     e = d;
     d = c;
@@ -935,7 +843,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[53];
     e = d;
     d = c;
@@ -944,7 +851,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[54];
     e = d;
     d = c;
@@ -953,7 +859,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[55];
     e = d;
     d = c;
@@ -962,7 +867,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[56];
     e = d;
     d = c;
@@ -971,7 +875,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[57];
     e = d;
     d = c;
@@ -980,7 +883,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[58];
     e = d;
     d = c;
@@ -989,7 +891,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
     
     f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
     temp = rotl(a, 5) + f + e + k + w[59];
     e = d;
     d = c;
@@ -1009,7 +910,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[61];
     e = d;
     d = c;
@@ -1018,7 +918,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[62];
     e = d;
     d = c;
@@ -1027,7 +926,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[63];
     e = d;
     d = c;
@@ -1036,7 +934,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[64];
     e = d;
     d = c;
@@ -1045,7 +942,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[65];
     e = d;
     d = c;
@@ -1054,7 +950,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[66];
     e = d;
     d = c;
@@ -1063,7 +958,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[67];
     e = d;
     d = c;
@@ -1072,7 +966,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[68];
     e = d;
     d = c;
@@ -1081,7 +974,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[69];
     e = d;
     d = c;
@@ -1090,7 +982,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[70];
     e = d;
     d = c;
@@ -1099,7 +990,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[71];
     e = d;
     d = c;
@@ -1108,7 +998,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[72];
     e = d;
     d = c;
@@ -1117,7 +1006,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[73];
     e = d;
     d = c;
@@ -1126,7 +1014,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[74];
     e = d;
     d = c;
@@ -1135,7 +1022,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[75];
     e = d;
     d = c;
@@ -1144,7 +1030,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[76];
     e = d;
     d = c;
@@ -1153,7 +1038,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[77];
     e = d;
     d = c;
@@ -1162,7 +1046,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[78];
     e = d;
     d = c;
@@ -1171,7 +1054,6 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     a = temp;
 
     f = b ^ c ^ d;
-    k = 0xCA62C1D6;
     temp = rotl(a, 5) + f + e + k + w[79];
     e = d;
     d = c;
