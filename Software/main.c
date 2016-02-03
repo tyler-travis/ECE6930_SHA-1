@@ -9,17 +9,22 @@
 //	Some Ideas for future optimization/readability
 //********************************************************************
 //
-//  1. Use a struct to carry all the information besides the message
+//  -  Use a struct to carry all the information besides the message
 //     and chunks array, that way we can condense the information
 //     better.
-//  2. Is there a way to make the padding section smaller? Looking at
+//
+//  -  Is there a way to make the padding section smaller? Looking at
 //     some code on line implementing SHA-1 in C shows a lot less code
 //     for that.
-//  3. Look into using some of the Intel Intrinsic functions.
-//  4. Optimize the SHA_Iteration function to better use the boolean
+//
+//  -  Look into using some of the Intel Intrinsic functions.
+//
+//  -  Optimize the SHA_Iteration function to better use the boolean
 //     expressions.
-//	5. pthreads
-//	6. Figure out how to do the SHA-1 XOR optimazations
+//
+//	-  pthreads
+//
+//	-  Figure out how to do the SHA-1 XOR optimazations
 //
 //********************************************************************
 
