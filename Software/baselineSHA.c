@@ -59,7 +59,7 @@
 //	Function Prototypes
 //********************************************************************
 
-void SHA1(char* message, uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t message_size);
+void SHA1(char* message1, char* message2, char* message3, char* message4, uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t message_size);
 void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bits, uint32_t numChunks, uint32_t leftOverBits, uint8_t addChunk);
 void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t chunk[16]);
 void printSHA(uint32_t hash_buffer[5]);
@@ -83,10 +83,14 @@ int main(int argc, char** argv)
     fseek(fp, 0, SEEK_SET);
 
     // Allocate the correct memory for the message
-    char* message = malloc(fsize);
-    fread(message, fsize, 1, fp);
+    char* message1 = malloc(fsize);
+    fread(message1, fsize, 1, fp);
 
-    printf("Input Message: %s\n", message);
+    char* message2 = "Hello";
+    char* message3 = "Wordl";
+    char* message4 = "foobar";
+
+    printf("Input Message: %s\n", message1);
     printf("Input Message size: %lu\n\n", fsize);
 
     // Initialize hash_buffer
@@ -96,14 +100,18 @@ int main(int argc, char** argv)
     uint32_t hash_buffer4[5];
 
     // Call SHA1 algorithm
-    SHA1(message, hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, fsize);
+    SHA1(message1, message2, message3, message4,
+            hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, fsize);
 
-    printf("\n\nMessage: %s\n", message);
+    printf("\n\nMessage: %s\n", message1);
     //**********printSHA(hash_buffer);
 
     //End program
     fclose(fp);
-    free(message);
+    free(message1);
+    free(message2);
+    free(message3);
+    free(message4);
     return 0;
 }
 
@@ -111,7 +119,7 @@ int main(int argc, char** argv)
 //	Function Definitions
 //********************************************************************
 
-void SHA1(char* message, uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t message_size)
+void SHA1(char* message1, char* message2, char* message3, char* message4, uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t message_size)
 {
     // Initial values for the hash_buffer
     hash_buffer1[0] = 0x67452301;  // h0
@@ -119,6 +127,27 @@ void SHA1(char* message, uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uin
     hash_buffer1[2] = 0x98BADCFE;  // h2
     hash_buffer1[3] = 0x10325476;  // h3
     hash_buffer1[4] = 0xC3D2E1F0;  // h4
+
+    // Initial values for the hash_buffer
+    hash_buffer2[0] = 0x67452301;  // h0
+    hash_buffer2[1] = 0xEFCDAB89;  // h1
+    hash_buffer2[2] = 0x98BADCFE;  // h2
+    hash_buffer2[3] = 0x10325476;  // h3
+    hash_buffer2[4] = 0xC3D2E1F0;  // h4
+
+    // Initial values for the hash_buffer
+    hash_buffer3[0] = 0x67452301;  // h0
+    hash_buffer3[1] = 0xEFCDAB89;  // h1
+    hash_buffer3[2] = 0x98BADCFE;  // h2
+    hash_buffer3[3] = 0x10325476;  // h3
+    hash_buffer3[4] = 0xC3D2E1F0;  // h4
+
+    // Initial values for the hash_buffer
+    hash_buffer4[0] = 0x67452301;  // h0
+    hash_buffer4[1] = 0xEFCDAB89;  // h1
+    hash_buffer4[2] = 0x98BADCFE;  // h2
+    hash_buffer4[3] = 0x10325476;  // h3
+    hash_buffer4[4] = 0xC3D2E1F0;  // h4
 
     // Get the size of the message
     uint64_t message_size_bytes = message_size;
@@ -142,7 +171,7 @@ void SHA1(char* message, uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uin
     uint32_t chunks[number_of_chunks][16];
 
     // Prep the message into 512-bit chunks (16 32-bit words)
-    prepMessage(message, chunks, message_size_bits, number_of_chunks, leftOverBits, addChunk);
+    prepMessage(message1, chunks, message_size_bits, number_of_chunks, leftOverBits, addChunk);
 
     //################################
     //	FOR DEBUGGING

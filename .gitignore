@@ -1,5 +1,5 @@
-Software/CMakeCache.txt
-Software/CMakeFiles
-Software/Makefile
-Software/cmake_install.cmake
-Software/*.o
+$GIT_DIR/Software/CMakeCache.txt
+$GIT_DIR/Software/CMakeFiles
+$GIT_DIR/Software/Makefile
+$GIT_DIR/Software/cmake_install.cmake
+$GIT_DIR/Software/baselineSHA.o
