@@ -48,12 +48,30 @@
 #define f4(vecB, vecC, vecD) (_mm_xor_si128(_mm_xor_si128(vecB, vecC), vecD))
 
 #define temp(vecA, vecE, vecF, k, w1, w2, w3, w4) (_mm_setr_epi32(rotl(((uint32_t*)&vecA)[0],5) + ((uint32_t*)&vecF)[0] + ((uint32_t*)&vecE)[0] + k + w1, \
-        rotl(((uint32_t*)&vecA)[1],5) + ((uint32_t*)&vecF)[1] + ((uint32_t*)&vecE)[1] + k + w2, \
-        rotl(((uint32_t*)&vecA)[2],5) + ((uint32_t*)&vecF)[2] + ((uint32_t*)&vecE)[2] + k + w3, \
-        rotl(((uint32_t*)&vecA)[3],5) + ((uint32_t*)&vecF)[3] + ((uint32_t*)&vecE)[3] + k + w4))
+            rotl(((uint32_t*)&vecA)[1],5) + ((uint32_t*)&vecF)[1] + ((uint32_t*)&vecE)[1] + k + w2, \
+            rotl(((uint32_t*)&vecA)[2],5) + ((uint32_t*)&vecF)[2] + ((uint32_t*)&vecE)[2] + k + w3, \
+            rotl(((uint32_t*)&vecA)[3],5) + ((uint32_t*)&vecF)[3] + ((uint32_t*)&vecE)[3] + k + w4))
 
 #define setC(vecB) (_mm_setr_epi32(rotl(((uint32_t*)&vecB)[0], 30), rotl(((uint32_t*)&vecB)[1], 30), \
-        rotl(((uint32_t*)&vecB)[2], 30), rotl(((uint32_t*)&vecB)[3], 30)))
+            rotl(((uint32_t*)&vecB)[2], 30), rotl(((uint32_t*)&vecB)[3], 30)))
+
+//********************************************************************
+//	Define a bool
+//********************************************************************
+
+typedef enum {false, true} bool;
+
+//********************************************************************
+//	Constants
+//********************************************************************
+
+const char character_set[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+    'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
+
+#define N 56
+#define string_size 10
 
 //********************************************************************
 //	Function Prototypes
@@ -65,6 +83,7 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5],
         uint32_t chunk1[16], uint32_t chunk2[16], uint32_t chunk3[16], uint32_t chunk4[16]);
 void printSHA(uint32_t hash_buffer[5]);
+bool SHAcompare(uint32_t hash_buffer[5], uint32_t input_hash[5]);
 
 uint32_t rotl(uint32_t value, uint16_t shift);
 
@@ -74,15 +93,480 @@ uint32_t rotl(uint32_t value, uint16_t shift);
 
 int main(int argc, char** argv)
 {
-    char* message1 = "barfoo";
-    char* message2 = "Hello1";
-    char* message3 = "World1";
-    char* message4 = "foobar";
+    uint32_t input_hash[5];
+    printf("argv[1] = %s\n", argv[1]);
 
-    uint32_t fsize = 6;
+    sscanf(argv[1], "%8x%8x%8x%8x%8x", &input_hash[0], &input_hash[1], &input_hash[2], &input_hash[3], &input_hash[4]);
 
-    printf("Input Message: %s\n", message1);
-    printf("Input Message size: %d\n\n", fsize);
+    // Initialize hash_buffer
+    uint32_t hash_buffer1[5];
+    uint32_t hash_buffer2[5];
+    uint32_t hash_buffer3[5];
+    uint32_t hash_buffer4[5];
+
+    char password1[11];
+    char password2[11];
+    char password3[11];
+    char password4[11];
+    for(int i = 0; i < string_size; ++i)
+    {
+        // Set the null terminator in the correct location
+        //password1[i + 1] = 0x00;
+        //password2[i + 1] = 0x00;
+        //password3[i + 1] = 0x00;
+        //password4[i + 1] = 0x00;
+        for(int j = 0; (j < N) && (i >= 0); j++)
+        {
+            // If this is the first time here,
+            if(i == 0)
+            {
+                password1[0] = character_set[j++];
+                password2[0] = character_set[j++];
+                password3[0] = character_set[j++];
+                password4[0] = character_set[j];
+                SHA1(password1, password2, password3, password4,
+                        hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 1);
+                //printf("password1: %s\n", password1);
+                //printSHA(hash_buffer1);
+                //printf("password2: %s\n", password2);
+                //printSHA(hash_buffer2);
+                //printf("password3: %s\n", password3);
+                //printSHA(hash_buffer3);
+                //printf("password4: %s\n", password4);
+                //printSHA(hash_buffer4);
+                if(SHAcompare(hash_buffer1, input_hash))
+                {
+                    printf("Found match!\nPassword: %s\n", password1);
+                    printSHA(hash_buffer1);
+                    return 0;
+                }
+                else if(SHAcompare(hash_buffer2, input_hash))
+                {
+                    printf("Found match!\nPassword: %s\n", password2);
+                    printSHA(hash_buffer2);
+                    return 0;
+                }
+                else if(SHAcompare(hash_buffer3, input_hash))
+                {
+                    printf("Found match!\nPassword: %s\n", password3);
+                    printSHA(hash_buffer3);
+                    return 0;
+                }
+                else if(SHAcompare(hash_buffer4, input_hash))
+                {
+                    printf("Found match!\nPassword: %s\n", password4);
+                    printSHA(hash_buffer4);
+                    return 0;
+                }
+            }
+            else
+            {
+                password1[0] = character_set[j];
+                password2[0] = character_set[j];
+                password3[0] = character_set[j];
+                password4[0] = character_set[j];
+            }
+            for(int k = 0; (k < N) && (i >= 1); k++)
+            {
+                if(i == 1)
+                {
+                    password1[1] = character_set[k++];
+                    password2[1] = character_set[k++];
+                    password3[1] = character_set[k++];
+                    password4[1] = character_set[k];
+                    SHA1(password1, password2, password3, password4,
+                            hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 2);
+                    if(SHAcompare(hash_buffer1, input_hash))
+                    {
+                        printf("Found match!\nPassword: %s\n", password1);
+                        printSHA(hash_buffer1);
+                        return 0;
+                    }
+                    else if(SHAcompare(hash_buffer2, input_hash))
+                    {
+                        printf("Found match!\nPassword: %s\n", password2);
+                        printSHA(hash_buffer2);
+                        return 0;
+                    }
+                    else if(SHAcompare(hash_buffer3, input_hash))
+                    {
+                        printf("Found match!\nPassword: %s\n", password3);
+                        printSHA(hash_buffer3);
+                        return 0;
+                    }
+                    else if(SHAcompare(hash_buffer4, input_hash))
+                    {
+                        printf("Found match!\nPassword: %s\n", password4);
+                        printSHA(hash_buffer4);
+                        return 0;
+                    }
+                }
+                else
+                {
+                    password1[1] = character_set[k];
+                    password2[1] = character_set[k];
+                    password3[1] = character_set[k];
+                    password4[1] = character_set[k];
+                }
+
+                for(int l = 0; (l < N) && (i >= 2); l++)
+                {
+                    if(i == 2)
+                    {
+                        password1[2] = character_set[l++];
+                        password2[2] = character_set[l++];
+                        password3[2] = character_set[l++];
+                        password4[2] = character_set[l];
+                        SHA1(password1, password2, password3, password4,
+                                hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 3);
+                        if(SHAcompare(hash_buffer1, input_hash))
+                        {
+                            printf("Found match!\nPassword: %s\n", password1);
+                            printSHA(hash_buffer1);
+                            return 0;
+                        }
+                        else if(SHAcompare(hash_buffer2, input_hash))
+                        {
+                            printf("Found match!\nPassword: %s\n", password2);
+                            printSHA(hash_buffer2);
+                            return 0;
+                        }
+                        else if(SHAcompare(hash_buffer3, input_hash))
+                        {
+                            printf("Found match!\nPassword: %s\n", password3);
+                            printSHA(hash_buffer3);
+                            return 0;
+                        }
+                        else if(SHAcompare(hash_buffer4, input_hash))
+                        {
+                            printf("Found match!\nPassword: %s\n", password4);
+                            printSHA(hash_buffer4);
+                            return 0;
+                        }
+                    }
+                    else
+                    {
+                        password1[2] = character_set[l];
+                        password2[2] = character_set[l];
+                        password3[2] = character_set[l];
+                        password4[2] = character_set[l];
+                    }
+                    for(int m = 0; (m < N) && (i >= 3); m++)
+                    {
+                        if(i == 3)
+                        {
+                            password1[3] = character_set[m++];
+                            password2[3] = character_set[m++];
+                            password3[3] = character_set[m++];
+                            password4[3] = character_set[m];
+                            SHA1(password1, password2, password3, password4,
+                                    hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 4);
+                            if(SHAcompare(hash_buffer1, input_hash))
+                            {
+                                printf("Found match!\nPassword: %s\n", password1);
+                                printSHA(hash_buffer1);
+                                return 0;
+                            }
+                            else if(SHAcompare(hash_buffer2, input_hash))
+                            {
+                                printf("Found match!\nPassword: %s\n", password2);
+                                printSHA(hash_buffer2);
+                                return 0;
+                            }
+                            else if(SHAcompare(hash_buffer3, input_hash))
+                            {
+                                printf("Found match!\nPassword: %s\n", password3);
+                                printSHA(hash_buffer3);
+                                return 0;
+                            }
+                            else if(SHAcompare(hash_buffer4, input_hash))
+                            {
+                                printf("Found match!\nPassword: %s\n", password4);
+                                printSHA(hash_buffer4);
+                                return 0;
+                            }
+                        }
+                        else
+                        {
+                            password1[3] = character_set[m];
+                            password2[3] = character_set[m];
+                            password3[3] = character_set[m];
+                            password4[3] = character_set[m];
+                        }
+                        for(int n = 0; (n < N) && (i >= 4); n++)
+                        {
+                            if(i == 4)
+                            {
+                                password1[4] = character_set[n++];
+                                password2[4] = character_set[n++];
+                                password3[4] = character_set[n++];
+                                password4[4] = character_set[n];
+                                SHA1(password1, password2, password3, password4,
+                                        hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 5);
+                                if(SHAcompare(hash_buffer1, input_hash))
+                                {
+                                    printf("Found match!\nPassword: %s\n", password1);
+                                    printSHA(hash_buffer1);
+                                    return 0;
+                                }
+                                else if(SHAcompare(hash_buffer2, input_hash))
+                                {
+                                    printf("Found match!\nPassword: %s\n", password2);
+                                    printSHA(hash_buffer2);
+                                    return 0;
+                                }
+                                else if(SHAcompare(hash_buffer3, input_hash))
+                                {
+                                    printf("Found match!\nPassword: %s\n", password3);
+                                    printSHA(hash_buffer3);
+                                    return 0;
+                                }
+                                else if(SHAcompare(hash_buffer4, input_hash))
+                                {
+                                    printf("Found match!\nPassword: %s\n", password4);
+                                    printSHA(hash_buffer4);
+                                    return 0;
+                                }
+                            }
+                            else
+                            {
+                                password1[4] = character_set[n];
+                                password2[4] = character_set[n];
+                                password3[4] = character_set[n];
+                                password4[4] = character_set[n];
+                            }
+                            for(int o = 0; (o < N) && (i >= 5); o++)
+                            {
+                                if(i == 5)
+                                {
+                                    password1[5] = character_set[o++];
+                                    password2[5] = character_set[o++];
+                                    password3[5] = character_set[o++];
+                                    password4[5] = character_set[o];
+                                    SHA1(password1, password2, password3, password4,
+                                            hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 6);
+                                    if(SHAcompare(hash_buffer1, input_hash))
+                                    {
+                                        printf("Found match!\nPassword: %s\n", password1);
+                                        printSHA(hash_buffer1);
+                                        return 0;
+                                    }
+                                    else if(SHAcompare(hash_buffer2, input_hash))
+                                    {
+                                        printf("Found match!\nPassword: %s\n", password2);
+                                        printSHA(hash_buffer2);
+                                        return 0;
+                                    }
+                                    else if(SHAcompare(hash_buffer3, input_hash))
+                                    {
+                                        printf("Found match!\nPassword: %s\n", password3);
+                                        printSHA(hash_buffer3);
+                                        return 0;
+                                    }
+                                    else if(SHAcompare(hash_buffer4, input_hash))
+                                    {
+                                        printf("Found match!\nPassword: %s\n", password4);
+                                        printSHA(hash_buffer4);
+                                        return 0;
+                                    }
+                                }
+                                else
+                                {
+                                    password1[5] = character_set[o];
+                                    password2[5] = character_set[o];
+                                    password3[5] = character_set[o];
+                                    password4[5] = character_set[o];
+                                }
+                                for(int p = 0; (p < N) && (i >= 6); p++)
+                                {
+                                    if(i == 6)
+                                    {
+                                        password1[6] = character_set[p++];
+                                        password2[6] = character_set[p++];
+                                        password3[6] = character_set[p++];
+                                        password4[6] = character_set[p];
+                                        SHA1(password1, password2, password3, password4,
+                                                hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 7);
+                                        if(SHAcompare(hash_buffer1, input_hash))
+                                        {
+                                            printf("Found match!\nPassword: %s\n", password1);
+                                            printSHA(hash_buffer1);
+                                            return 0;
+                                        }
+                                        else if(SHAcompare(hash_buffer2, input_hash))
+                                        {
+                                            printf("Found match!\nPassword: %s\n", password2);
+                                            printSHA(hash_buffer2);
+                                            return 0;
+                                        }
+                                        else if(SHAcompare(hash_buffer3, input_hash))
+                                        {
+                                            printf("Found match!\nPassword: %s\n", password3);
+                                            printSHA(hash_buffer3);
+                                            return 0;
+                                        }
+                                        else if(SHAcompare(hash_buffer4, input_hash))
+                                        {
+                                            printf("Found match!\nPassword: %s\n", password4);
+                                            printSHA(hash_buffer4);
+                                            return 0;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        password1[6] = character_set[p];
+                                        password2[6] = character_set[p];
+                                        password3[6] = character_set[p];
+                                        password4[6] = character_set[p];
+                                    }
+                                    for(int q = 0; (q < N) && (i >= 7); q++)
+                                    {
+                                        if(i == 7)
+                                        {
+                                            password1[7] = character_set[q++];
+                                            password2[7] = character_set[q++];
+                                            password3[7] = character_set[q++];
+                                            password4[7] = character_set[q];
+                                            SHA1(password1, password2, password3, password4,
+                                                    hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 8);
+                                            if(SHAcompare(hash_buffer1, input_hash))
+                                            {
+                                                printf("Found match!\nPassword: %s\n", password1);
+                                                printSHA(hash_buffer1);
+                                                return 0;
+                                            }
+                                            else if(SHAcompare(hash_buffer2, input_hash))
+                                            {
+                                                printf("Found match!\nPassword: %s\n", password2);
+                                                printSHA(hash_buffer2);
+                                                return 0;
+                                            }
+                                            else if(SHAcompare(hash_buffer3, input_hash))
+                                            {
+                                                printf("Found match!\nPassword: %s\n", password3);
+                                                printSHA(hash_buffer3);
+                                                return 0;
+                                            }
+                                            else if(SHAcompare(hash_buffer4, input_hash))
+                                            {
+                                                printf("Found match!\nPassword: %s\n", password4);
+                                                printSHA(hash_buffer4);
+                                                return 0;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            password1[7] = character_set[q];
+                                            password2[7] = character_set[q];
+                                            password3[7] = character_set[q];
+                                            password4[7] = character_set[q];
+                                        }
+                                        for(int r = 0; (r < N) && (i >= 8); r++)
+                                        {
+                                            if(i == 8)
+                                            {
+                                                password1[8] = character_set[r++];
+                                                password2[8] = character_set[r++];
+                                                password3[8] = character_set[r++];
+                                                password4[8] = character_set[r];
+                                                SHA1(password1, password2, password3, password4,
+                                                        hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 9);
+                                                if(SHAcompare(hash_buffer1, input_hash))
+                                                {
+                                                    printf("Found match!\nPassword: %s\n", password1);
+                                                    printSHA(hash_buffer1);
+                                                    return 0;
+                                                }
+                                                else if(SHAcompare(hash_buffer2, input_hash))
+                                                {
+                                                    printf("Found match!\nPassword: %s\n", password2);
+                                                    printSHA(hash_buffer2);
+                                                    return 0;
+                                                }
+                                                else if(SHAcompare(hash_buffer3, input_hash))
+                                                {
+                                                    printf("Found match!\nPassword: %s\n", password3);
+                                                    printSHA(hash_buffer3);
+                                                    return 0;
+                                                }
+                                                else if(SHAcompare(hash_buffer4, input_hash))
+                                                {
+                                                    printf("Found match!\nPassword: %s\n", password4);
+                                                    printSHA(hash_buffer4);
+                                                    return 0;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                password1[8] = character_set[r];
+                                                password2[8] = character_set[r];
+                                                password3[8] = character_set[r];
+                                                password4[8] = character_set[r];
+                                            }
+                                            for(int s = 0; (s < N) && (i >= 9); s++)
+                                            {
+                                                if(i == 9)
+                                                {
+                                                    password1[9] = character_set[s++];
+                                                    password2[9] = character_set[s++];
+                                                    password3[9] = character_set[s++];
+                                                    password4[9] = character_set[s];
+                                                    SHA1(password1, password2, password3, password4,
+                                                            hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 10);
+                                                    if(SHAcompare(hash_buffer1, input_hash))
+                                                    {
+                                                        printf("Found match!\nPassword: %s\n", password1);
+                                                        printSHA(hash_buffer1);
+                                                        return 0;
+                                                    }
+                                                    else if(SHAcompare(hash_buffer2, input_hash))
+                                                    {
+                                                        printf("Found match!\nPassword: %s\n", password2);
+                                                        printSHA(hash_buffer2);
+                                                        return 0;
+                                                    }
+                                                    else if(SHAcompare(hash_buffer3, input_hash))
+                                                    {
+                                                        printf("Found match!\nPassword: %s\n", password3);
+                                                        printSHA(hash_buffer3);
+                                                        return 0;
+                                                    }
+                                                    else if(SHAcompare(hash_buffer4, input_hash))
+                                                    {
+                                                        printf("Found match!\nPassword: %s\n", password4);
+                                                        printSHA(hash_buffer4);
+                                                        return 0;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    password1[9] = character_set[s];
+                                                    password2[9] = character_set[s];
+                                                    password3[9] = character_set[s];
+                                                    password4[9] = character_set[s];
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    printf("Unable to find hash: %s\n", argv[1]);
+
+    /*char* message1 = "barfoo";
+      char* message2 = "Hello1";
+      char* message3 = "World1";
+      char* message4 = "foobar";
+
+      uint32_t fsize = 6;
+
+      printf("Input Message: %s\n", message1);
+      printf("Input Message size: %d\n\n", fsize);
 
     // Initialize hash_buffer
     uint32_t hash_buffer1[5];
@@ -92,7 +576,7 @@ int main(int argc, char** argv)
 
     // Call SHA1 algorithm
     SHA1(message1, message2, message3, message4,
-            hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, fsize);
+    hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, fsize);
 
     printf("\n\nMessage: %s\n", message1);
     printSHA(hash_buffer1);
@@ -101,7 +585,7 @@ int main(int argc, char** argv)
     printf("\n\nMessage: %s\n", message3);
     printSHA(hash_buffer3);
     printf("\n\nMessage: %s\n", message4);
-    printSHA(hash_buffer4);
+    printSHA(hash_buffer4);*/
 
     //End program
     return 0;
@@ -175,11 +659,11 @@ void SHA1(char* message1, char* message2, char* message3, char* message4, uint32
     //	FOR DEBUGGING
     //################################
     /*printf("Message AFTER prep: \n");
-    for(i = 0; i < number_of_chunks; i++){
-        for(j = 0; j < 16; j++){
-            printf("%08X", chunks[i][j]);
-        }
-    }*/
+      for(i = 0; i < number_of_chunks; i++){
+      for(j = 0; j < 16; j++){
+      printf("%08X", chunks[i][j]);
+      }
+      }*/
     //################################
     //################################
 
@@ -241,8 +725,8 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
     //--------------------------------
     //	PADDING
     //--------------------------------
-    printf("Offset: %d \n", offset);
-    printf("Byte number %d \n", j);
+    //printf("Offset: %d \n", offset);
+    //printf("Byte number %d \n", j);
 
     //Different methods for leftOverBits >= 448 and leftOverBits < 448
     switch(addChunk)
@@ -251,7 +735,7 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
             {
                 //Calculate bytes of padding
                 numBytesPadding = 56 - (leftOverBits/8);
-                printf("# padding: %d \n", numBytesPadding);
+                //printf("# padding: %d \n", numBytesPadding);
 
 
                 for(i = 0; i < numBytesPadding; i++){
@@ -282,7 +766,7 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
             {
                 //Calculate bytes of padding
                 numBytesPadding = 64 - (leftOverBits/8);
-                printf("# padding: %d \n", numBytesPadding);
+                //printf("# padding: %d \n", numBytesPadding);
 
                 for(i = 0; i < numBytesPadding; i++){
 
@@ -296,7 +780,7 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
                         chunks[numChunks-2][j] |= (0x80 << offset);
                     }
 
-                    //printf("Current word: %08X \n", chunks[numChunks-2][j]);
+                    ////printf("Current word: %08X \n", chunks[numChunks-2][j]);
 
                     if(offset == 0){
                         offset = 24;
@@ -332,28 +816,28 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
     //################################
 
     //PRINT THE ORIGINAL MESSAGE
-    printf("\n");
-    printf("The message size in bytes: %d \n", (int)(message_size_bits/8));
-    printf("The message size in bits: %d \n", (int)message_size_bits);
-    printf("# of leftover bits: %d \n", (int)leftOverBits);
+    //printf("\n");
+    //printf("The message size in bytes: %d \n", (int)(message_size_bits/8));
+    //printf("The message size in bits: %d \n", (int)message_size_bits);
+    //printf("# of leftover bits: %d \n", (int)leftOverBits);
 
 
     for(i = 0; i < (message_size_bits/8); i++){
-        printf("%c", message[i]);
+        //printf("%c", message[i]);
     }
 
     //PRINT THE DATA OF ALL THE CHUNKS BY WORDS
-    printf("\n\n");
-    printf("Number of chunks: %d \n", numChunks);
+    //printf("\n\n");
+    //printf("Number of chunks: %d \n", numChunks);
 
     for(i = 0; i < numChunks; i++){
         for(j = 0; j < 16; j++){
-            printf("%08X", chunks[i][j]);
+            //printf("%08X", chunks[i][j]);
         }
-        printf("\n\n");
+        //printf("\n\n");
     }
 
-    printf("\n\n");
+    //printf("\n\n");
 
     //################################
     //################################
@@ -727,7 +1211,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     __m128i vecE = _mm_setr_epi32(hash_buffer1[4],hash_buffer2[4],hash_buffer3[4],hash_buffer4[4]);
 
     // Main Loop
-    
+
     //f = (b & c) | (~b & d);
     //k = 0x5A827999;
     //temp = rotl(a, 5) + f + e + k + w[0];
@@ -739,7 +1223,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
 
     k = 0x5A827999;
     __m128i vecF = f1(vecB,vecC,vecD);
-    __m128i vecTemp = temp(vecA, vecE, vecF, k, w1[0], w2[0], w3[0], w4[0]); 
+    __m128i vecTemp = temp(vecA, vecE, vecF, k, w1[0], w2[0], w3[0], w4[0]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -747,7 +1231,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[1], w2[1], w3[1], w4[1]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[1], w2[1], w3[1], w4[1]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -755,7 +1239,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[2], w2[2], w3[2], w4[2]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[2], w2[2], w3[2], w4[2]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -763,7 +1247,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[3], w2[3], w3[3], w4[3]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[3], w2[3], w3[3], w4[3]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -771,7 +1255,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[4], w2[4], w3[4], w4[4]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[4], w2[4], w3[4], w4[4]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -779,7 +1263,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[5], w2[5], w3[5], w4[5]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[5], w2[5], w3[5], w4[5]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -787,7 +1271,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[6], w2[6], w3[6], w4[6]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[6], w2[6], w3[6], w4[6]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -795,7 +1279,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[7], w2[7], w3[7], w4[7]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[7], w2[7], w3[7], w4[7]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -803,7 +1287,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[8], w2[8], w3[8], w4[8]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[8], w2[8], w3[8], w4[8]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -811,7 +1295,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[9], w2[9], w3[9], w4[9]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[9], w2[9], w3[9], w4[9]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -819,7 +1303,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[10], w2[10], w3[10], w4[10]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[10], w2[10], w3[10], w4[10]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -827,7 +1311,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[11], w2[11], w3[11], w4[11]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[11], w2[11], w3[11], w4[11]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -835,7 +1319,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[12], w2[12], w3[12], w4[12]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[12], w2[12], w3[12], w4[12]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -843,7 +1327,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[13], w2[13], w3[13], w4[13]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[13], w2[13], w3[13], w4[13]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -851,7 +1335,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[14], w2[14], w3[14], w4[14]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[14], w2[14], w3[14], w4[14]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -859,7 +1343,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[15], w2[15], w3[15], w4[15]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[15], w2[15], w3[15], w4[15]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -867,7 +1351,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[16], w2[16], w3[16], w4[16]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[16], w2[16], w3[16], w4[16]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -875,7 +1359,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[17], w2[17], w3[17], w4[17]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[17], w2[17], w3[17], w4[17]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -883,7 +1367,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[18], w2[18], w3[18], w4[18]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[18], w2[18], w3[18], w4[18]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -891,7 +1375,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f1(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[19], w2[19], w3[19], w4[19]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[19], w2[19], w3[19], w4[19]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -903,7 +1387,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     k = 0x6ED9EBA1;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[20], w2[20], w3[20], w4[20]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[20], w2[20], w3[20], w4[20]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -911,7 +1395,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[21], w2[21], w3[21], w4[21]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[21], w2[21], w3[21], w4[21]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -919,7 +1403,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[22], w2[22], w3[22], w4[22]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[22], w2[22], w3[22], w4[22]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -927,7 +1411,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[23], w2[23], w3[23], w4[23]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[23], w2[23], w3[23], w4[23]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -935,7 +1419,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[24], w2[24], w3[24], w4[24]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[24], w2[24], w3[24], w4[24]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -943,7 +1427,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[25], w2[25], w3[25], w4[25]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[25], w2[25], w3[25], w4[25]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -951,7 +1435,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[26], w2[26], w3[26], w4[26]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[26], w2[26], w3[26], w4[26]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -959,7 +1443,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[27], w2[27], w3[27], w4[27]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[27], w2[27], w3[27], w4[27]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -967,7 +1451,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[28], w2[28], w3[28], w4[28]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[28], w2[28], w3[28], w4[28]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -975,7 +1459,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[29], w2[29], w3[29], w4[29]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[29], w2[29], w3[29], w4[29]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -983,7 +1467,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[30], w2[30], w3[30], w4[30]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[30], w2[30], w3[30], w4[30]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -991,7 +1475,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[31], w2[31], w3[31], w4[31]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[31], w2[31], w3[31], w4[31]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -999,7 +1483,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[32], w2[32], w3[32], w4[32]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[32], w2[32], w3[32], w4[32]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1007,7 +1491,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[33], w2[33], w3[33], w4[33]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[33], w2[33], w3[33], w4[33]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1015,7 +1499,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[34], w2[34], w3[34], w4[34]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[34], w2[34], w3[34], w4[34]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1023,7 +1507,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[35], w2[35], w3[35], w4[35]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[35], w2[35], w3[35], w4[35]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1031,7 +1515,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[36], w2[36], w3[36], w4[36]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[36], w2[36], w3[36], w4[36]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1039,7 +1523,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[37], w2[37], w3[37], w4[37]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[37], w2[37], w3[37], w4[37]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1047,7 +1531,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[38], w2[38], w3[38], w4[38]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[38], w2[38], w3[38], w4[38]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1055,7 +1539,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f2(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[39], w2[39], w3[39], w4[39]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[39], w2[39], w3[39], w4[39]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1067,7 +1551,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     k = 0x8F1BBCDC;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[40], w2[40], w3[40], w4[40]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[40], w2[40], w3[40], w4[40]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1075,7 +1559,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[41], w2[41], w3[41], w4[41]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[41], w2[41], w3[41], w4[41]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1083,7 +1567,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[42], w2[42], w3[42], w4[42]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[42], w2[42], w3[42], w4[42]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1091,7 +1575,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[43], w2[43], w3[43], w4[43]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[43], w2[43], w3[43], w4[43]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1099,7 +1583,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[44], w2[44], w3[44], w4[44]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[44], w2[44], w3[44], w4[44]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1107,7 +1591,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[45], w2[45], w3[45], w4[45]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[45], w2[45], w3[45], w4[45]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1115,7 +1599,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[46], w2[46], w3[46], w4[46]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[46], w2[46], w3[46], w4[46]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1123,7 +1607,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[47], w2[47], w3[47], w4[47]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[47], w2[47], w3[47], w4[47]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1131,7 +1615,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[48], w2[48], w3[48], w4[48]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[48], w2[48], w3[48], w4[48]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1139,7 +1623,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[49], w2[49], w3[49], w4[49]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[49], w2[49], w3[49], w4[49]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1147,7 +1631,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[50], w2[50], w3[50], w4[50]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[50], w2[50], w3[50], w4[50]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1155,7 +1639,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[51], w2[51], w3[51], w4[51]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[51], w2[51], w3[51], w4[51]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1163,7 +1647,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[52], w2[52], w3[52], w4[52]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[52], w2[52], w3[52], w4[52]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1171,7 +1655,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[53], w2[53], w3[53], w4[53]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[53], w2[53], w3[53], w4[53]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1179,7 +1663,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[54], w2[54], w3[54], w4[54]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[54], w2[54], w3[54], w4[54]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1187,7 +1671,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[55], w2[55], w3[55], w4[55]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[55], w2[55], w3[55], w4[55]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1195,7 +1679,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[56], w2[56], w3[56], w4[56]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[56], w2[56], w3[56], w4[56]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1203,7 +1687,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[57], w2[57], w3[57], w4[57]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[57], w2[57], w3[57], w4[57]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1211,7 +1695,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[58], w2[58], w3[58], w4[58]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[58], w2[58], w3[58], w4[58]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1219,19 +1703,19 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f3(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[59], w2[59], w3[59], w4[59]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[59], w2[59], w3[59], w4[59]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
     vecB = vecA;
     vecA = vecTemp;
-    
+
     // ------------------------------------
 
     k = 0xCA62C1D6;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[60], w2[60], w3[60], w4[60]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[60], w2[60], w3[60], w4[60]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1239,7 +1723,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[61], w2[61], w3[61], w4[61]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[61], w2[61], w3[61], w4[61]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1247,7 +1731,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[62], w2[62], w3[62], w4[62]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[62], w2[62], w3[62], w4[62]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1255,7 +1739,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[63], w2[63], w3[63], w4[63]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[63], w2[63], w3[63], w4[63]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1263,7 +1747,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[64], w2[64], w3[64], w4[64]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[64], w2[64], w3[64], w4[64]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1271,7 +1755,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[65], w2[65], w3[65], w4[65]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[65], w2[65], w3[65], w4[65]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1279,7 +1763,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[66], w2[66], w3[66], w4[66]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[66], w2[66], w3[66], w4[66]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1287,7 +1771,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[67], w2[67], w3[67], w4[67]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[67], w2[67], w3[67], w4[67]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1295,7 +1779,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[68], w2[68], w3[68], w4[68]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[68], w2[68], w3[68], w4[68]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1303,7 +1787,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[69], w2[69], w3[69], w4[69]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[69], w2[69], w3[69], w4[69]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1311,7 +1795,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[70], w2[70], w3[70], w4[70]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[70], w2[70], w3[70], w4[70]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1319,7 +1803,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[71], w2[71], w3[71], w4[71]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[71], w2[71], w3[71], w4[71]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1327,7 +1811,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[72], w2[72], w3[72], w4[72]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[72], w2[72], w3[72], w4[72]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1335,7 +1819,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[73], w2[73], w3[73], w4[73]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[73], w2[73], w3[73], w4[73]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1343,7 +1827,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[74], w2[74], w3[74], w4[74]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[74], w2[74], w3[74], w4[74]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1351,7 +1835,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[75], w2[75], w3[75], w4[75]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[75], w2[75], w3[75], w4[75]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1359,7 +1843,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[76], w2[76], w3[76], w4[76]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[76], w2[76], w3[76], w4[76]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1367,7 +1851,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[77], w2[77], w3[77], w4[77]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[77], w2[77], w3[77], w4[77]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1375,7 +1859,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[78], w2[78], w3[78], w4[78]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[78], w2[78], w3[78], w4[78]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1383,7 +1867,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecA = vecTemp;
 
     vecF = f4(vecB,vecC,vecD);
-    vecTemp = temp(vecA, vecE, vecF, k, w1[79], w2[79], w3[79], w4[79]); 
+    vecTemp = temp(vecA, vecE, vecF, k, w1[79], w2[79], w3[79], w4[79]);
     vecE = vecD;
     vecD = vecC;
     vecC = setC(vecB);
@@ -1428,4 +1912,9 @@ void printSHA(uint32_t hash_buffer[5])
 uint32_t rotl(uint32_t value, uint16_t shift)
 {
     return (value << shift) | (value >> (32 - shift));
+}
+
+bool SHAcompare(uint32_t hash_buffer[5], uint32_t input_hash[5])
+{
+    return !memcmp(hash_buffer, input_hash, 20);
 }
