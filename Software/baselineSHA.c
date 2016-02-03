@@ -59,9 +59,11 @@
 //	Function Prototypes
 //********************************************************************
 
-void SHA1(char* message1, char* message2, char* message3, char* message4, uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t message_size);
+void SHA1(char* message1, char* message2, char* message3, char* message4,
+        uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t message_size);
 void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bits, uint32_t numChunks, uint32_t leftOverBits, uint8_t addChunk);
-void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t chunk[16]);
+void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5],
+        uint32_t chunk1[16], uint32_t chunk2[16], uint32_t chunk3[16], uint32_t chunk4[16]);
 void printSHA(uint32_t hash_buffer[5]);
 
 uint32_t rotl(uint32_t value, uint16_t shift);
@@ -72,26 +74,15 @@ uint32_t rotl(uint32_t value, uint16_t shift);
 
 int main(int argc, char** argv)
 {
-    // Create file pointer to read in message
-    // We will by applying the SHA-1 algorithm to this message
-    FILE *fp;
-    fp = fopen(argv[1], "r");
-
-    // Determine size of the file
-    fseek(fp, 0, SEEK_END);
-    long fsize = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-
-    // Allocate the correct memory for the message
-    char* message1 = malloc(fsize);
-    fread(message1, fsize, 1, fp);
-
-    char* message2 = "Hello";
-    char* message3 = "Wordl";
+    char* message1 = "barfoo";
+    char* message2 = "Hello1";
+    char* message3 = "World1";
     char* message4 = "foobar";
 
+    uint32_t fsize = 6;
+
     printf("Input Message: %s\n", message1);
-    printf("Input Message size: %lu\n\n", fsize);
+    printf("Input Message size: %d\n\n", fsize);
 
     // Initialize hash_buffer
     uint32_t hash_buffer1[5];
@@ -104,14 +95,15 @@ int main(int argc, char** argv)
             hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, fsize);
 
     printf("\n\nMessage: %s\n", message1);
-    //**********printSHA(hash_buffer);
+    printSHA(hash_buffer1);
+    printf("\n\nMessage: %s\n", message2);
+    printSHA(hash_buffer2);
+    printf("\n\nMessage: %s\n", message3);
+    printSHA(hash_buffer3);
+    printf("\n\nMessage: %s\n", message4);
+    printSHA(hash_buffer4);
 
     //End program
-    fclose(fp);
-    free(message1);
-    free(message2);
-    free(message3);
-    free(message4);
     return 0;
 }
 
@@ -168,27 +160,33 @@ void SHA1(char* message1, char* message2, char* message3, char* message4, uint32
     uint16_t j;
 
     // Initialize the chunks array
-    uint32_t chunks[number_of_chunks][16];
+    uint32_t chunks1[number_of_chunks][16];
+    uint32_t chunks2[number_of_chunks][16];
+    uint32_t chunks3[number_of_chunks][16];
+    uint32_t chunks4[number_of_chunks][16];
 
     // Prep the message into 512-bit chunks (16 32-bit words)
-    prepMessage(message1, chunks, message_size_bits, number_of_chunks, leftOverBits, addChunk);
+    prepMessage(message1, chunks1, message_size_bits, number_of_chunks, leftOverBits, addChunk);
+    prepMessage(message2, chunks2, message_size_bits, number_of_chunks, leftOverBits, addChunk);
+    prepMessage(message3, chunks3, message_size_bits, number_of_chunks, leftOverBits, addChunk);
+    prepMessage(message4, chunks4, message_size_bits, number_of_chunks, leftOverBits, addChunk);
 
     //################################
     //	FOR DEBUGGING
     //################################
-    printf("Message AFTER prep: \n");
+    /*printf("Message AFTER prep: \n");
     for(i = 0; i < number_of_chunks; i++){
         for(j = 0; j < 16; j++){
             printf("%08X", chunks[i][j]);
         }
-    }
+    }*/
     //################################
     //################################
 
     // This manipulates the bytes as defined by SHA-1
     for(i = 0; i < number_of_chunks; ++i)
     {
-        shaIteration(hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, chunks[i]);
+        shaIteration(hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, chunks1[i], chunks2[i], chunks3[i], chunks4[i]);
     }
 }
 
@@ -362,10 +360,10 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 
 }
 
-void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t chunk[16])
+void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5],
+        uint32_t chunk1[16], uint32_t chunk2[16], uint32_t chunk3[16], uint32_t chunk4[16])
 {
     // Array to store the extended value
-    uint32_t w[80];
     uint32_t w1[80];
     uint32_t w2[80];
     uint32_t w3[80];
@@ -379,90 +377,341 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     uint32_t a, b, c, d, e, f, k, temp;
     //uint32_t k;
 
-    // Break chunk into 16 32-bit words
-    w[0] = chunk[0];
-    w[1] = chunk[1];
-    w[2] = chunk[2];
-    w[3] = chunk[3];
-    w[4] = chunk[4];
-    w[5] = chunk[5];
-    w[6] = chunk[6];
-    w[7] = chunk[7];
-    w[8] = chunk[8];
-    w[9] = chunk[9];
-    w[10] = chunk[10];
-    w[11] = chunk[11];
-    w[12] = chunk[12];
-    w[13] = chunk[13];
-    w[14] = chunk[14];
-    w[15] = chunk[15];
+    // Break chunk into 16 32-bit words w1
+    w1[0] = chunk1[0];
+    w1[1] = chunk1[1];
+    w1[2] = chunk1[2];
+    w1[3] = chunk1[3];
+    w1[4] = chunk1[4];
+    w1[5] = chunk1[5];
+    w1[6] = chunk1[6];
+    w1[7] = chunk1[7];
+    w1[8] = chunk1[8];
+    w1[9] = chunk1[9];
+    w1[10] = chunk1[10];
+    w1[11] = chunk1[11];
+    w1[12] = chunk1[12];
+    w1[13] = chunk1[13];
+    w1[14] = chunk1[14];
+    w1[15] = chunk1[15];
 
-    // Extend the 16 32-bit words into 80 32-bit words
-    w[16] = rotl((w[13] ^ w[8] ^ w[2] ^ w[0]), 1);
-    w[17] = rotl((w[14] ^ w[9] ^ w[3] ^ w[1]), 1);
-    w[18] = rotl((w[15] ^ w[10] ^ w[4] ^ w[2]), 1);
-    w[19] = rotl((w[16] ^ w[11] ^ w[5] ^ w[3]), 1);
-    w[20] = rotl((w[17] ^ w[12] ^ w[6] ^ w[4]), 1);
-    w[21] = rotl((w[18] ^ w[13] ^ w[7] ^ w[5]), 1);
-    w[22] = rotl((w[19] ^ w[14] ^ w[8] ^ w[6]), 1);
-    w[23] = rotl((w[20] ^ w[15] ^ w[9] ^ w[7]), 1);
-    w[24] = rotl((w[21] ^ w[16] ^ w[10] ^ w[8]), 1);
-    w[25] = rotl((w[22] ^ w[17] ^ w[11] ^ w[9]), 1);
-    w[26] = rotl((w[23] ^ w[18] ^ w[12] ^ w[10]), 1);
-    w[27] = rotl((w[24] ^ w[19] ^ w[13] ^ w[11]), 1);
-    w[28] = rotl((w[25] ^ w[20] ^ w[14] ^ w[12]), 1);
-    w[29] = rotl((w[26] ^ w[21] ^ w[15] ^ w[13]), 1);
-    w[30] = rotl((w[27] ^ w[22] ^ w[16] ^ w[14]), 1);
-    w[31] = rotl((w[28] ^ w[23] ^ w[17] ^ w[15]), 1);
-    w[32] = rotl((w[29] ^ w[24] ^ w[18] ^ w[16]), 1);
-    w[33] = rotl((w[30] ^ w[25] ^ w[19] ^ w[17]), 1);
-    w[34] = rotl((w[31] ^ w[26] ^ w[20] ^ w[18]), 1);
-    w[35] = rotl((w[32] ^ w[27] ^ w[21] ^ w[19]), 1);
-    w[36] = rotl((w[33] ^ w[28] ^ w[22] ^ w[20]), 1);
-    w[37] = rotl((w[34] ^ w[29] ^ w[23] ^ w[21]), 1);
-    w[38] = rotl((w[35] ^ w[30] ^ w[24] ^ w[22]), 1);
-    w[39] = rotl((w[36] ^ w[31] ^ w[25] ^ w[23]), 1);
-    w[40] = rotl((w[37] ^ w[32] ^ w[26] ^ w[24]), 1);
-    w[41] = rotl((w[38] ^ w[33] ^ w[27] ^ w[25]), 1);
-    w[42] = rotl((w[39] ^ w[34] ^ w[28] ^ w[26]), 1);
-    w[43] = rotl((w[40] ^ w[35] ^ w[29] ^ w[27]), 1);
-    w[44] = rotl((w[41] ^ w[36] ^ w[30] ^ w[28]), 1);
-    w[45] = rotl((w[42] ^ w[37] ^ w[31] ^ w[29]), 1);
-    w[46] = rotl((w[43] ^ w[38] ^ w[32] ^ w[30]), 1);
-    w[47] = rotl((w[44] ^ w[39] ^ w[33] ^ w[31]), 1);
-    w[48] = rotl((w[45] ^ w[40] ^ w[34] ^ w[32]), 1);
-    w[49] = rotl((w[46] ^ w[41] ^ w[35] ^ w[33]), 1);
-    w[50] = rotl((w[47] ^ w[42] ^ w[36] ^ w[34]), 1);
-    w[51] = rotl((w[48] ^ w[43] ^ w[37] ^ w[35]), 1);
-    w[52] = rotl((w[49] ^ w[44] ^ w[38] ^ w[36]), 1);
-    w[53] = rotl((w[50] ^ w[45] ^ w[39] ^ w[37]), 1);
-    w[54] = rotl((w[51] ^ w[46] ^ w[40] ^ w[38]), 1);
-    w[55] = rotl((w[52] ^ w[47] ^ w[41] ^ w[39]), 1);
-    w[56] = rotl((w[53] ^ w[48] ^ w[42] ^ w[40]), 1);
-    w[57] = rotl((w[54] ^ w[49] ^ w[43] ^ w[41]), 1);
-    w[58] = rotl((w[55] ^ w[50] ^ w[44] ^ w[42]), 1);
-    w[59] = rotl((w[56] ^ w[51] ^ w[45] ^ w[43]), 1);
-    w[60] = rotl((w[57] ^ w[52] ^ w[46] ^ w[44]), 1);
-    w[61] = rotl((w[58] ^ w[53] ^ w[47] ^ w[45]), 1);
-    w[62] = rotl((w[59] ^ w[54] ^ w[48] ^ w[46]), 1);
-    w[63] = rotl((w[60] ^ w[55] ^ w[49] ^ w[47]), 1);
-    w[64] = rotl((w[61] ^ w[56] ^ w[50] ^ w[48]), 1);
-    w[65] = rotl((w[62] ^ w[57] ^ w[51] ^ w[49]), 1);
-    w[66] = rotl((w[63] ^ w[58] ^ w[52] ^ w[50]), 1);
-    w[67] = rotl((w[64] ^ w[59] ^ w[53] ^ w[51]), 1);
-    w[68] = rotl((w[65] ^ w[60] ^ w[54] ^ w[52]), 1);
-    w[69] = rotl((w[66] ^ w[61] ^ w[55] ^ w[53]), 1);
-    w[70] = rotl((w[67] ^ w[62] ^ w[56] ^ w[54]), 1);
-    w[71] = rotl((w[68] ^ w[63] ^ w[57] ^ w[55]), 1);
-    w[72] = rotl((w[69] ^ w[64] ^ w[58] ^ w[56]), 1);
-    w[73] = rotl((w[70] ^ w[65] ^ w[59] ^ w[57]), 1);
-    w[74] = rotl((w[71] ^ w[66] ^ w[60] ^ w[58]), 1);
-    w[75] = rotl((w[72] ^ w[67] ^ w[61] ^ w[59]), 1);
-    w[76] = rotl((w[73] ^ w[68] ^ w[62] ^ w[60]), 1);
-    w[77] = rotl((w[74] ^ w[69] ^ w[63] ^ w[61]), 1);
-    w[78] = rotl((w[75] ^ w[70] ^ w[64] ^ w[62]), 1);
-    w[79] = rotl((w[76] ^ w[71] ^ w[65] ^ w[63]), 1);
+    // Break chunk into 16 32-bit words w2
+    w2[0] = chunk2[0];
+    w2[1] = chunk2[1];
+    w2[2] = chunk2[2];
+    w2[3] = chunk2[3];
+    w2[4] = chunk2[4];
+    w2[5] = chunk2[5];
+    w2[6] = chunk2[6];
+    w2[7] = chunk2[7];
+    w2[8] = chunk2[8];
+    w2[9] = chunk2[9];
+    w2[10] = chunk2[10];
+    w2[11] = chunk2[11];
+    w2[12] = chunk2[12];
+    w2[13] = chunk2[13];
+    w2[14] = chunk2[14];
+    w2[15] = chunk2[15];
 
+    // Break chunk into 16 32-bit words w3
+    w3[0] = chunk3[0];
+    w3[1] = chunk3[1];
+    w3[2] = chunk3[2];
+    w3[3] = chunk3[3];
+    w3[4] = chunk3[4];
+    w3[5] = chunk3[5];
+    w3[6] = chunk3[6];
+    w3[7] = chunk3[7];
+    w3[8] = chunk3[8];
+    w3[9] = chunk3[9];
+    w3[10] = chunk3[10];
+    w3[11] = chunk3[11];
+    w3[12] = chunk3[12];
+    w3[13] = chunk3[13];
+    w3[14] = chunk3[14];
+    w3[15] = chunk3[15];
+
+    // Break chunk into 16 32-bit words w4
+    w4[0] = chunk4[0];
+    w4[1] = chunk4[1];
+    w4[2] = chunk4[2];
+    w4[3] = chunk4[3];
+    w4[4] = chunk4[4];
+    w4[5] = chunk4[5];
+    w4[6] = chunk4[6];
+    w4[7] = chunk4[7];
+    w4[8] = chunk4[8];
+    w4[9] = chunk4[9];
+    w4[10] = chunk4[10];
+    w4[11] = chunk4[11];
+    w4[12] = chunk4[12];
+    w4[13] = chunk4[13];
+    w4[14] = chunk4[14];
+    w4[15] = chunk4[15];
+
+    // Extend the 16 32-bit words into 80 32-bit words w1
+    w1[16] = rotl((w1[13] ^ w1[8] ^ w1[2] ^ w1[0]), 1);
+    w1[17] = rotl((w1[14] ^ w1[9] ^ w1[3] ^ w1[1]), 1);
+    w1[18] = rotl((w1[15] ^ w1[10] ^ w1[4] ^ w1[2]), 1);
+    w1[19] = rotl((w1[16] ^ w1[11] ^ w1[5] ^ w1[3]), 1);
+    w1[20] = rotl((w1[17] ^ w1[12] ^ w1[6] ^ w1[4]), 1);
+    w1[21] = rotl((w1[18] ^ w1[13] ^ w1[7] ^ w1[5]), 1);
+    w1[22] = rotl((w1[19] ^ w1[14] ^ w1[8] ^ w1[6]), 1);
+    w1[23] = rotl((w1[20] ^ w1[15] ^ w1[9] ^ w1[7]), 1);
+    w1[24] = rotl((w1[21] ^ w1[16] ^ w1[10] ^ w1[8]), 1);
+    w1[25] = rotl((w1[22] ^ w1[17] ^ w1[11] ^ w1[9]), 1);
+    w1[26] = rotl((w1[23] ^ w1[18] ^ w1[12] ^ w1[10]), 1);
+    w1[27] = rotl((w1[24] ^ w1[19] ^ w1[13] ^ w1[11]), 1);
+    w1[28] = rotl((w1[25] ^ w1[20] ^ w1[14] ^ w1[12]), 1);
+    w1[29] = rotl((w1[26] ^ w1[21] ^ w1[15] ^ w1[13]), 1);
+    w1[30] = rotl((w1[27] ^ w1[22] ^ w1[16] ^ w1[14]), 1);
+    w1[31] = rotl((w1[28] ^ w1[23] ^ w1[17] ^ w1[15]), 1);
+    w1[32] = rotl((w1[29] ^ w1[24] ^ w1[18] ^ w1[16]), 1);
+    w1[33] = rotl((w1[30] ^ w1[25] ^ w1[19] ^ w1[17]), 1);
+    w1[34] = rotl((w1[31] ^ w1[26] ^ w1[20] ^ w1[18]), 1);
+    w1[35] = rotl((w1[32] ^ w1[27] ^ w1[21] ^ w1[19]), 1);
+    w1[36] = rotl((w1[33] ^ w1[28] ^ w1[22] ^ w1[20]), 1);
+    w1[37] = rotl((w1[34] ^ w1[29] ^ w1[23] ^ w1[21]), 1);
+    w1[38] = rotl((w1[35] ^ w1[30] ^ w1[24] ^ w1[22]), 1);
+    w1[39] = rotl((w1[36] ^ w1[31] ^ w1[25] ^ w1[23]), 1);
+    w1[40] = rotl((w1[37] ^ w1[32] ^ w1[26] ^ w1[24]), 1);
+    w1[41] = rotl((w1[38] ^ w1[33] ^ w1[27] ^ w1[25]), 1);
+    w1[42] = rotl((w1[39] ^ w1[34] ^ w1[28] ^ w1[26]), 1);
+    w1[43] = rotl((w1[40] ^ w1[35] ^ w1[29] ^ w1[27]), 1);
+    w1[44] = rotl((w1[41] ^ w1[36] ^ w1[30] ^ w1[28]), 1);
+    w1[45] = rotl((w1[42] ^ w1[37] ^ w1[31] ^ w1[29]), 1);
+    w1[46] = rotl((w1[43] ^ w1[38] ^ w1[32] ^ w1[30]), 1);
+    w1[47] = rotl((w1[44] ^ w1[39] ^ w1[33] ^ w1[31]), 1);
+    w1[48] = rotl((w1[45] ^ w1[40] ^ w1[34] ^ w1[32]), 1);
+    w1[49] = rotl((w1[46] ^ w1[41] ^ w1[35] ^ w1[33]), 1);
+    w1[50] = rotl((w1[47] ^ w1[42] ^ w1[36] ^ w1[34]), 1);
+    w1[51] = rotl((w1[48] ^ w1[43] ^ w1[37] ^ w1[35]), 1);
+    w1[52] = rotl((w1[49] ^ w1[44] ^ w1[38] ^ w1[36]), 1);
+    w1[53] = rotl((w1[50] ^ w1[45] ^ w1[39] ^ w1[37]), 1);
+    w1[54] = rotl((w1[51] ^ w1[46] ^ w1[40] ^ w1[38]), 1);
+    w1[55] = rotl((w1[52] ^ w1[47] ^ w1[41] ^ w1[39]), 1);
+    w1[56] = rotl((w1[53] ^ w1[48] ^ w1[42] ^ w1[40]), 1);
+    w1[57] = rotl((w1[54] ^ w1[49] ^ w1[43] ^ w1[41]), 1);
+    w1[58] = rotl((w1[55] ^ w1[50] ^ w1[44] ^ w1[42]), 1);
+    w1[59] = rotl((w1[56] ^ w1[51] ^ w1[45] ^ w1[43]), 1);
+    w1[60] = rotl((w1[57] ^ w1[52] ^ w1[46] ^ w1[44]), 1);
+    w1[61] = rotl((w1[58] ^ w1[53] ^ w1[47] ^ w1[45]), 1);
+    w1[62] = rotl((w1[59] ^ w1[54] ^ w1[48] ^ w1[46]), 1);
+    w1[63] = rotl((w1[60] ^ w1[55] ^ w1[49] ^ w1[47]), 1);
+    w1[64] = rotl((w1[61] ^ w1[56] ^ w1[50] ^ w1[48]), 1);
+    w1[65] = rotl((w1[62] ^ w1[57] ^ w1[51] ^ w1[49]), 1);
+    w1[66] = rotl((w1[63] ^ w1[58] ^ w1[52] ^ w1[50]), 1);
+    w1[67] = rotl((w1[64] ^ w1[59] ^ w1[53] ^ w1[51]), 1);
+    w1[68] = rotl((w1[65] ^ w1[60] ^ w1[54] ^ w1[52]), 1);
+    w1[69] = rotl((w1[66] ^ w1[61] ^ w1[55] ^ w1[53]), 1);
+    w1[70] = rotl((w1[67] ^ w1[62] ^ w1[56] ^ w1[54]), 1);
+    w1[71] = rotl((w1[68] ^ w1[63] ^ w1[57] ^ w1[55]), 1);
+    w1[72] = rotl((w1[69] ^ w1[64] ^ w1[58] ^ w1[56]), 1);
+    w1[73] = rotl((w1[70] ^ w1[65] ^ w1[59] ^ w1[57]), 1);
+    w1[74] = rotl((w1[71] ^ w1[66] ^ w1[60] ^ w1[58]), 1);
+    w1[75] = rotl((w1[72] ^ w1[67] ^ w1[61] ^ w1[59]), 1);
+    w1[76] = rotl((w1[73] ^ w1[68] ^ w1[62] ^ w1[60]), 1);
+    w1[77] = rotl((w1[74] ^ w1[69] ^ w1[63] ^ w1[61]), 1);
+    w1[78] = rotl((w1[75] ^ w1[70] ^ w1[64] ^ w1[62]), 1);
+    w1[79] = rotl((w1[76] ^ w1[71] ^ w1[65] ^ w1[63]), 1);
+
+    // Extend the 16 32-bit words into 80 32-bit words w2
+    w2[16] = rotl((w2[13] ^ w2[8] ^ w2[2] ^ w2[0]), 1);
+    w2[17] = rotl((w2[14] ^ w2[9] ^ w2[3] ^ w2[1]), 1);
+    w2[18] = rotl((w2[15] ^ w2[10] ^ w2[4] ^ w2[2]), 1);
+    w2[19] = rotl((w2[16] ^ w2[11] ^ w2[5] ^ w2[3]), 1);
+    w2[20] = rotl((w2[17] ^ w2[12] ^ w2[6] ^ w2[4]), 1);
+    w2[21] = rotl((w2[18] ^ w2[13] ^ w2[7] ^ w2[5]), 1);
+    w2[22] = rotl((w2[19] ^ w2[14] ^ w2[8] ^ w2[6]), 1);
+    w2[23] = rotl((w2[20] ^ w2[15] ^ w2[9] ^ w2[7]), 1);
+    w2[24] = rotl((w2[21] ^ w2[16] ^ w2[10] ^ w2[8]), 1);
+    w2[25] = rotl((w2[22] ^ w2[17] ^ w2[11] ^ w2[9]), 1);
+    w2[26] = rotl((w2[23] ^ w2[18] ^ w2[12] ^ w2[10]), 1);
+    w2[27] = rotl((w2[24] ^ w2[19] ^ w2[13] ^ w2[11]), 1);
+    w2[28] = rotl((w2[25] ^ w2[20] ^ w2[14] ^ w2[12]), 1);
+    w2[29] = rotl((w2[26] ^ w2[21] ^ w2[15] ^ w2[13]), 1);
+    w2[30] = rotl((w2[27] ^ w2[22] ^ w2[16] ^ w2[14]), 1);
+    w2[31] = rotl((w2[28] ^ w2[23] ^ w2[17] ^ w2[15]), 1);
+    w2[32] = rotl((w2[29] ^ w2[24] ^ w2[18] ^ w2[16]), 1);
+    w2[33] = rotl((w2[30] ^ w2[25] ^ w2[19] ^ w2[17]), 1);
+    w2[34] = rotl((w2[31] ^ w2[26] ^ w2[20] ^ w2[18]), 1);
+    w2[35] = rotl((w2[32] ^ w2[27] ^ w2[21] ^ w2[19]), 1);
+    w2[36] = rotl((w2[33] ^ w2[28] ^ w2[22] ^ w2[20]), 1);
+    w2[37] = rotl((w2[34] ^ w2[29] ^ w2[23] ^ w2[21]), 1);
+    w2[38] = rotl((w2[35] ^ w2[30] ^ w2[24] ^ w2[22]), 1);
+    w2[39] = rotl((w2[36] ^ w2[31] ^ w2[25] ^ w2[23]), 1);
+    w2[40] = rotl((w2[37] ^ w2[32] ^ w2[26] ^ w2[24]), 1);
+    w2[41] = rotl((w2[38] ^ w2[33] ^ w2[27] ^ w2[25]), 1);
+    w2[42] = rotl((w2[39] ^ w2[34] ^ w2[28] ^ w2[26]), 1);
+    w2[43] = rotl((w2[40] ^ w2[35] ^ w2[29] ^ w2[27]), 1);
+    w2[44] = rotl((w2[41] ^ w2[36] ^ w2[30] ^ w2[28]), 1);
+    w2[45] = rotl((w2[42] ^ w2[37] ^ w2[31] ^ w2[29]), 1);
+    w2[46] = rotl((w2[43] ^ w2[38] ^ w2[32] ^ w2[30]), 1);
+    w2[47] = rotl((w2[44] ^ w2[39] ^ w2[33] ^ w2[31]), 1);
+    w2[48] = rotl((w2[45] ^ w2[40] ^ w2[34] ^ w2[32]), 1);
+    w2[49] = rotl((w2[46] ^ w2[41] ^ w2[35] ^ w2[33]), 1);
+    w2[50] = rotl((w2[47] ^ w2[42] ^ w2[36] ^ w2[34]), 1);
+    w2[51] = rotl((w2[48] ^ w2[43] ^ w2[37] ^ w2[35]), 1);
+    w2[52] = rotl((w2[49] ^ w2[44] ^ w2[38] ^ w2[36]), 1);
+    w2[53] = rotl((w2[50] ^ w2[45] ^ w2[39] ^ w2[37]), 1);
+    w2[54] = rotl((w2[51] ^ w2[46] ^ w2[40] ^ w2[38]), 1);
+    w2[55] = rotl((w2[52] ^ w2[47] ^ w2[41] ^ w2[39]), 1);
+    w2[56] = rotl((w2[53] ^ w2[48] ^ w2[42] ^ w2[40]), 1);
+    w2[57] = rotl((w2[54] ^ w2[49] ^ w2[43] ^ w2[41]), 1);
+    w2[58] = rotl((w2[55] ^ w2[50] ^ w2[44] ^ w2[42]), 1);
+    w2[59] = rotl((w2[56] ^ w2[51] ^ w2[45] ^ w2[43]), 1);
+    w2[60] = rotl((w2[57] ^ w2[52] ^ w2[46] ^ w2[44]), 1);
+    w2[61] = rotl((w2[58] ^ w2[53] ^ w2[47] ^ w2[45]), 1);
+    w2[62] = rotl((w2[59] ^ w2[54] ^ w2[48] ^ w2[46]), 1);
+    w2[63] = rotl((w2[60] ^ w2[55] ^ w2[49] ^ w2[47]), 1);
+    w2[64] = rotl((w2[61] ^ w2[56] ^ w2[50] ^ w2[48]), 1);
+    w2[65] = rotl((w2[62] ^ w2[57] ^ w2[51] ^ w2[49]), 1);
+    w2[66] = rotl((w2[63] ^ w2[58] ^ w2[52] ^ w2[50]), 1);
+    w2[67] = rotl((w2[64] ^ w2[59] ^ w2[53] ^ w2[51]), 1);
+    w2[68] = rotl((w2[65] ^ w2[60] ^ w2[54] ^ w2[52]), 1);
+    w2[69] = rotl((w2[66] ^ w2[61] ^ w2[55] ^ w2[53]), 1);
+    w2[70] = rotl((w2[67] ^ w2[62] ^ w2[56] ^ w2[54]), 1);
+    w2[71] = rotl((w2[68] ^ w2[63] ^ w2[57] ^ w2[55]), 1);
+    w2[72] = rotl((w2[69] ^ w2[64] ^ w2[58] ^ w2[56]), 1);
+    w2[73] = rotl((w2[70] ^ w2[65] ^ w2[59] ^ w2[57]), 1);
+    w2[74] = rotl((w2[71] ^ w2[66] ^ w2[60] ^ w2[58]), 1);
+    w2[75] = rotl((w2[72] ^ w2[67] ^ w2[61] ^ w2[59]), 1);
+    w2[76] = rotl((w2[73] ^ w2[68] ^ w2[62] ^ w2[60]), 1);
+    w2[77] = rotl((w2[74] ^ w2[69] ^ w2[63] ^ w2[61]), 1);
+    w2[78] = rotl((w2[75] ^ w2[70] ^ w2[64] ^ w2[62]), 1);
+    w2[79] = rotl((w2[76] ^ w2[71] ^ w2[65] ^ w2[63]), 1);
+
+    // Extend the 16 32-bit words into 80 32-bit words w3
+    w3[16] = rotl((w3[13] ^ w3[8] ^ w3[2] ^ w3[0]), 1);
+    w3[17] = rotl((w3[14] ^ w3[9] ^ w3[3] ^ w3[1]), 1);
+    w3[18] = rotl((w3[15] ^ w3[10] ^ w3[4] ^ w3[2]), 1);
+    w3[19] = rotl((w3[16] ^ w3[11] ^ w3[5] ^ w3[3]), 1);
+    w3[20] = rotl((w3[17] ^ w3[12] ^ w3[6] ^ w3[4]), 1);
+    w3[21] = rotl((w3[18] ^ w3[13] ^ w3[7] ^ w3[5]), 1);
+    w3[22] = rotl((w3[19] ^ w3[14] ^ w3[8] ^ w3[6]), 1);
+    w3[23] = rotl((w3[20] ^ w3[15] ^ w3[9] ^ w3[7]), 1);
+    w3[24] = rotl((w3[21] ^ w3[16] ^ w3[10] ^ w3[8]), 1);
+    w3[25] = rotl((w3[22] ^ w3[17] ^ w3[11] ^ w3[9]), 1);
+    w3[26] = rotl((w3[23] ^ w3[18] ^ w3[12] ^ w3[10]), 1);
+    w3[27] = rotl((w3[24] ^ w3[19] ^ w3[13] ^ w3[11]), 1);
+    w3[28] = rotl((w3[25] ^ w3[20] ^ w3[14] ^ w3[12]), 1);
+    w3[29] = rotl((w3[26] ^ w3[21] ^ w3[15] ^ w3[13]), 1);
+    w3[30] = rotl((w3[27] ^ w3[22] ^ w3[16] ^ w3[14]), 1);
+    w3[31] = rotl((w3[28] ^ w3[23] ^ w3[17] ^ w3[15]), 1);
+    w3[32] = rotl((w3[29] ^ w3[24] ^ w3[18] ^ w3[16]), 1);
+    w3[33] = rotl((w3[30] ^ w3[25] ^ w3[19] ^ w3[17]), 1);
+    w3[34] = rotl((w3[31] ^ w3[26] ^ w3[20] ^ w3[18]), 1);
+    w3[35] = rotl((w3[32] ^ w3[27] ^ w3[21] ^ w3[19]), 1);
+    w3[36] = rotl((w3[33] ^ w3[28] ^ w3[22] ^ w3[20]), 1);
+    w3[37] = rotl((w3[34] ^ w3[29] ^ w3[23] ^ w3[21]), 1);
+    w3[38] = rotl((w3[35] ^ w3[30] ^ w3[24] ^ w3[22]), 1);
+    w3[39] = rotl((w3[36] ^ w3[31] ^ w3[25] ^ w3[23]), 1);
+    w3[40] = rotl((w3[37] ^ w3[32] ^ w3[26] ^ w3[24]), 1);
+    w3[41] = rotl((w3[38] ^ w3[33] ^ w3[27] ^ w3[25]), 1);
+    w3[42] = rotl((w3[39] ^ w3[34] ^ w3[28] ^ w3[26]), 1);
+    w3[43] = rotl((w3[40] ^ w3[35] ^ w3[29] ^ w3[27]), 1);
+    w3[44] = rotl((w3[41] ^ w3[36] ^ w3[30] ^ w3[28]), 1);
+    w3[45] = rotl((w3[42] ^ w3[37] ^ w3[31] ^ w3[29]), 1);
+    w3[46] = rotl((w3[43] ^ w3[38] ^ w3[32] ^ w3[30]), 1);
+    w3[47] = rotl((w3[44] ^ w3[39] ^ w3[33] ^ w3[31]), 1);
+    w3[48] = rotl((w3[45] ^ w3[40] ^ w3[34] ^ w3[32]), 1);
+    w3[49] = rotl((w3[46] ^ w3[41] ^ w3[35] ^ w3[33]), 1);
+    w3[50] = rotl((w3[47] ^ w3[42] ^ w3[36] ^ w3[34]), 1);
+    w3[51] = rotl((w3[48] ^ w3[43] ^ w3[37] ^ w3[35]), 1);
+    w3[52] = rotl((w3[49] ^ w3[44] ^ w3[38] ^ w3[36]), 1);
+    w3[53] = rotl((w3[50] ^ w3[45] ^ w3[39] ^ w3[37]), 1);
+    w3[54] = rotl((w3[51] ^ w3[46] ^ w3[40] ^ w3[38]), 1);
+    w3[55] = rotl((w3[52] ^ w3[47] ^ w3[41] ^ w3[39]), 1);
+    w3[56] = rotl((w3[53] ^ w3[48] ^ w3[42] ^ w3[40]), 1);
+    w3[57] = rotl((w3[54] ^ w3[49] ^ w3[43] ^ w3[41]), 1);
+    w3[58] = rotl((w3[55] ^ w3[50] ^ w3[44] ^ w3[42]), 1);
+    w3[59] = rotl((w3[56] ^ w3[51] ^ w3[45] ^ w3[43]), 1);
+    w3[60] = rotl((w3[57] ^ w3[52] ^ w3[46] ^ w3[44]), 1);
+    w3[61] = rotl((w3[58] ^ w3[53] ^ w3[47] ^ w3[45]), 1);
+    w3[62] = rotl((w3[59] ^ w3[54] ^ w3[48] ^ w3[46]), 1);
+    w3[63] = rotl((w3[60] ^ w3[55] ^ w3[49] ^ w3[47]), 1);
+    w3[64] = rotl((w3[61] ^ w3[56] ^ w3[50] ^ w3[48]), 1);
+    w3[65] = rotl((w3[62] ^ w3[57] ^ w3[51] ^ w3[49]), 1);
+    w3[66] = rotl((w3[63] ^ w3[58] ^ w3[52] ^ w3[50]), 1);
+    w3[67] = rotl((w3[64] ^ w3[59] ^ w3[53] ^ w3[51]), 1);
+    w3[68] = rotl((w3[65] ^ w3[60] ^ w3[54] ^ w3[52]), 1);
+    w3[69] = rotl((w3[66] ^ w3[61] ^ w3[55] ^ w3[53]), 1);
+    w3[70] = rotl((w3[67] ^ w3[62] ^ w3[56] ^ w3[54]), 1);
+    w3[71] = rotl((w3[68] ^ w3[63] ^ w3[57] ^ w3[55]), 1);
+    w3[72] = rotl((w3[69] ^ w3[64] ^ w3[58] ^ w3[56]), 1);
+    w3[73] = rotl((w3[70] ^ w3[65] ^ w3[59] ^ w3[57]), 1);
+    w3[74] = rotl((w3[71] ^ w3[66] ^ w3[60] ^ w3[58]), 1);
+    w3[75] = rotl((w3[72] ^ w3[67] ^ w3[61] ^ w3[59]), 1);
+    w3[76] = rotl((w3[73] ^ w3[68] ^ w3[62] ^ w3[60]), 1);
+    w3[77] = rotl((w3[74] ^ w3[69] ^ w3[63] ^ w3[61]), 1);
+    w3[78] = rotl((w3[75] ^ w3[70] ^ w3[64] ^ w3[62]), 1);
+    w3[79] = rotl((w3[76] ^ w3[71] ^ w3[65] ^ w3[63]), 1);
+
+    // Extend the 16 32-bit words into 80 32-bit words w4
+    w4[16] = rotl((w4[13] ^ w4[8] ^ w4[2] ^ w4[0]), 1);
+    w4[17] = rotl((w4[14] ^ w4[9] ^ w4[3] ^ w4[1]), 1);
+    w4[18] = rotl((w4[15] ^ w4[10] ^ w4[4] ^ w4[2]), 1);
+    w4[19] = rotl((w4[16] ^ w4[11] ^ w4[5] ^ w4[3]), 1);
+    w4[20] = rotl((w4[17] ^ w4[12] ^ w4[6] ^ w4[4]), 1);
+    w4[21] = rotl((w4[18] ^ w4[13] ^ w4[7] ^ w4[5]), 1);
+    w4[22] = rotl((w4[19] ^ w4[14] ^ w4[8] ^ w4[6]), 1);
+    w4[23] = rotl((w4[20] ^ w4[15] ^ w4[9] ^ w4[7]), 1);
+    w4[24] = rotl((w4[21] ^ w4[16] ^ w4[10] ^ w4[8]), 1);
+    w4[25] = rotl((w4[22] ^ w4[17] ^ w4[11] ^ w4[9]), 1);
+    w4[26] = rotl((w4[23] ^ w4[18] ^ w4[12] ^ w4[10]), 1);
+    w4[27] = rotl((w4[24] ^ w4[19] ^ w4[13] ^ w4[11]), 1);
+    w4[28] = rotl((w4[25] ^ w4[20] ^ w4[14] ^ w4[12]), 1);
+    w4[29] = rotl((w4[26] ^ w4[21] ^ w4[15] ^ w4[13]), 1);
+    w4[30] = rotl((w4[27] ^ w4[22] ^ w4[16] ^ w4[14]), 1);
+    w4[31] = rotl((w4[28] ^ w4[23] ^ w4[17] ^ w4[15]), 1);
+    w4[32] = rotl((w4[29] ^ w4[24] ^ w4[18] ^ w4[16]), 1);
+    w4[33] = rotl((w4[30] ^ w4[25] ^ w4[19] ^ w4[17]), 1);
+    w4[34] = rotl((w4[31] ^ w4[26] ^ w4[20] ^ w4[18]), 1);
+    w4[35] = rotl((w4[32] ^ w4[27] ^ w4[21] ^ w4[19]), 1);
+    w4[36] = rotl((w4[33] ^ w4[28] ^ w4[22] ^ w4[20]), 1);
+    w4[37] = rotl((w4[34] ^ w4[29] ^ w4[23] ^ w4[21]), 1);
+    w4[38] = rotl((w4[35] ^ w4[30] ^ w4[24] ^ w4[22]), 1);
+    w4[39] = rotl((w4[36] ^ w4[31] ^ w4[25] ^ w4[23]), 1);
+    w4[40] = rotl((w4[37] ^ w4[32] ^ w4[26] ^ w4[24]), 1);
+    w4[41] = rotl((w4[38] ^ w4[33] ^ w4[27] ^ w4[25]), 1);
+    w4[42] = rotl((w4[39] ^ w4[34] ^ w4[28] ^ w4[26]), 1);
+    w4[43] = rotl((w4[40] ^ w4[35] ^ w4[29] ^ w4[27]), 1);
+    w4[44] = rotl((w4[41] ^ w4[36] ^ w4[30] ^ w4[28]), 1);
+    w4[45] = rotl((w4[42] ^ w4[37] ^ w4[31] ^ w4[29]), 1);
+    w4[46] = rotl((w4[43] ^ w4[38] ^ w4[32] ^ w4[30]), 1);
+    w4[47] = rotl((w4[44] ^ w4[39] ^ w4[33] ^ w4[31]), 1);
+    w4[48] = rotl((w4[45] ^ w4[40] ^ w4[34] ^ w4[32]), 1);
+    w4[49] = rotl((w4[46] ^ w4[41] ^ w4[35] ^ w4[33]), 1);
+    w4[50] = rotl((w4[47] ^ w4[42] ^ w4[36] ^ w4[34]), 1);
+    w4[51] = rotl((w4[48] ^ w4[43] ^ w4[37] ^ w4[35]), 1);
+    w4[52] = rotl((w4[49] ^ w4[44] ^ w4[38] ^ w4[36]), 1);
+    w4[53] = rotl((w4[50] ^ w4[45] ^ w4[39] ^ w4[37]), 1);
+    w4[54] = rotl((w4[51] ^ w4[46] ^ w4[40] ^ w4[38]), 1);
+    w4[55] = rotl((w4[52] ^ w4[47] ^ w4[41] ^ w4[39]), 1);
+    w4[56] = rotl((w4[53] ^ w4[48] ^ w4[42] ^ w4[40]), 1);
+    w4[57] = rotl((w4[54] ^ w4[49] ^ w4[43] ^ w4[41]), 1);
+    w4[58] = rotl((w4[55] ^ w4[50] ^ w4[44] ^ w4[42]), 1);
+    w4[59] = rotl((w4[56] ^ w4[51] ^ w4[45] ^ w4[43]), 1);
+    w4[60] = rotl((w4[57] ^ w4[52] ^ w4[46] ^ w4[44]), 1);
+    w4[61] = rotl((w4[58] ^ w4[53] ^ w4[47] ^ w4[45]), 1);
+    w4[62] = rotl((w4[59] ^ w4[54] ^ w4[48] ^ w4[46]), 1);
+    w4[63] = rotl((w4[60] ^ w4[55] ^ w4[49] ^ w4[47]), 1);
+    w4[64] = rotl((w4[61] ^ w4[56] ^ w4[50] ^ w4[48]), 1);
+    w4[65] = rotl((w4[62] ^ w4[57] ^ w4[51] ^ w4[49]), 1);
+    w4[66] = rotl((w4[63] ^ w4[58] ^ w4[52] ^ w4[50]), 1);
+    w4[67] = rotl((w4[64] ^ w4[59] ^ w4[53] ^ w4[51]), 1);
+    w4[68] = rotl((w4[65] ^ w4[60] ^ w4[54] ^ w4[52]), 1);
+    w4[69] = rotl((w4[66] ^ w4[61] ^ w4[55] ^ w4[53]), 1);
+    w4[70] = rotl((w4[67] ^ w4[62] ^ w4[56] ^ w4[54]), 1);
+    w4[71] = rotl((w4[68] ^ w4[63] ^ w4[57] ^ w4[55]), 1);
+    w4[72] = rotl((w4[69] ^ w4[64] ^ w4[58] ^ w4[56]), 1);
+    w4[73] = rotl((w4[70] ^ w4[65] ^ w4[59] ^ w4[57]), 1);
+    w4[74] = rotl((w4[71] ^ w4[66] ^ w4[60] ^ w4[58]), 1);
+    w4[75] = rotl((w4[72] ^ w4[67] ^ w4[61] ^ w4[59]), 1);
+    w4[76] = rotl((w4[73] ^ w4[68] ^ w4[62] ^ w4[60]), 1);
+    w4[77] = rotl((w4[74] ^ w4[69] ^ w4[63] ^ w4[61]), 1);
+    w4[78] = rotl((w4[75] ^ w4[70] ^ w4[64] ^ w4[62]), 1);
+    w4[79] = rotl((w4[76] ^ w4[71] ^ w4[65] ^ w4[63]), 1);
 
     // Initialize hash value for this chunk
     //a = hash_buffer[0];
@@ -505,655 +754,668 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     vecB = vecA;
     vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[1];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[2], w2[2], w3[2], w4[2]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[2];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[3], w2[3], w3[3], w4[3]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[3];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[4], w2[4], w3[4], w4[4]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[4];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[5], w2[5], w3[5], w4[5]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[5];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[6], w2[6], w3[6], w4[6]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[6];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[7], w2[7], w3[7], w4[7]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[7];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[8], w2[8], w3[8], w4[8]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[8];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[9], w2[9], w3[9], w4[9]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[9];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[10], w2[10], w3[10], w4[10]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[10];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[11], w2[11], w3[11], w4[11]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[11];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[12], w2[12], w3[12], w4[12]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[12];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[13], w2[13], w3[13], w4[13]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[13];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[14], w2[14], w3[14], w4[14]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[14];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[15], w2[15], w3[15], w4[15]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[15];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[16], w2[16], w3[16], w4[16]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[16];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[17], w2[17], w3[17], w4[17]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[17];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[18], w2[18], w3[18], w4[18]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[18];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-
-    f = (b & c) | (~b & d);
-    temp = rotl(a, 5) + f + e + k + w[19];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[19], w2[19], w3[19], w4[19]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
     // -----------------------------------------
 
-    f = b ^ c ^ d;
     k = 0x6ED9EBA1;
-    temp = rotl(a, 5) + f + e + k + w[20];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[21];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[20], w2[20], w3[20], w4[20]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[22];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[21], w2[21], w3[21], w4[21]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[23];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[22], w2[22], w3[22], w4[22]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[24];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[23], w2[23], w3[23], w4[23]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[25];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[24], w2[24], w3[24], w4[24]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[26];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[25], w2[25], w3[25], w4[25]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[27];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[26], w2[26], w3[26], w4[26]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[28];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[27], w2[27], w3[27], w4[27]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[29];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[28], w2[28], w3[28], w4[28]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[30];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[29], w2[29], w3[29], w4[29]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[31];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[30], w2[30], w3[30], w4[30]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[32];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[31], w2[31], w3[31], w4[31]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[33];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[32], w2[32], w3[32], w4[32]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[34];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[33], w2[33], w3[33], w4[33]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[35];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[34], w2[34], w3[34], w4[34]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[36];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[35], w2[35], w3[35], w4[35]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[37];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[36], w2[36], w3[36], w4[36]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[38];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[37], w2[37], w3[37], w4[37]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[39];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[38], w2[38], w3[38], w4[38]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f2(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[39], w2[39], w3[39], w4[39]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
     // -----------------------
-    
-    f = (b & c) | (b & d) | (c & d);
-    k = 0x8F1BBCDC;
-    temp = rotl(a, 5) + f + e + k + w[40];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[41];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[42];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[43];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[44];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[45];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[46];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[47];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[48];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[49];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[50];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[51];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[52];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[53];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[54];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[55];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[56];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[57];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[58];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
-    
-    f = (b & c) | (b & d) | (c & d);
-    temp = rotl(a, 5) + f + e + k + w[59];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
 
+    k = 0x8F1BBCDC;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[40], w2[40], w3[40], w4[40]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[41], w2[41], w3[41], w4[41]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[42], w2[42], w3[42], w4[42]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[43], w2[43], w3[43], w4[43]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[44], w2[44], w3[44], w4[44]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[45], w2[45], w3[45], w4[45]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[46], w2[46], w3[46], w4[46]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[47], w2[47], w3[47], w4[47]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[48], w2[48], w3[48], w4[48]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[49], w2[49], w3[49], w4[49]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[50], w2[50], w3[50], w4[50]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[51], w2[51], w3[51], w4[51]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[52], w2[52], w3[52], w4[52]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[53], w2[53], w3[53], w4[53]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[54], w2[54], w3[54], w4[54]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[55], w2[55], w3[55], w4[55]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[56], w2[56], w3[56], w4[56]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[57], w2[57], w3[57], w4[57]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[58], w2[58], w3[58], w4[58]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f3(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[59], w2[59], w3[59], w4[59]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+    
     // ------------------------------------
 
-    f = b ^ c ^ d;
     k = 0xCA62C1D6;
-    temp = rotl(a, 5) + f + e + k + w[60];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[61];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[60], w2[60], w3[60], w4[60]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[62];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[61], w2[61], w3[61], w4[61]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[63];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[62], w2[62], w3[62], w4[62]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[64];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[63], w2[63], w3[63], w4[63]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[65];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[64], w2[64], w3[64], w4[64]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[66];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[65], w2[65], w3[65], w4[65]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[67];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[66], w2[66], w3[66], w4[66]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[68];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[67], w2[67], w3[67], w4[67]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[69];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[68], w2[68], w3[68], w4[68]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[70];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[69], w2[69], w3[69], w4[69]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[71];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[70], w2[70], w3[70], w4[70]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[72];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[71], w2[71], w3[71], w4[71]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[73];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[72], w2[72], w3[72], w4[72]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[74];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[73], w2[73], w3[73], w4[73]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[75];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[74], w2[74], w3[74], w4[74]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[76];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[75], w2[75], w3[75], w4[75]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[77];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[76], w2[76], w3[76], w4[76]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[78];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[77], w2[77], w3[77], w4[77]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
-    f = b ^ c ^ d;
-    temp = rotl(a, 5) + f + e + k + w[79];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[78], w2[78], w3[78], w4[78]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f4(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[79], w2[79], w3[79], w4[79]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
     // -----------------------------
 
     // Put the new values into the hash_buffer
-    hash_buffer1[0] += a;
-    hash_buffer1[1] += b;
-    hash_buffer1[2] += c;
-    hash_buffer1[3] += d;
-    hash_buffer1[4] += e;
+    hash_buffer1[0] += ((uint32_t*)&vecA)[0];
+    hash_buffer1[1] += ((uint32_t*)&vecB)[0];
+    hash_buffer1[2] += ((uint32_t*)&vecC)[0];
+    hash_buffer1[3] += ((uint32_t*)&vecD)[0];
+    hash_buffer1[4] += ((uint32_t*)&vecE)[0];
+
+    hash_buffer2[0] += ((uint32_t*)&vecA)[1];
+    hash_buffer2[1] += ((uint32_t*)&vecB)[1];
+    hash_buffer2[2] += ((uint32_t*)&vecC)[1];
+    hash_buffer2[3] += ((uint32_t*)&vecD)[1];
+    hash_buffer2[4] += ((uint32_t*)&vecE)[1];
+
+    hash_buffer3[0] += ((uint32_t*)&vecA)[2];
+    hash_buffer3[1] += ((uint32_t*)&vecB)[2];
+    hash_buffer3[2] += ((uint32_t*)&vecC)[2];
+    hash_buffer3[3] += ((uint32_t*)&vecD)[2];
+    hash_buffer3[4] += ((uint32_t*)&vecE)[2];
+
+    hash_buffer4[0] += ((uint32_t*)&vecA)[3];
+    hash_buffer4[1] += ((uint32_t*)&vecB)[3];
+    hash_buffer4[2] += ((uint32_t*)&vecC)[3];
+    hash_buffer4[3] += ((uint32_t*)&vecD)[3];
+    hash_buffer4[4] += ((uint32_t*)&vecE)[3];
 }
 
 void printSHA(uint32_t hash_buffer[5])
