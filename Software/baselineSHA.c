@@ -36,14 +36,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <immintrin.h>
+
+//********************************************************************
+//  MACROS
+//********************************************************************
+
+#define f1(vecB, vecC, vecD) (_mm_or_si128(_mm_and_si128(vecB, vecC), _mm_andnot_si128(vecB, vecD)))
+#define f2(vecB, vecC, vecD) (_mm_xor_si128(_mm_xor_si128(vecB, vecC), vecD))
+#define f3(vecB, vecC, vecD) (_mm_or_si128(_mm_or_si128(_mm_and_si128(vecB, vecC), _mm_and_si128(vecB, vecD)), _mm_and_si128(vecC, vecD)))
+#define f4(vecB, vecC, vecD) (_mm_xor_si128(_mm_xor_si128(vecB, vecC), vecD))
+
+#define temp(vecA, vecE, vecF, k, w1, w2, w3, w4) (_mm_setr_epi32(rotl(((uint32_t*)&vecA)[0],5) + ((uint32_t*)&vecF)[0] + ((uint32_t*)&vecE)[0] + k + w1, \
+        rotl(((uint32_t*)&vecA)[1],5) + ((uint32_t*)&vecF)[1] + ((uint32_t*)&vecE)[1] + k + w2, \
+        rotl(((uint32_t*)&vecA)[2],5) + ((uint32_t*)&vecF)[2] + ((uint32_t*)&vecE)[2] + k + w3, \
+        rotl(((uint32_t*)&vecA)[3],5) + ((uint32_t*)&vecF)[3] + ((uint32_t*)&vecE)[3] + k + w4))
+
+#define setC(vecB) (_mm_setr_epi32(rotl(((uint32_t*)&vecB)[0], 30), rotl(((uint32_t*)&vecB)[1], 30), \
+        rotl(((uint32_t*)&vecB)[2], 30), rotl(((uint32_t*)&vecB)[3], 30)))
 
 //********************************************************************
 //	Function Prototypes
 //********************************************************************
 
-void SHA1(char* message, uint32_t hash_buffer[5], uint32_t message_size);
+void SHA1(char* message, uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t message_size);
 void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bits, uint32_t numChunks, uint32_t leftOverBits, uint8_t addChunk);
-void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16]);
+void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t chunk[16]);
 void printSHA(uint32_t hash_buffer[5]);
 
 uint32_t rotl(uint32_t value, uint16_t shift);
@@ -72,13 +90,16 @@ int main(int argc, char** argv)
     printf("Input Message size: %lu\n\n", fsize);
 
     // Initialize hash_buffer
-    uint32_t hash_buffer[5];
+    uint32_t hash_buffer1[5];
+    uint32_t hash_buffer2[5];
+    uint32_t hash_buffer3[5];
+    uint32_t hash_buffer4[5];
 
     // Call SHA1 algorithm
-    SHA1(message, hash_buffer, fsize);
+    SHA1(message, hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, fsize);
 
     printf("\n\nMessage: %s\n", message);
-    printSHA(hash_buffer);
+    //**********printSHA(hash_buffer);
 
     //End program
     fclose(fp);
@@ -90,14 +111,14 @@ int main(int argc, char** argv)
 //	Function Definitions
 //********************************************************************
 
-void SHA1(char* message, uint32_t hash_buffer[5], uint32_t message_size)
+void SHA1(char* message, uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t message_size)
 {
     // Initial values for the hash_buffer
-    hash_buffer[0] = 0x67452301;  // h0
-    hash_buffer[1] = 0xEFCDAB89;  // h1
-    hash_buffer[2] = 0x98BADCFE;  // h2
-    hash_buffer[3] = 0x10325476;  // h3
-    hash_buffer[4] = 0xC3D2E1F0;  // h4
+    hash_buffer1[0] = 0x67452301;  // h0
+    hash_buffer1[1] = 0xEFCDAB89;  // h1
+    hash_buffer1[2] = 0x98BADCFE;  // h2
+    hash_buffer1[3] = 0x10325476;  // h3
+    hash_buffer1[4] = 0xC3D2E1F0;  // h4
 
     // Get the size of the message
     uint64_t message_size_bytes = message_size;
@@ -138,7 +159,7 @@ void SHA1(char* message, uint32_t hash_buffer[5], uint32_t message_size)
     // This manipulates the bytes as defined by SHA-1
     for(i = 0; i < number_of_chunks; ++i)
     {
-        shaIteration(hash_buffer, chunks[i]);
+        shaIteration(hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, chunks[i]);
     }
 }
 
@@ -312,16 +333,22 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
 
 }
 
-void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
+void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t chunk[16])
 {
     // Array to store the extended value
     uint32_t w[80];
+    uint32_t w1[80];
+    uint32_t w2[80];
+    uint32_t w3[80];
+    uint32_t w4[80];
+
 
     // Iterator variable
     uint16_t i;
 
     // Values for computation during the iteration
     uint32_t a, b, c, d, e, f, k, temp;
+    //uint32_t k;
 
     // Break chunk into 16 32-bit words
     w[0] = chunk[0];
@@ -409,21 +436,45 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
 
 
     // Initialize hash value for this chunk
-    a = hash_buffer[0];
-    b = hash_buffer[1];
-    c = hash_buffer[2];
-    d = hash_buffer[3];
-    e = hash_buffer[4];
+    //a = hash_buffer[0];
+    //b = hash_buffer[1];
+    //c = hash_buffer[2];
+    //d = hash_buffer[3];
+    //e = hash_buffer[4];
+
+    __m128i vecA = _mm_setr_epi32(hash_buffer1[0],hash_buffer2[0],hash_buffer3[0],hash_buffer4[0]);
+    __m128i vecB = _mm_setr_epi32(hash_buffer1[1],hash_buffer2[1],hash_buffer3[1],hash_buffer4[1]);
+    __m128i vecC = _mm_setr_epi32(hash_buffer1[2],hash_buffer2[2],hash_buffer3[2],hash_buffer4[2]);
+    __m128i vecD = _mm_setr_epi32(hash_buffer1[3],hash_buffer2[3],hash_buffer3[3],hash_buffer4[3]);
+    __m128i vecE = _mm_setr_epi32(hash_buffer1[4],hash_buffer2[4],hash_buffer3[4],hash_buffer4[4]);
 
     // Main Loop
-    f = (b & c) | (~b & d);
+    
+    //f = (b & c) | (~b & d);
+    //k = 0x5A827999;
+    //temp = rotl(a, 5) + f + e + k + w[0];
+    //e = d;
+    //d = c;
+    //c = rotl(b, 30);
+    //b = a;
+    //a = temp;
+
     k = 0x5A827999;
-    temp = rotl(a, 5) + f + e + k + w[0];
-    e = d;
-    d = c;
-    c = rotl(b, 30);
-    b = a;
-    a = temp;
+    __m128i vecF = f1(vecB,vecC,vecD);
+    __m128i vecTemp = temp(vecA, vecE, vecF, k, w1[0], w2[0], w3[0], w4[0]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
+
+    vecF = f1(vecB,vecC,vecD);
+    vecTemp = temp(vecA, vecE, vecF, k, w1[1], w2[1], w3[1], w4[1]); 
+    vecE = vecD;
+    vecD = vecC;
+    vecC = setC(vecB);
+    vecB = vecA;
+    vecA = vecTemp;
 
     f = (b & c) | (~b & d);
     temp = rotl(a, 5) + f + e + k + w[1];
@@ -1069,11 +1120,11 @@ void shaIteration(uint32_t hash_buffer[5], uint32_t chunk[16])
     // -----------------------------
 
     // Put the new values into the hash_buffer
-    hash_buffer[0] += a;
-    hash_buffer[1] += b;
-    hash_buffer[2] += c;
-    hash_buffer[3] += d;
-    hash_buffer[4] += e;
+    hash_buffer1[0] += a;
+    hash_buffer1[1] += b;
+    hash_buffer1[2] += c;
+    hash_buffer1[3] += d;
+    hash_buffer1[4] += e;
 }
 
 void printSHA(uint32_t hash_buffer[5])
