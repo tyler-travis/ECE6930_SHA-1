@@ -108,14 +108,17 @@ int main(int argc, char** argv)
     char password2[11];
     char password3[11];
     char password4[11];
-    for(int i = 0; i < string_size; ++i)
+
+    uint32_t i,j,k,l,m,n,o,p,q,r,s;
+
+    for(i = 0; i < string_size; ++i)
     {
         // Set the null terminator in the correct location
         //password1[i + 1] = 0x00;
         //password2[i + 1] = 0x00;
         //password3[i + 1] = 0x00;
         //password4[i + 1] = 0x00;
-        for(int j = 0; (j < N) && (i >= 0); j++)
+        for(j = 0; (j < N) && (i >= 0); j++)
         {
             // If this is the first time here,
             if(i == 0)
@@ -166,7 +169,7 @@ int main(int argc, char** argv)
                 password3[0] = character_set[j];
                 password4[0] = character_set[j];
             }
-            for(int k = 0; (k < N) && (i >= 1); k++)
+            for(k = 0; (k < N) && (i >= 1); k++)
             {
                 if(i == 1)
                 {
@@ -209,7 +212,7 @@ int main(int argc, char** argv)
                     password4[1] = character_set[k];
                 }
 
-                for(int l = 0; (l < N) && (i >= 2); l++)
+                for(l = 0; (l < N) && (i >= 2); l++)
                 {
                     if(i == 2)
                     {
@@ -251,7 +254,7 @@ int main(int argc, char** argv)
                         password3[2] = character_set[l];
                         password4[2] = character_set[l];
                     }
-                    for(int m = 0; (m < N) && (i >= 3); m++)
+                    for(m = 0; (m < N) && (i >= 3); m++)
                     {
                         if(i == 3)
                         {
@@ -293,7 +296,7 @@ int main(int argc, char** argv)
                             password3[3] = character_set[m];
                             password4[3] = character_set[m];
                         }
-                        for(int n = 0; (n < N) && (i >= 4); n++)
+                        for(n = 0; (n < N) && (i >= 4); n++)
                         {
                             if(i == 4)
                             {
@@ -335,7 +338,7 @@ int main(int argc, char** argv)
                                 password3[4] = character_set[n];
                                 password4[4] = character_set[n];
                             }
-                            for(int o = 0; (o < N) && (i >= 5); o++)
+                            for(o = 0; (o < N) && (i >= 5); o++)
                             {
                                 if(i == 5)
                                 {
@@ -377,7 +380,7 @@ int main(int argc, char** argv)
                                     password3[5] = character_set[o];
                                     password4[5] = character_set[o];
                                 }
-                                for(int p = 0; (p < N) && (i >= 6); p++)
+                                for(p = 0; (p < N) && (i >= 6); p++)
                                 {
                                     if(i == 6)
                                     {
@@ -419,7 +422,7 @@ int main(int argc, char** argv)
                                         password3[6] = character_set[p];
                                         password4[6] = character_set[p];
                                     }
-                                    for(int q = 0; (q < N) && (i >= 7); q++)
+                                    for(q = 0; (q < N) && (i >= 7); q++)
                                     {
                                         if(i == 7)
                                         {
@@ -461,7 +464,7 @@ int main(int argc, char** argv)
                                             password3[7] = character_set[q];
                                             password4[7] = character_set[q];
                                         }
-                                        for(int r = 0; (r < N) && (i >= 8); r++)
+                                        for(r = 0; (r < N) && (i >= 8); r++)
                                         {
                                             if(i == 8)
                                             {
@@ -503,7 +506,7 @@ int main(int argc, char** argv)
                                                 password3[8] = character_set[r];
                                                 password4[8] = character_set[r];
                                             }
-                                            for(int s = 0; (s < N) && (i >= 9); s++)
+                                            for(s = 0; (s < N) && (i >= 9); s++)
                                             {
                                                 if(i == 9)
                                                 {
