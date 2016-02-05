@@ -759,6 +759,7 @@ void SHA1(char* message1, char* message2, char* message3, char* message4, uint32
     uint64_t message_size_bytes = message_size;
 
     // Initialize the chunks array
+    //***RUNS FASTER AS 2D ARRAY?***  
     uint32_t chunks1[1][16];
     uint32_t chunks2[1][16];
     uint32_t chunks3[1][16];
@@ -789,6 +790,8 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_byt
     //uint16_t i = 0;
 
     uint64_t message_size_bits = message_size_bytes*8;
+
+    printf("%s \n", message);
 
     switch(message_size_bytes){
         case 1:
