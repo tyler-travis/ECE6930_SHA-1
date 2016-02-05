@@ -125,7 +125,7 @@ int main(int argc, char** argv)
         //password2[i + 1] = 0x00;
         //password3[i + 1] = 0x00;
         //password4[i + 1] = 0x00;
-        for(j = 0; (j < N) && (i >= 0); j++)
+        for(j = 0; (j < N); j++)
         {
             // If this is the first time here,
             if(i == 0)
@@ -149,7 +149,7 @@ int main(int argc, char** argv)
                     printf("Found match!\nPassword: %s\n", password1);
                     printSHA(hash_buffer1);
                     gettimeofday(&end, NULL);
-                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                 - (start.tv_sec * 1000000 + start.tv_usec)));
                     return 0;
                 }
@@ -158,7 +158,7 @@ int main(int argc, char** argv)
                     printf("Found match!\nPassword: %s\n", password2);
                     printSHA(hash_buffer2);
                     gettimeofday(&end, NULL);
-                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                 - (start.tv_sec * 1000000 + start.tv_usec)));
                     return 0;
                 }
@@ -167,7 +167,7 @@ int main(int argc, char** argv)
                     printf("Found match!\nPassword: %s\n", password3);
                     printSHA(hash_buffer3);
                     gettimeofday(&end, NULL);
-                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                 - (start.tv_sec * 1000000 + start.tv_usec)));
                     return 0;
                 }
@@ -176,7 +176,7 @@ int main(int argc, char** argv)
                     printf("Found match!\nPassword: %s\n", password4);
                     printSHA(hash_buffer4);
                     gettimeofday(&end, NULL);
-                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                 - (start.tv_sec * 1000000 + start.tv_usec)));
                     return 0;
                 }
@@ -203,7 +203,7 @@ int main(int argc, char** argv)
                         printf("Found match!\nPassword: %s\n", password1);
                         printSHA(hash_buffer1);
                         gettimeofday(&end, NULL);
-                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                     - (start.tv_sec * 1000000 + start.tv_usec)));
                         return 0;
                     }
@@ -212,7 +212,7 @@ int main(int argc, char** argv)
                         printf("Found match!\nPassword: %s\n", password2);
                         printSHA(hash_buffer2);
                         gettimeofday(&end, NULL);
-                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                     - (start.tv_sec * 1000000 + start.tv_usec)));
                         return 0;
                     }
@@ -221,7 +221,7 @@ int main(int argc, char** argv)
                         printf("Found match!\nPassword: %s\n", password3);
                         printSHA(hash_buffer3);
                         gettimeofday(&end, NULL);
-                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                     - (start.tv_sec * 1000000 + start.tv_usec)));
                         return 0;
                     }
@@ -230,7 +230,7 @@ int main(int argc, char** argv)
                         printf("Found match!\nPassword: %s\n", password4);
                         printSHA(hash_buffer4);
                         gettimeofday(&end, NULL);
-                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                     - (start.tv_sec * 1000000 + start.tv_usec)));
                         return 0;
                     }
@@ -258,7 +258,7 @@ int main(int argc, char** argv)
                             printf("Found match!\nPassword: %s\n", password1);
                             printSHA(hash_buffer1);
                             gettimeofday(&end, NULL);
-                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                         - (start.tv_sec * 1000000 + start.tv_usec)));
                             return 0;
                         }
@@ -267,7 +267,7 @@ int main(int argc, char** argv)
                             printf("Found match!\nPassword: %s\n", password2);
                             printSHA(hash_buffer2);
                             gettimeofday(&end, NULL);
-                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                         - (start.tv_sec * 1000000 + start.tv_usec)));
                             return 0;
                         }
@@ -276,7 +276,7 @@ int main(int argc, char** argv)
                             printf("Found match!\nPassword: %s\n", password3);
                             printSHA(hash_buffer3);
                             gettimeofday(&end, NULL);
-                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                         - (start.tv_sec * 1000000 + start.tv_usec)));
                             return 0;
                         }
@@ -285,7 +285,7 @@ int main(int argc, char** argv)
                             printf("Found match!\nPassword: %s\n", password4);
                             printSHA(hash_buffer4);
                             gettimeofday(&end, NULL);
-                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                         - (start.tv_sec * 1000000 + start.tv_usec)));
                             return 0;
                         }
@@ -312,7 +312,7 @@ int main(int argc, char** argv)
                                 printf("Found match!\nPassword: %s\n", password1);
                                 printSHA(hash_buffer1);
                                 gettimeofday(&end, NULL);
-                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                             - (start.tv_sec * 1000000 + start.tv_usec)));
                                 return 0;
                             }
@@ -321,7 +321,7 @@ int main(int argc, char** argv)
                                 printf("Found match!\nPassword: %s\n", password2);
                                 printSHA(hash_buffer2);
                                 gettimeofday(&end, NULL);
-                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                             - (start.tv_sec * 1000000 + start.tv_usec)));
                                 return 0;
                             }
@@ -330,7 +330,7 @@ int main(int argc, char** argv)
                                 printf("Found match!\nPassword: %s\n", password3);
                                 printSHA(hash_buffer3);
                                 gettimeofday(&end, NULL);
-                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                             - (start.tv_sec * 1000000 + start.tv_usec)));
                                 return 0;
                             }
@@ -339,7 +339,7 @@ int main(int argc, char** argv)
                                 printf("Found match!\nPassword: %s\n", password4);
                                 printSHA(hash_buffer4);
                                 gettimeofday(&end, NULL);
-                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                             - (start.tv_sec * 1000000 + start.tv_usec)));
                                 return 0;
                             }
@@ -366,7 +366,7 @@ int main(int argc, char** argv)
                                     printf("Found match!\nPassword: %s\n", password1);
                                     printSHA(hash_buffer1);
                                     gettimeofday(&end, NULL);
-                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                 - (start.tv_sec * 1000000 + start.tv_usec)));
                                     return 0;
                                 }
@@ -375,7 +375,7 @@ int main(int argc, char** argv)
                                     printf("Found match!\nPassword: %s\n", password2);
                                     printSHA(hash_buffer2);
                                     gettimeofday(&end, NULL);
-                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                 - (start.tv_sec * 1000000 + start.tv_usec)));
                                     return 0;
                                 }
@@ -384,7 +384,7 @@ int main(int argc, char** argv)
                                     printf("Found match!\nPassword: %s\n", password3);
                                     printSHA(hash_buffer3);
                                     gettimeofday(&end, NULL);
-                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                 - (start.tv_sec * 1000000 + start.tv_usec)));
                                     return 0;
                                 }
@@ -393,7 +393,7 @@ int main(int argc, char** argv)
                                     printf("Found match!\nPassword: %s\n", password4);
                                     printSHA(hash_buffer4);
                                     gettimeofday(&end, NULL);
-                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                 - (start.tv_sec * 1000000 + start.tv_usec)));
                                     return 0;
                                 }
@@ -420,7 +420,7 @@ int main(int argc, char** argv)
                                         printf("Found match!\nPassword: %s\n", password1);
                                         printSHA(hash_buffer1);
                                         gettimeofday(&end, NULL);
-                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                     - (start.tv_sec * 1000000 + start.tv_usec)));
                                         return 0;
                                     }
@@ -429,7 +429,7 @@ int main(int argc, char** argv)
                                         printf("Found match!\nPassword: %s\n", password2);
                                         printSHA(hash_buffer2);
                                         gettimeofday(&end, NULL);
-                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                     - (start.tv_sec * 1000000 + start.tv_usec)));
                                         return 0;
                                     }
@@ -438,7 +438,7 @@ int main(int argc, char** argv)
                                         printf("Found match!\nPassword: %s\n", password3);
                                         printSHA(hash_buffer3);
                                         gettimeofday(&end, NULL);
-                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                     - (start.tv_sec * 1000000 + start.tv_usec)));
                                         return 0;
                                     }
@@ -447,7 +447,7 @@ int main(int argc, char** argv)
                                         printf("Found match!\nPassword: %s\n", password4);
                                         printSHA(hash_buffer4);
                                         gettimeofday(&end, NULL);
-                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                     - (start.tv_sec * 1000000 + start.tv_usec)));
                                         return 0;
                                     }
@@ -474,7 +474,7 @@ int main(int argc, char** argv)
                                             printf("Found match!\nPassword: %s\n", password1);
                                             printSHA(hash_buffer1);
                                             gettimeofday(&end, NULL);
-                                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                         - (start.tv_sec * 1000000 + start.tv_usec)));
                                             return 0;
                                         }
@@ -483,7 +483,7 @@ int main(int argc, char** argv)
                                             printf("Found match!\nPassword: %s\n", password2);
                                             printSHA(hash_buffer2);
                                             gettimeofday(&end, NULL);
-                                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                         - (start.tv_sec * 1000000 + start.tv_usec)));
                                             return 0;
                                         }
@@ -492,7 +492,7 @@ int main(int argc, char** argv)
                                             printf("Found match!\nPassword: %s\n", password3);
                                             printSHA(hash_buffer3);
                                             gettimeofday(&end, NULL);
-                                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                         - (start.tv_sec * 1000000 + start.tv_usec)));
                                             return 0;
                                         }
@@ -501,7 +501,7 @@ int main(int argc, char** argv)
                                             printf("Found match!\nPassword: %s\n", password4);
                                             printSHA(hash_buffer4);
                                             gettimeofday(&end, NULL);
-                                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                         - (start.tv_sec * 1000000 + start.tv_usec)));
                                             return 0;
                                         }
@@ -528,7 +528,7 @@ int main(int argc, char** argv)
                                                 printf("Found match!\nPassword: %s\n", password1);
                                                 printSHA(hash_buffer1);
                                                 gettimeofday(&end, NULL);
-                                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                             - (start.tv_sec * 1000000 + start.tv_usec)));
                                                 return 0;
                                             }
@@ -537,7 +537,7 @@ int main(int argc, char** argv)
                                                 printf("Found match!\nPassword: %s\n", password2);
                                                 printSHA(hash_buffer2);
                                                 gettimeofday(&end, NULL);
-                                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                             - (start.tv_sec * 1000000 + start.tv_usec)));
                                                 return 0;
                                             }
@@ -546,7 +546,7 @@ int main(int argc, char** argv)
                                                 printf("Found match!\nPassword: %s\n", password3);
                                                 printSHA(hash_buffer3);
                                                 gettimeofday(&end, NULL);
-                                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                             - (start.tv_sec * 1000000 + start.tv_usec)));
                                                 return 0;
                                             }
@@ -555,7 +555,7 @@ int main(int argc, char** argv)
                                                 printf("Found match!\nPassword: %s\n", password4);
                                                 printSHA(hash_buffer4);
                                                 gettimeofday(&end, NULL);
-                                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                             - (start.tv_sec * 1000000 + start.tv_usec)));
                                                 return 0;
                                             }
@@ -582,7 +582,7 @@ int main(int argc, char** argv)
                                                     printf("Found match!\nPassword: %s\n", password1);
                                                     printSHA(hash_buffer1);
                                                     gettimeofday(&end, NULL);
-                                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                                 - (start.tv_sec * 1000000 + start.tv_usec)));
                                                     return 0;
                                                 }
@@ -591,7 +591,7 @@ int main(int argc, char** argv)
                                                     printf("Found match!\nPassword: %s\n", password2);
                                                     printSHA(hash_buffer2);
                                                     gettimeofday(&end, NULL);
-                                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                                 - (start.tv_sec * 1000000 + start.tv_usec)));
                                                     return 0;
                                                 }
@@ -600,7 +600,7 @@ int main(int argc, char** argv)
                                                     printf("Found match!\nPassword: %s\n", password3);
                                                     printSHA(hash_buffer3);
                                                     gettimeofday(&end, NULL);
-                                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                                 - (start.tv_sec * 1000000 + start.tv_usec)));
                                                     return 0;
                                                 }
@@ -609,7 +609,7 @@ int main(int argc, char** argv)
                                                     printf("Found match!\nPassword: %s\n", password4);
                                                     printSHA(hash_buffer4);
                                                     gettimeofday(&end, NULL);
-                                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                                 - (start.tv_sec * 1000000 + start.tv_usec)));
                                                     return 0;
                                                 }
@@ -636,7 +636,7 @@ int main(int argc, char** argv)
                                                         printf("Found match!\nPassword: %s\n", password1);
                                                         printSHA(hash_buffer1);
                                                         gettimeofday(&end, NULL);
-                                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                                     - (start.tv_sec * 1000000 + start.tv_usec)));
                                                         return 0;
                                                     }
@@ -645,7 +645,7 @@ int main(int argc, char** argv)
                                                         printf("Found match!\nPassword: %s\n", password2);
                                                         printSHA(hash_buffer2);
                                                         gettimeofday(&end, NULL);
-                                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                                     - (start.tv_sec * 1000000 + start.tv_usec)));
                                                         return 0;
                                                     }
@@ -654,7 +654,7 @@ int main(int argc, char** argv)
                                                         printf("Found match!\nPassword: %s\n", password3);
                                                         printSHA(hash_buffer3);
                                                         gettimeofday(&end, NULL);
-                                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                                     - (start.tv_sec * 1000000 + start.tv_usec)));
                                                         return 0;
                                                     }
@@ -663,7 +663,7 @@ int main(int argc, char** argv)
                                                         printf("Found match!\nPassword: %s\n", password4);
                                                         printSHA(hash_buffer4);
                                                         gettimeofday(&end, NULL);
-                                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec) 
+                                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                                                                     - (start.tv_sec * 1000000 + start.tv_usec)));
                                                         return 0;
                                                     }
