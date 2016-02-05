@@ -81,7 +81,7 @@ const char character_set[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
 
 void SHA1(char* message1, char* message2, char* message3, char* message4,
         uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t message_size);
-void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bits, uint32_t numChunks, uint32_t leftOverBits, uint8_t addChunk);
+void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bytes);
 void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5],
         uint32_t chunk1[16], uint32_t chunk2[16], uint32_t chunk3[16], uint32_t chunk4[16]);
 void printSHA(uint32_t hash_buffer[5]);
@@ -757,54 +757,26 @@ void SHA1(char* message1, char* message2, char* message3, char* message4, uint32
 
     // Get the size of the message
     uint64_t message_size_bytes = message_size;
-    uint64_t message_size_bits = message_size_bytes*8;
-    uint32_t leftOverBits = message_size_bits % 512;
-    uint8_t addChunk = 0;
-
-    if(leftOverBits < 448){
-        addChunk = 1;
-    }
-    else{
-        addChunk = 2;
-    }
-
-    uint64_t number_of_chunks = (message_size_bytes/64) + addChunk;
-
-    uint16_t i;
-    uint16_t j;
 
     // Initialize the chunks array
-    uint32_t chunks1[number_of_chunks][16];
-    uint32_t chunks2[number_of_chunks][16];
-    uint32_t chunks3[number_of_chunks][16];
-    uint32_t chunks4[number_of_chunks][16];
+    uint32_t chunks1[1][16];
+    uint32_t chunks2[1][16];
+    uint32_t chunks3[1][16];
+    uint32_t chunks4[1][16];
 
     // Prep the message into 512-bit chunks (16 32-bit words)
-    prepMessage(message1, chunks1, message_size_bits, number_of_chunks, leftOverBits, addChunk);
-    prepMessage(message2, chunks2, message_size_bits, number_of_chunks, leftOverBits, addChunk);
-    prepMessage(message3, chunks3, message_size_bits, number_of_chunks, leftOverBits, addChunk);
-    prepMessage(message4, chunks4, message_size_bits, number_of_chunks, leftOverBits, addChunk);
+    prepMessage(message1, chunks1, message_size_bytes);
+    prepMessage(message2, chunks2, message_size_bytes);
+    prepMessage(message3, chunks3, message_size_bytes);
+    prepMessage(message4, chunks4, message_size_bytes);
 
-    //################################
-    //	FOR DEBUGGING
-    //################################
-    /*printf("Message AFTER prep: \n");
-      for(i = 0; i < number_of_chunks; i++){
-      for(j = 0; j < 16; j++){
-      printf("%08X", chunks[i][j]);
-      }
-      }*/
-    //################################
-    //################################
 
-    // This manipulates the bytes as defined by SHA-1
-    for(i = 0; i < number_of_chunks; ++i)
-    {
-        shaIteration(hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, chunks1[i], chunks2[i], chunks3[i], chunks4[i]);
-    }
+    //Perform Hashing function
+    shaIteration(hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, chunks1[0], chunks2[0], chunks3[0], chunks4[0]);
+    
 }
 
-void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bits, uint32_t numChunks, uint32_t leftOverBits, uint8_t addChunk)
+void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bytes)
 {
     //512 bits = 64 bytes
     //		   = 16 words
@@ -814,164 +786,289 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bit
     //		  = 2 words
     //32 bits = 4 bytes
 
-    uint16_t numBytesPadding = 0;
+    //uint16_t i = 0;
 
-    uint16_t i = 0;
-    uint16_t j = 0;
+    uint64_t message_size_bits = message_size_bytes*8;
 
-    uint8_t offset = 24;
-
-    //Split message into 512 bit chunks excluding last chunk
-    for(i = 0; i < (numChunks - addChunk); i++){
-        for(j = 0; j < 16; j++){
-            chunks[i][j] = message[(0*j)+(i*64)]<<24 | message[(1*j)+(i*64)]<<16 | message[(2*j)+(i*64)]<<8 | message[(3*j)+(i*64)];
-        }
-        //memcpy(chunks[i], message + ((j*4)+(i*64)), sizeof(uint32_t));
-    }
-
-
-    //Fill in last chunk of message bits
-    j = 0;
-    for(i = 0; i < (leftOverBits/8); i++){
-        //Set word to 0x00000000
-        if(offset == 24){
-            chunks[numChunks-addChunk][j] = 0;
-        }
-
-        //Add byte to word in correct position
-        chunks[numChunks-addChunk][j] |= (((message[i + ((numChunks-addChunk)*64)]) | 0x00000000) << offset);
-
-        //Reset offset for new word, else decrease offset to next byte position
-        if(offset == 0){
-            offset = 24;
-            j++;
-        }
-        else{
-            offset = offset - 8;
-        }
-
-    }
-
-    //--------------------------------
-    //	PADDING
-    //--------------------------------
-    //printf("Offset: %d \n", offset);
-    //printf("Byte number %d \n", j);
-
-    //Different methods for leftOverBits >= 448 and leftOverBits < 448
-    switch(addChunk)
-    {
+    switch(message_size_bytes){
         case 1:
-            {
-                //Calculate bytes of padding
-                numBytesPadding = 56 - (leftOverBits/8);
-                //printf("# padding: %d \n", numBytesPadding);
+        {
+            //Insert message and padding
+            chunks[0][0] = message[0]<<24 | 0x80<<16;
+            chunks[0][1] = 0;
+            chunks[0][2] = 0;
+            chunks[0][3] = 0;
+            chunks[0][4] = 0;
+            chunks[0][5] = 0;
+            chunks[0][6] = 0;
+            chunks[0][7] = 0;
+            chunks[0][8] = 0;
+            chunks[0][9] = 0;
+            chunks[0][10] = 0;
+            chunks[0][11] = 0;
+            chunks[0][12] = 0;
+            chunks[0][13] = 0;
+            
+            //Append 64-bit size of message
+            //MSW
+            chunks[0][14] = message_size_bits >> 32;
+            //LSW
+            chunks[0][15] = message_size_bits & 0x00000000FFFFFFFF;
+            break;
 
-
-                for(i = 0; i < numBytesPadding; i++){
-
-                    //Set word to 0x00000000
-                    if(offset == 24){
-                        chunks[numChunks-addChunk][j] = 0;
-                    }
-
-                    if(i == 0){
-                        //First byte is 0x80
-                        chunks[numChunks-1][j] |= (0x80 << offset);
-                    }
-
-                    if(offset == 0){
-                        offset = 24;
-                        j++;
-                    }
-                    else{
-                        offset = offset - 8;
-                    }
-                }
-
-                break;
-
-            } //end of case 1
+        } //end of case 1
         case 2:
-            {
-                //Calculate bytes of padding
-                numBytesPadding = 64 - (leftOverBits/8);
-                //printf("# padding: %d \n", numBytesPadding);
-
-                for(i = 0; i < numBytesPadding; i++){
-
-                    //Set word to 0x00000000
-                    if(offset == 24){
-                        chunks[numChunks-addChunk][j] = 0;
-                    }
-
-                    if(i == 0){
-                        //First byte is 0x80
-                        chunks[numChunks-2][j] |= (0x80 << offset);
-                    }
-
-                    ////printf("Current word: %08X \n", chunks[numChunks-2][j]);
-
-                    if(offset == 0){
-                        offset = 24;
-                        j++;
-                    }
-                    else{
-                        offset = offset - 8;
-                    }
-                }
-
-                //Add 448 bits to last chunk
-                for(i = 0; i < 14; i++){
-                    chunks[numChunks-1][i] = 0;
-                }
-
-                break;
-
-            } //end of case 2
-    } //end of switch
-
-    //--------------------------------
-    //	APPEND 64-bit message length
-    //--------------------------------
-
-    //MSW
-    chunks[numChunks-1][14] = message_size_bits >> 32;
-    //LSW
-    chunks[numChunks-1][15] = message_size_bits & 0x00000000FFFFFFFF;
-
-
-    //################################
-    //	FOR DEBUGGING
-    //################################
-
-    //PRINT THE ORIGINAL MESSAGE
-    //printf("\n");
-    //printf("The message size in bytes: %d \n", (int)(message_size_bits/8));
-    //printf("The message size in bits: %d \n", (int)message_size_bits);
-    //printf("# of leftover bits: %d \n", (int)leftOverBits);
-
-
-    for(i = 0; i < (message_size_bits/8); i++){
-        //printf("%c", message[i]);
-    }
-
-    //PRINT THE DATA OF ALL THE CHUNKS BY WORDS
-    //printf("\n\n");
-    //printf("Number of chunks: %d \n", numChunks);
-
-    for(i = 0; i < numChunks; i++){
-        for(j = 0; j < 16; j++){
-            //printf("%08X", chunks[i][j]);
-        }
-        //printf("\n\n");
-    }
-
-    //printf("\n\n");
-
-    //################################
-    //################################
-
+        {
+            //Insert message and padding
+            chunks[0][0] = message[0]<<24 | message[1]<<16 | 0x80<<8;
+            chunks[0][1] = 0;
+            chunks[0][2] = 0;
+            chunks[0][3] = 0;
+            chunks[0][4] = 0;
+            chunks[0][5] = 0;
+            chunks[0][6] = 0;
+            chunks[0][7] = 0;
+            chunks[0][8] = 0;
+            chunks[0][9] = 0;
+            chunks[0][10] = 0;
+            chunks[0][11] = 0;
+            chunks[0][12] = 0;
+            chunks[0][13] = 0;
+            
+            //Append 64-bit size of message
+            //MSW
+            chunks[0][14] = message_size_bits >> 32;
+            //LSW
+            chunks[0][15] = message_size_bits & 0x00000000FFFFFFFF;
+            break;
+        } //end of case 2
+        case 3:
+        {
+            //Insert message and padding
+            chunks[0][0] = message[0]<<24 | message[1]<<16 | message[2]<<8 | 0x80;
+            chunks[0][1] = 0;
+            chunks[0][2] = 0;
+            chunks[0][3] = 0;
+            chunks[0][4] = 0;
+            chunks[0][5] = 0;
+            chunks[0][6] = 0;
+            chunks[0][7] = 0;
+            chunks[0][8] = 0;
+            chunks[0][9] = 0;
+            chunks[0][10] = 0;
+            chunks[0][11] = 0;
+            chunks[0][12] = 0;
+            chunks[0][13] = 0;
+            
+            //Append 64-bit size of message
+            //MSW
+            chunks[0][14] = message_size_bits >> 32;
+            //LSW
+            chunks[0][15] = message_size_bits & 0x00000000FFFFFFFF;
+            break;
+        } //end of case 3
+        case 4:
+        {
+            //Insert message and padding
+            chunks[0][0] = message[0]<<24 | message[1]<<16 | message[2]<<8 | message[3];
+            chunks[0][1] = 0x80<<24;
+            chunks[0][2] = 0;
+            chunks[0][3] = 0;
+            chunks[0][4] = 0;
+            chunks[0][5] = 0;
+            chunks[0][6] = 0;
+            chunks[0][7] = 0;
+            chunks[0][8] = 0;
+            chunks[0][9] = 0;
+            chunks[0][10] = 0;
+            chunks[0][11] = 0;
+            chunks[0][12] = 0;
+            chunks[0][13] = 0;
+            
+            //Append 64-bit size of message
+            //MSW
+            chunks[0][14] = message_size_bits >> 32;
+            //LSW
+            chunks[0][15] = message_size_bits & 0x00000000FFFFFFFF;
+            break;
+        } //end of case 4
+        case 5:
+        {
+            //Insert message and padding
+            chunks[0][0] = message[0]<<24 | message[1]<<16 | message[2]<<8 | message[3];
+            chunks[0][1] = message[4]<<24 | 0x80<<16;
+            chunks[0][2] = 0;
+            chunks[0][3] = 0;
+            chunks[0][4] = 0;
+            chunks[0][5] = 0;
+            chunks[0][6] = 0;
+            chunks[0][7] = 0;
+            chunks[0][8] = 0;
+            chunks[0][9] = 0;
+            chunks[0][10] = 0;
+            chunks[0][11] = 0;
+            chunks[0][12] = 0;
+            chunks[0][13] = 0;
+            
+            //Append 64-bit size of message
+            //MSW
+            chunks[0][14] = message_size_bits >> 32;
+            //LSW
+            chunks[0][15] = message_size_bits & 0x00000000FFFFFFFF;
+            break;
+        } //end of case 5
+        case 6:
+        {
+            //Insert message and padding
+            chunks[0][0] = message[0]<<24 | message[1]<<16 | message[2]<<8 | message[3];
+            chunks[0][1] = message[4]<<24 | message[5]<<16 | 0x80<<8;
+            chunks[0][2] = 0;
+            chunks[0][3] = 0;
+            chunks[0][4] = 0;
+            chunks[0][5] = 0;
+            chunks[0][6] = 0;
+            chunks[0][7] = 0;
+            chunks[0][8] = 0;
+            chunks[0][9] = 0;
+            chunks[0][10] = 0;
+            chunks[0][11] = 0;
+            chunks[0][12] = 0;
+            chunks[0][13] = 0;
+            
+            //Append 64-bit size of message
+            //MSW
+            chunks[0][14] = message_size_bits >> 32;
+            //LSW
+            chunks[0][15] = message_size_bits & 0x00000000FFFFFFFF;
+            break;
+        } //end of case 6
+        case 7:
+        {
+            //Insert message and padding
+            chunks[0][0] = message[0]<<24 | message[1]<<16 | message[2]<<8 | message[3];
+            chunks[0][1] = message[4]<<24 | message[5]<<16 | message[6]<<8 | 0x80;
+            chunks[0][2] = 0;
+            chunks[0][3] = 0;
+            chunks[0][4] = 0;
+            chunks[0][5] = 0;
+            chunks[0][6] = 0;
+            chunks[0][7] = 0;
+            chunks[0][8] = 0;
+            chunks[0][9] = 0;
+            chunks[0][10] = 0;
+            chunks[0][11] = 0;
+            chunks[0][12] = 0;
+            chunks[0][13] = 0;
+            
+            //Append 64-bit size of message
+            //MSW
+            chunks[0][14] = message_size_bits >> 32;
+            //LSW
+            chunks[0][15] = message_size_bits & 0x00000000FFFFFFFF;
+            break;
+        } //end of case 7
+        case 8:
+        {
+            //Insert message and padding
+            chunks[0][0] = message[0]<<24 | message[1]<<16 | message[2]<<8 | message[3];
+            chunks[0][1] = message[4]<<24 | message[5]<<16 | message[6]<<8 | message[7];
+            chunks[0][2] = 0x80<<24;
+            chunks[0][3] = 0;
+            chunks[0][4] = 0;
+            chunks[0][5] = 0;
+            chunks[0][6] = 0;
+            chunks[0][7] = 0;
+            chunks[0][8] = 0;
+            chunks[0][9] = 0;
+            chunks[0][10] = 0;
+            chunks[0][11] = 0;
+            chunks[0][12] = 0;
+            chunks[0][13] = 0;
+            
+            //Append 64-bit size of message
+            //MSW
+            chunks[0][14] = message_size_bits >> 32;
+            //LSW
+            chunks[0][15] = message_size_bits & 0x00000000FFFFFFFF;
+            break;
+        } //end of case 8
+        case 9:
+        {
+            //Insert message and padding
+            chunks[0][0] = message[0]<<24 | message[1]<<16 | message[2]<<8 | message[3];
+            chunks[0][1] = message[4]<<24 | message[5]<<16 | message[6]<<8 | message[7];
+            chunks[0][2] = message[8]<<24 | 0x80<<16;
+            chunks[0][3] = 0;
+            chunks[0][4] = 0;
+            chunks[0][5] = 0;
+            chunks[0][6] = 0;
+            chunks[0][7] = 0;
+            chunks[0][8] = 0;
+            chunks[0][9] = 0;
+            chunks[0][10] = 0;
+            chunks[0][11] = 0;
+            chunks[0][12] = 0;
+            chunks[0][13] = 0;
+            
+            //Append 64-bit size of message
+            //MSW
+            chunks[0][14] = message_size_bits >> 32;
+            //LSW
+            chunks[0][15] = message_size_bits & 0x00000000FFFFFFFF;
+            break;
+        } //end of case 9
+        case 10:
+        {
+            //Insert message and padding
+            chunks[0][0] = message[0]<<24 | message[1]<<16 | message[2]<<8 | message[3];
+            chunks[0][1] = message[4]<<24 | message[5]<<16 | message[6]<<8 | message[7];
+            chunks[0][2] = message[8]<<24 | message[9]<<16 | 0x80<<8;
+            chunks[0][3] = 0;
+            chunks[0][4] = 0;
+            chunks[0][5] = 0;
+            chunks[0][6] = 0;
+            chunks[0][7] = 0;
+            chunks[0][8] = 0;
+            chunks[0][9] = 0;
+            chunks[0][10] = 0;
+            chunks[0][11] = 0;
+            chunks[0][12] = 0;
+            chunks[0][13] = 0;
+            
+            //Append 64-bit size of message
+            //MSW
+            chunks[0][14] = message_size_bits >> 32;
+            //LSW
+            chunks[0][15] = message_size_bits & 0x00000000FFFFFFFF;
+            break;
+        } //end of case 10
+        case 11:
+        {
+            //Insert message and padding
+            chunks[0][0] = message[0]<<24 | message[1]<<16 | message[2]<<8 | message[3];
+            chunks[0][1] = message[4]<<24 | message[5]<<16 | message[6]<<8 | message[7];
+            chunks[0][2] = message[8]<<24 | message[9]<<16 | message[10]<<8 | 0x80;
+            chunks[0][3] = 0;
+            chunks[0][4] = 0;
+            chunks[0][5] = 0;
+            chunks[0][6] = 0;
+            chunks[0][7] = 0;
+            chunks[0][8] = 0;
+            chunks[0][9] = 0;
+            chunks[0][10] = 0;
+            chunks[0][11] = 0;
+            chunks[0][12] = 0;
+            chunks[0][13] = 0;
+            
+            //Append 64-bit size of message
+            //MSW
+            chunks[0][14] = message_size_bits >> 32;
+            //LSW
+            chunks[0][15] = message_size_bits & 0x00000000FFFFFFFF;
+            break;
+        } //end of case 11
+    }//end of switch
+    
 }
 
 void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5],
