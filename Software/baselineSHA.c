@@ -13,18 +13,12 @@
 //     and chunks array, that way we can condense the information
 //     better.
 //
-//  -  Is there a way to make the padding section smaller? Looking at
-//     some code on line implementing SHA-1 in C shows a lot less code
-//     for that.
-//
-//  -  Look into using some of the Intel Intrinsic functions.
-//
 //  -  Optimize the SHA_Iteration function to better use the boolean
 //     expressions.
 //
 //	-  pthreads
 //
-//	-  Figure out how to do the SHA-1 XOR optimazations
+//	-  Figure out how to do the SHA-1 XOR optimizations
 //
 //********************************************************************
 
@@ -86,6 +80,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
         uint32_t chunk1[16], uint32_t chunk2[16], uint32_t chunk3[16], uint32_t chunk4[16]);
 void printSHA(uint32_t hash_buffer[5]);
 bool SHAcompare(uint32_t hash_buffer[5], uint32_t input_hash[5]);
+bool SHAcompareVEC(__m128i vecInput1, __m128i vecResult1, uint32_t vecInput2, uint32_t vecResult2);
 
 uint32_t rotl(uint32_t value, uint16_t shift);
 
@@ -144,6 +139,8 @@ int main(int argc, char** argv)
                 //printSHA(hash_buffer3);
                 //printf("password4: %s\n", password4);
                 //printSHA(hash_buffer4);
+
+
                 if(SHAcompare(hash_buffer1, input_hash))
                 {
                     printf("Found match!\nPassword: %s\n", password1);
@@ -791,7 +788,7 @@ void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_byt
 
     uint64_t message_size_bits = message_size_bytes*8;
 
-    printf("%s \n", message);
+    //printf("%s \n", message);
 
     switch(message_size_bytes){
         case 1:
