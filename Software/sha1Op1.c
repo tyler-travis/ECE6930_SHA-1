@@ -84,7 +84,7 @@ void SHA1(char* message1, char* message2, char* message3, char* message4,
         uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t message_size);
 void prepMessage(char* message, uint32_t chunks[][16], uint64_t message_size_bytes);
 void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5],
-        uint32_t chunk1[16], uint32_t chunk2[16], uint32_t chunk3[16], uint32_t chunk4[16], uint32_t PW1, uint32_t PW2, uint32_t PW3, uint32_t PW4);
+        uint32_t chunk1[16], uint32_t chunk2[16], uint32_t chunk3[16], uint32_t chunk4[16]);
 void printSHA(uint32_t hash_buffer[5]);
 bool SHAcompare(uint32_t hash_buffer[5], uint32_t input_hash[5]);
 bool SHAcompareVEC(__m128i vecInput1, __m128i vecResult1, uint32_t vecInput2, uint32_t vecResult2);
@@ -1076,12 +1076,12 @@ void SHA1(char* message1, char* message2, char* message3, char* message4, uint32
 
 
     //Perform Hashing function
-    shaIteration(hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, chunks1[0], chunks2[0], chunks3[0], chunks4[0], PW1, PW2, PW3, PW4);
+    shaIteration(hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, chunks1[0], chunks2[0], chunks3[0], chunks4[0]);
 
 }
 
 void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5],
-        uint32_t chunk1[16], uint32_t chunk2[16], uint32_t chunk3[16], uint32_t chunk4[16], uint32_t PW1, uint32_t PW2, uint32_t PW3, uint32_t PW4 )
+        uint32_t chunk1[16], uint32_t chunk2[16], uint32_t chunk3[16], uint32_t chunk4[16])
 {
     // Array to store the extended value
     uint32_t w1[80];
@@ -1128,6 +1128,8 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     uint32_t w1_0_18 = rotl(w1[0], 18);
     uint32_t w1_0_19 = rotl(w1[0], 19);
     uint32_t w1_0_20 = rotl(w1[0], 20);
+    uint32_t w1_0_21 = rotl(w1[0], 21);
+    uint32_t w1_0_22 = rotl(w1[0], 22);
 
     uint32_t w1_0_6___w1_0_4 = w1_0_4 ^ w1_0_6;
     uint32_t w1_0_8___w1_0_4 = w1_0_4 ^ w1_0_8;
@@ -1154,6 +1156,8 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     uint32_t w2_0_18 = rotl(w2[0], 18);
     uint32_t w2_0_19 = rotl(w2[0], 19);
     uint32_t w2_0_20 = rotl(w2[0], 20);
+    uint32_t w2_0_21 = rotl(w1[0], 21);
+    uint32_t w2_0_22 = rotl(w1[0], 22);
 
     uint32_t w2_0_6___w2_0_4 = w2_0_4 ^ w2_0_6;
     uint32_t w2_0_8___w2_0_4 = w2_0_4 ^ w2_0_8;
@@ -1180,6 +1184,8 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     uint32_t w3_0_18 = rotl(w3[0], 18);
     uint32_t w3_0_19 = rotl(w3[0], 19);
     uint32_t w3_0_20 = rotl(w3[0], 20);
+    uint32_t w3_0_21 = rotl(w1[0], 21);
+    uint32_t w3_0_22 = rotl(w1[0], 22);
 
     uint32_t w3_0_6___w3_0_4 = w3_0_4 ^ w3_0_6;
     uint32_t w3_0_8___w3_0_4 = w3_0_4 ^ w3_0_8;
@@ -1206,6 +1212,8 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     uint32_t w4_0_18 = rotl(w4[0], 18);
     uint32_t w4_0_19 = rotl(w4[0], 19);
     uint32_t w4_0_20 = rotl(w4[0], 20);
+    uint32_t w4_0_21 = rotl(w1[0], 21);
+    uint32_t w4_0_22 = rotl(w1[0], 22);
 
     uint32_t w4_0_6___w4_0_4 = w4_0_4 ^ w4_0_6;
     uint32_t w4_0_8___w4_0_4 = w4_0_4 ^ w4_0_8;
