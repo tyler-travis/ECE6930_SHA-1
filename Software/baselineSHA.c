@@ -1232,6 +1232,10 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     w1[78] = rotl((w1[75] ^ w1[70] ^ w1[64] ^ w1[62]), 1);
     w1[79] = rotl((w1[76] ^ w1[71] ^ w1[65] ^ w1[63]), 1);
 
+    // for(i = 0; i < 80; i++){
+    //     printf("w1[%d] : %8X\n", i, w1[i]);
+    // }
+
     // Extend the 16 32-bit words into 80 32-bit words w2
     w2[16] = rotl((w2[13] ^ w2[8] ^ w2[2] ^ w2[0]), 1);
     w2[17] = rotl((w2[14] ^ w2[9] ^ w2[3] ^ w2[1]), 1);
@@ -1363,6 +1367,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     w3[77] = rotl((w3[74] ^ w3[69] ^ w3[63] ^ w3[61]), 1);
     w3[78] = rotl((w3[75] ^ w3[70] ^ w3[64] ^ w3[62]), 1);
     w3[79] = rotl((w3[76] ^ w3[71] ^ w3[65] ^ w3[63]), 1);
+
 
     // Extend the 16 32-bit words into 80 32-bit words w4
     w4[16] = rotl((w4[13] ^ w4[8] ^ w4[2] ^ w4[0]), 1);
