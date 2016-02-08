@@ -67,12 +67,7 @@ const char character_set[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
     'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
 
-const char character_set_lower[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
-    'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
-    'y', 'z' };
-
-#define N 52
-#define N_lower 26
+#define N 26
 #define string_size 10
 
 //********************************************************************
@@ -126,15 +121,15 @@ int main(int argc, char** argv)
         //password2[i + 1] = 0x00;
         //password3[i + 1] = 0x00;
         //password4[i + 1] = 0x00;
-        for(j = 0; (j < N_lower); j++)
+        for(j = 0; (j < N); j++)
         {
             // If this is the first time here,
             if(i == 0)
             {
-                password1[0] = character_set_lower[j++];
-                password2[0] = character_set_lower[j++];
-                password3[0] = character_set_lower[j++];
-                password4[0] = character_set_lower[j];
+                password1[0] = character_set[j++];
+                password2[0] = character_set[j++];
+                password3[0] = character_set[j++];
+                password4[0] = character_set[j];
                 SHA1(password1, password2, password3, password4,
                         hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 1);
                 //printf("password1: %s\n", password1);
@@ -186,19 +181,19 @@ int main(int argc, char** argv)
             }
             else
             {
-                password1[0] = character_set_lower[j];
-                password2[0] = character_set_lower[j];
-                password3[0] = character_set_lower[j];
-                password4[0] = character_set_lower[j];
+                password1[0] = character_set[j];
+                password2[0] = character_set[j];
+                password3[0] = character_set[j];
+                password4[0] = character_set[j];
             }
-            for(k = 0; (k < N_lower) && (i >= 1); k++)
+            for(k = 0; (k < N) && (i >= 1); k++)
             {
                 if(i == 1)
                 {
-                    password1[1] = character_set_lower[k++];
-                    password2[1] = character_set_lower[k++];
-                    password3[1] = character_set_lower[k++];
-                    password4[1] = character_set_lower[k];
+                    password1[1] = character_set[k++];
+                    password2[1] = character_set[k++];
+                    password3[1] = character_set[k++];
+                    password4[1] = character_set[k];
                     SHA1(password1, password2, password3, password4,
                             hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 2);
                     if(SHAcompare(hash_buffer1, input_hash))
@@ -240,20 +235,20 @@ int main(int argc, char** argv)
                 }
                 else
                 {
-                    password1[1] = character_set_lower[k];
-                    password2[1] = character_set_lower[k];
-                    password3[1] = character_set_lower[k];
-                    password4[1] = character_set_lower[k];
+                    password1[1] = character_set[k];
+                    password2[1] = character_set[k];
+                    password3[1] = character_set[k];
+                    password4[1] = character_set[k];
                 }
 
-                for(l = 0; (l < N_lower) && (i >= 2); l++)
+                for(l = 0; (l < N) && (i >= 2); l++)
                 {
                     if(i == 2)
                     {
-                        password1[2] = character_set_lower[l++];
-                        password2[2] = character_set_lower[l++];
-                        password3[2] = character_set_lower[l++];
-                        password4[2] = character_set_lower[l];
+                        password1[2] = character_set[l++];
+                        password2[2] = character_set[l++];
+                        password3[2] = character_set[l++];
+                        password4[2] = character_set[l];
                         SHA1(password1, password2, password3, password4,
                                 hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 3);
                         if(SHAcompare(hash_buffer1, input_hash))
@@ -295,19 +290,19 @@ int main(int argc, char** argv)
                     }
                     else
                     {
-                        password1[2] = character_set_lower[l];
-                        password2[2] = character_set_lower[l];
-                        password3[2] = character_set_lower[l];
-                        password4[2] = character_set_lower[l];
+                        password1[2] = character_set[l];
+                        password2[2] = character_set[l];
+                        password3[2] = character_set[l];
+                        password4[2] = character_set[l];
                     }
-                    for(m = 0; (m < N_lower) && (i >= 3); m++)
+                    for(m = 0; (m < N) && (i >= 3); m++)
                     {
                         if(i == 3)
                         {
-                            password1[3] = character_set_lower[m++];
-                            password2[3] = character_set_lower[m++];
-                            password3[3] = character_set_lower[m++];
-                            password4[3] = character_set_lower[m];
+                            password1[3] = character_set[m++];
+                            password2[3] = character_set[m++];
+                            password3[3] = character_set[m++];
+                            password4[3] = character_set[m];
                             SHA1(password1, password2, password3, password4,
                                     hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 4);
                             if(SHAcompare(hash_buffer1, input_hash))
@@ -349,19 +344,19 @@ int main(int argc, char** argv)
                         }
                         else
                         {
-                            password1[3] = character_set_lower[m];
-                            password2[3] = character_set_lower[m];
-                            password3[3] = character_set_lower[m];
-                            password4[3] = character_set_lower[m];
+                            password1[3] = character_set[m];
+                            password2[3] = character_set[m];
+                            password3[3] = character_set[m];
+                            password4[3] = character_set[m];
                         }
-                        for(n = 0; (n < N_lower) && (i >= 4); n++)
+                        for(n = 0; (n < N) && (i >= 4); n++)
                         {
                             if(i == 4)
                             {
-                                password1[4] = character_set_lower[n++];
-                                password2[4] = character_set_lower[n++];
-                                password3[4] = character_set_lower[n++];
-                                password4[4] = character_set_lower[n];
+                                password1[4] = character_set[n++];
+                                password2[4] = character_set[n++];
+                                password3[4] = character_set[n++];
+                                password4[4] = character_set[n];
                                 SHA1(password1, password2, password3, password4,
                                         hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 5);
                                 if(SHAcompare(hash_buffer1, input_hash))
@@ -403,19 +398,19 @@ int main(int argc, char** argv)
                             }
                             else
                             {
-                                password1[4] = character_set_lower[n];
-                                password2[4] = character_set_lower[n];
-                                password3[4] = character_set_lower[n];
-                                password4[4] = character_set_lower[n];
+                                password1[4] = character_set[n];
+                                password2[4] = character_set[n];
+                                password3[4] = character_set[n];
+                                password4[4] = character_set[n];
                             }
-                            for(o = 0; (o < N_lower) && (i >= 5); o++)
+                            for(o = 0; (o < N) && (i >= 5); o++)
                             {
                                 if(i == 5)
                                 {
-                                    password1[5] = character_set_lower[o++];
-                                    password2[5] = character_set_lower[o++];
-                                    password3[5] = character_set_lower[o++];
-                                    password4[5] = character_set_lower[o];
+                                    password1[5] = character_set[o++];
+                                    password2[5] = character_set[o++];
+                                    password3[5] = character_set[o++];
+                                    password4[5] = character_set[o];
                                     SHA1(password1, password2, password3, password4,
                                             hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 6);
                                     if(SHAcompare(hash_buffer1, input_hash))
@@ -457,19 +452,19 @@ int main(int argc, char** argv)
                                 }
                                 else
                                 {
-                                    password1[5] = character_set_lower[o];
-                                    password2[5] = character_set_lower[o];
-                                    password3[5] = character_set_lower[o];
-                                    password4[5] = character_set_lower[o];
+                                    password1[5] = character_set[o];
+                                    password2[5] = character_set[o];
+                                    password3[5] = character_set[o];
+                                    password4[5] = character_set[o];
                                 }
-                                for(p = 0; (p < N_lower) && (i >= 6); p++)
+                                for(p = 0; (p < N) && (i >= 6); p++)
                                 {
                                     if(i == 6)
                                     {
-                                        password1[6] = character_set_lower[p++];
-                                        password2[6] = character_set_lower[p++];
-                                        password3[6] = character_set_lower[p++];
-                                        password4[6] = character_set_lower[p];
+                                        password1[6] = character_set[p++];
+                                        password2[6] = character_set[p++];
+                                        password3[6] = character_set[p++];
+                                        password4[6] = character_set[p];
                                         SHA1(password1, password2, password3, password4,
                                                 hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 7);
                                         if(SHAcompare(hash_buffer1, input_hash))
@@ -511,19 +506,19 @@ int main(int argc, char** argv)
                                     }
                                     else
                                     {
-                                        password1[6] = character_set_lower[p];
-                                        password2[6] = character_set_lower[p];
-                                        password3[6] = character_set_lower[p];
-                                        password4[6] = character_set_lower[p];
+                                        password1[6] = character_set[p];
+                                        password2[6] = character_set[p];
+                                        password3[6] = character_set[p];
+                                        password4[6] = character_set[p];
                                     }
-                                    for(q = 0; (q < N_lower) && (i >= 7); q++)
+                                    for(q = 0; (q < N) && (i >= 7); q++)
                                     {
                                         if(i == 7)
                                         {
-                                            password1[7] = character_set_lower[q++];
-                                            password2[7] = character_set_lower[q++];
-                                            password3[7] = character_set_lower[q++];
-                                            password4[7] = character_set_lower[q];
+                                            password1[7] = character_set[q++];
+                                            password2[7] = character_set[q++];
+                                            password3[7] = character_set[q++];
+                                            password4[7] = character_set[q];
                                             SHA1(password1, password2, password3, password4,
                                                     hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 8);
                                             if(SHAcompare(hash_buffer1, input_hash))
@@ -565,19 +560,19 @@ int main(int argc, char** argv)
                                         }
                                         else
                                         {
-                                            password1[7] = character_set_lower[q];
-                                            password2[7] = character_set_lower[q];
-                                            password3[7] = character_set_lower[q];
-                                            password4[7] = character_set_lower[q];
+                                            password1[7] = character_set[q];
+                                            password2[7] = character_set[q];
+                                            password3[7] = character_set[q];
+                                            password4[7] = character_set[q];
                                         }
-                                        for(r = 0; (r < N_lower) && (i >= 8); r++)
+                                        for(r = 0; (r < N) && (i >= 8); r++)
                                         {
                                             if(i == 8)
                                             {
-                                                password1[8] = character_set_lower[r++];
-                                                password2[8] = character_set_lower[r++];
-                                                password3[8] = character_set_lower[r++];
-                                                password4[8] = character_set_lower[r];
+                                                password1[8] = character_set[r++];
+                                                password2[8] = character_set[r++];
+                                                password3[8] = character_set[r++];
+                                                password4[8] = character_set[r];
                                                 SHA1(password1, password2, password3, password4,
                                                         hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 9);
                                                 if(SHAcompare(hash_buffer1, input_hash))
@@ -619,19 +614,19 @@ int main(int argc, char** argv)
                                             }
                                             else
                                             {
-                                                password1[8] = character_set_lower[r];
-                                                password2[8] = character_set_lower[r];
-                                                password3[8] = character_set_lower[r];
-                                                password4[8] = character_set_lower[r];
+                                                password1[8] = character_set[r];
+                                                password2[8] = character_set[r];
+                                                password3[8] = character_set[r];
+                                                password4[8] = character_set[r];
                                             }
-                                            for(s = 0; (s < N_lower) && (i >= 9); s++)
+                                            for(s = 0; (s < N) && (i >= 9); s++)
                                             {
                                                 if(i == 9)
                                                 {
-                                                    password1[9] = character_set_lower[s++];
-                                                    password2[9] = character_set_lower[s++];
-                                                    password3[9] = character_set_lower[s++];
-                                                    password4[9] = character_set_lower[s];
+                                                    password1[9] = character_set[s++];
+                                                    password2[9] = character_set[s++];
+                                                    password3[9] = character_set[s++];
+                                                    password4[9] = character_set[s];
                                                     SHA1(password1, password2, password3, password4,
                                                             hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 10);
                                                     if(SHAcompare(hash_buffer1, input_hash))
@@ -673,10 +668,10 @@ int main(int argc, char** argv)
                                                 }
                                                 else
                                                 {
-                                                    password1[9] = character_set_lower[s];
-                                                    password2[9] = character_set_lower[s];
-                                                    password3[9] = character_set_lower[s];
-                                                    password4[9] = character_set_lower[s];
+                                                    password1[9] = character_set[s];
+                                                    password2[9] = character_set[s];
+                                                    password3[9] = character_set[s];
+                                                    password4[9] = character_set[s];
                                                 }
                                             }
                                         }

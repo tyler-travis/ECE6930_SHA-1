@@ -68,12 +68,7 @@ const char character_set[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
     'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
 
-const char character_set_lower[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
-    'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
-    'y', 'z' };
-
-#define N 52
-#define N_lower 26
+#define N 26
 #define string_size 10
 
 //********************************************************************
@@ -127,15 +122,15 @@ int main(int argc, char** argv)
         //password2[i + 1] = 0x00;
         //password3[i + 1] = 0x00;
         //password4[i + 1] = 0x00;
-        for(j = 0; (j < N_lower); j++)
+        for(j = 0; (j < N); j++)
         {
             // If this is the first time here,
             if(i == 0)
             {
-                password1[i] = character_set_lower[j++];
-                password2[i] = character_set_lower[j++];
-                password3[i] = character_set_lower[j++];
-                password4[i] = character_set_lower[j];
+                password1[i] = character_set[j++];
+                password2[i] = character_set[j++];
+                password3[i] = character_set[j++];
+                password4[i] = character_set[j];
                 SHA1(password1, password2, password3, password4,
                         hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 1);
                 if(SHAcompare(hash_buffer1, input_hash))
@@ -177,19 +172,19 @@ int main(int argc, char** argv)
             }
             else
             {
-                password1[i] = character_set_lower[j];
-                password2[i] = character_set_lower[j];
-                password3[i] = character_set_lower[j];
-                password4[i] = character_set_lower[j];
+                password1[i] = character_set[j];
+                password2[i] = character_set[j];
+                password3[i] = character_set[j];
+                password4[i] = character_set[j];
             }
-            for(k = 0; (k < N_lower) && (i >= 1); k++)
+            for(k = 0; (k < N) && (i >= 1); k++)
             {
                 if(i == 1)
                 {
-                    password1[i - 1] = character_set_lower[k++];
-                    password2[i - 1] = character_set_lower[k++];
-                    password3[i - 1] = character_set_lower[k++];
-                    password4[i - 1] = character_set_lower[k];
+                    password1[i - 1] = character_set[k++];
+                    password2[i - 1] = character_set[k++];
+                    password3[i - 1] = character_set[k++];
+                    password4[i - 1] = character_set[k];
                     SHA1(password1, password2, password3, password4,
                             hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 2);
                     if(SHAcompare(hash_buffer1, input_hash))
@@ -231,20 +226,20 @@ int main(int argc, char** argv)
                 }
                 else
                 {
-                    password1[i - 1] = character_set_lower[k];
-                    password2[i - 1] = character_set_lower[k];
-                    password3[i - 1] = character_set_lower[k];
-                    password4[i - 1] = character_set_lower[k];
+                    password1[i - 1] = character_set[k];
+                    password2[i - 1] = character_set[k];
+                    password3[i - 1] = character_set[k];
+                    password4[i - 1] = character_set[k];
                 }
 
-                for(l = 0; (l < N_lower) && (i >= 2); l++)
+                for(l = 0; (l < N) && (i >= 2); l++)
                 {
                     if(i == 2)
                     {
-                        password1[i - 2] = character_set_lower[l++];
-                        password2[i - 2] = character_set_lower[l++];
-                        password3[i - 2] = character_set_lower[l++];
-                        password4[i - 2] = character_set_lower[l];
+                        password1[i - 2] = character_set[l++];
+                        password2[i - 2] = character_set[l++];
+                        password3[i - 2] = character_set[l++];
+                        password4[i - 2] = character_set[l];
                         SHA1(password1, password2, password3, password4,
                                 hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 3);
                         if(SHAcompare(hash_buffer1, input_hash))
@@ -286,19 +281,19 @@ int main(int argc, char** argv)
                     }
                     else
                     {
-                        password1[i - 2] = character_set_lower[l];
-                        password2[i - 2] = character_set_lower[l];
-                        password3[i - 2] = character_set_lower[l];
-                        password4[i - 2] = character_set_lower[l];
+                        password1[i - 2] = character_set[l];
+                        password2[i - 2] = character_set[l];
+                        password3[i - 2] = character_set[l];
+                        password4[i - 2] = character_set[l];
                     }
-                    for(m = 0; (m < N_lower) && (i >= 3); m++)
+                    for(m = 0; (m < N) && (i >= 3); m++)
                     {
                         if(i == 3)
                         {
-                            password1[i - 3] = character_set_lower[m++];
-                            password2[i - 3] = character_set_lower[m++];
-                            password3[i - 3] = character_set_lower[m++];
-                            password4[i - 3] = character_set_lower[m];
+                            password1[i - 3] = character_set[m++];
+                            password2[i - 3] = character_set[m++];
+                            password3[i - 3] = character_set[m++];
+                            password4[i - 3] = character_set[m];
                             SHA1(password1, password2, password3, password4,
                                     hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 4);
                             if(SHAcompare(hash_buffer1, input_hash))
@@ -340,19 +335,19 @@ int main(int argc, char** argv)
                         }
                         else
                         {
-                            password1[i - 3] = character_set_lower[m];
-                            password2[i - 3] = character_set_lower[m];
-                            password3[i - 3] = character_set_lower[m];
-                            password4[i - 3] = character_set_lower[m];
+                            password1[i - 3] = character_set[m];
+                            password2[i - 3] = character_set[m];
+                            password3[i - 3] = character_set[m];
+                            password4[i - 3] = character_set[m];
                         }
-                        for(n = 0; (n < N_lower) && (i >= 4); n++)
+                        for(n = 0; (n < N) && (i >= 4); n++)
                         {
                             if(i == 4)
                             {
-                                password1[i - 4] = character_set_lower[n++];
-                                password2[i - 4] = character_set_lower[n++];
-                                password3[i - 4] = character_set_lower[n++];
-                                password4[i - 4] = character_set_lower[n];
+                                password1[i - 4] = character_set[n++];
+                                password2[i - 4] = character_set[n++];
+                                password3[i - 4] = character_set[n++];
+                                password4[i - 4] = character_set[n];
                                 SHA1(password1, password2, password3, password4,
                                         hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 5);
                                 if(SHAcompare(hash_buffer1, input_hash))
@@ -394,19 +389,19 @@ int main(int argc, char** argv)
                             }
                             else
                             {
-                                password1[i - 4] = character_set_lower[n];
-                                password2[i - 4] = character_set_lower[n];
-                                password3[i - 4] = character_set_lower[n];
-                                password4[i - 4] = character_set_lower[n];
+                                password1[i - 4] = character_set[n];
+                                password2[i - 4] = character_set[n];
+                                password3[i - 4] = character_set[n];
+                                password4[i - 4] = character_set[n];
                             }
-                            for(o = 0; (o < N_lower) && (i >= 5); o++)
+                            for(o = 0; (o < N) && (i >= 5); o++)
                             {
                                 if(i == 5)
                                 {
-                                    password1[i - 5] = character_set_lower[o++];
-                                    password2[i - 5] = character_set_lower[o++];
-                                    password3[i - 5] = character_set_lower[o++];
-                                    password4[i - 5] = character_set_lower[o];
+                                    password1[i - 5] = character_set[o++];
+                                    password2[i - 5] = character_set[o++];
+                                    password3[i - 5] = character_set[o++];
+                                    password4[i - 5] = character_set[o];
                                     SHA1(password1, password2, password3, password4,
                                             hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 6);
                                     if(SHAcompare(hash_buffer1, input_hash))
@@ -448,19 +443,19 @@ int main(int argc, char** argv)
                                 }
                                 else
                                 {
-                                    password1[i - 5] = character_set_lower[o];
-                                    password2[i - 5] = character_set_lower[o];
-                                    password3[i - 5] = character_set_lower[o];
-                                    password4[i - 5] = character_set_lower[o];
+                                    password1[i - 5] = character_set[o];
+                                    password2[i - 5] = character_set[o];
+                                    password3[i - 5] = character_set[o];
+                                    password4[i - 5] = character_set[o];
                                 }
-                                for(p = 0; (p < N_lower) && (i >= 6); p++)
+                                for(p = 0; (p < N) && (i >= 6); p++)
                                 {
                                     if(i == 6)
                                     {
-                                        password1[i - 6] = character_set_lower[p++];
-                                        password2[i - 6] = character_set_lower[p++];
-                                        password3[i - 6] = character_set_lower[p++];
-                                        password4[i - 6] = character_set_lower[p];
+                                        password1[i - 6] = character_set[p++];
+                                        password2[i - 6] = character_set[p++];
+                                        password3[i - 6] = character_set[p++];
+                                        password4[i - 6] = character_set[p];
                                         SHA1(password1, password2, password3, password4,
                                                 hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 7);
                                         if(SHAcompare(hash_buffer1, input_hash))
@@ -502,19 +497,19 @@ int main(int argc, char** argv)
                                     }
                                     else
                                     {
-                                        password1[i - 6] = character_set_lower[p];
-                                        password2[i - 6] = character_set_lower[p];
-                                        password3[i - 6] = character_set_lower[p];
-                                        password4[i - 6] = character_set_lower[p];
+                                        password1[i - 6] = character_set[p];
+                                        password2[i - 6] = character_set[p];
+                                        password3[i - 6] = character_set[p];
+                                        password4[i - 6] = character_set[p];
                                     }
-                                    for(q = 0; (q < N_lower) && (i >= 7); q++)
+                                    for(q = 0; (q < N) && (i >= 7); q++)
                                     {
                                         if(i == 7)
                                         {
-                                            password1[i - 7] = character_set_lower[q++];
-                                            password2[i - 7] = character_set_lower[q++];
-                                            password3[i - 7] = character_set_lower[q++];
-                                            password4[i - 7] = character_set_lower[q];
+                                            password1[i - 7] = character_set[q++];
+                                            password2[i - 7] = character_set[q++];
+                                            password3[i - 7] = character_set[q++];
+                                            password4[i - 7] = character_set[q];
                                             SHA1(password1, password2, password3, password4,
                                                     hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 8);
                                             if(SHAcompare(hash_buffer1, input_hash))
@@ -556,19 +551,19 @@ int main(int argc, char** argv)
                                         }
                                         else
                                         {
-                                            password1[i - 7] = character_set_lower[q];
-                                            password2[i - 7] = character_set_lower[q];
-                                            password3[i - 7] = character_set_lower[q];
-                                            password4[i - 7] = character_set_lower[q];
+                                            password1[i - 7] = character_set[q];
+                                            password2[i - 7] = character_set[q];
+                                            password3[i - 7] = character_set[q];
+                                            password4[i - 7] = character_set[q];
                                         }
-                                        for(r = 0; (r < N_lower) && (i >= 8); r++)
+                                        for(r = 0; (r < N) && (i >= 8); r++)
                                         {
                                             if(i == 8)
                                             {
-                                                password1[i - 8] = character_set_lower[r++];
-                                                password2[i - 8] = character_set_lower[r++];
-                                                password3[i - 8] = character_set_lower[r++];
-                                                password4[i - 8] = character_set_lower[r];
+                                                password1[i - 8] = character_set[r++];
+                                                password2[i - 8] = character_set[r++];
+                                                password3[i - 8] = character_set[r++];
+                                                password4[i - 8] = character_set[r];
                                                 SHA1(password1, password2, password3, password4,
                                                         hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 9);
                                                 if(SHAcompare(hash_buffer1, input_hash))
@@ -610,19 +605,19 @@ int main(int argc, char** argv)
                                             }
                                             else
                                             {
-                                                password1[i - 8] = character_set_lower[r];
-                                                password2[i - 8] = character_set_lower[r];
-                                                password3[i - 8] = character_set_lower[r];
-                                                password4[i - 8] = character_set_lower[r];
+                                                password1[i - 8] = character_set[r];
+                                                password2[i - 8] = character_set[r];
+                                                password3[i - 8] = character_set[r];
+                                                password4[i - 8] = character_set[r];
                                             }
-                                            for(s = 0; (s < N_lower) && (i >= 9); s++)
+                                            for(s = 0; (s < N) && (i >= 9); s++)
                                             {
                                                 if(i == 9)
                                                 {
-                                                    password1[i - 9] = character_set_lower[s++];
-                                                    password2[i - 9] = character_set_lower[s++];
-                                                    password3[i - 9] = character_set_lower[s++];
-                                                    password4[i - 9] = character_set_lower[s];
+                                                    password1[i - 9] = character_set[s++];
+                                                    password2[i - 9] = character_set[s++];
+                                                    password3[i - 9] = character_set[s++];
+                                                    password4[i - 9] = character_set[s];
                                                     SHA1(password1, password2, password3, password4,
                                                             hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 10);
                                                     if(SHAcompare(hash_buffer1, input_hash))
@@ -664,10 +659,10 @@ int main(int argc, char** argv)
                                                 }
                                                 else
                                                 {
-                                                    password1[i - 9] = character_set_lower[s];
-                                                    password2[i - 9] = character_set_lower[s];
-                                                    password3[i - 9] = character_set_lower[s];
-                                                    password4[i - 9] = character_set_lower[s];
+                                                    password1[i - 9] = character_set[s];
+                                                    password2[i - 9] = character_set[s];
+                                                    password3[i - 9] = character_set[s];
+                                                    password4[i - 9] = character_set[s];
                                                 }
                                             }
                                         }
@@ -1080,10 +1075,10 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     static uint32_t w4[80];
 
     //Preprocess extra 2048-bits
-    static uint32_t PW1[80];
-    static uint32_t PW2[80];
-    static uint32_t PW3[80];
-    static uint32_t PW4[80];
+    static uint32_t PW[80];
+    //static uint32_t PW[80];
+    //static uint32_t PW[80];
+    //static uint32_t PW[80];
 
     // Iterator variable
     uint16_t i;
@@ -1214,7 +1209,8 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
     //------------------------------------------------------------
     //      PRE-PROSSES PASSWORD 1
     //------------------------------------------------------------
-    if((w1[0] & 0xFF000000) == 0x61800000)
+    //printf("w1[0] == 0x%x\n", w1[0]);
+    if((w1[0] & 0xFF000000) == 0x61000000)
     {
         w1[1] = chunk1[1];
         w1[2] = chunk1[2];
@@ -1232,70 +1228,70 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
         w1[14] = chunk1[14];
         w1[15] = chunk1[15];
 
-        PW1[16] = rotl((w1[13] ^ w1[8] ^ w1[2]), 1);
-        PW1[17] = rotl((w1[14] ^ w1[9] ^ w1[3] ^ w1[1]), 1);
-        PW1[18] = rotl((w1[15] ^ w1[10] ^ w1[4] ^ w1[2]), 1);
-        PW1[19] = rotl((PW1[16] ^ w1[11] ^ w1[5] ^ w1[3]), 1);
-        PW1[20] = rotl((PW1[17] ^ w1[12] ^ w1[6] ^ w1[4]), 1);
-        PW1[21] = rotl((PW1[18] ^ w1[13] ^ w1[7] ^ w1[5]), 1);
-        PW1[22] = rotl((PW1[19] ^ w1[14] ^ w1[8] ^ w1[6]), 1);
-        PW1[23] = rotl((PW1[20] ^ w1[15] ^ w1[9] ^ w1[7]), 1);
-        PW1[24] = rotl((PW1[21] ^ PW1[16] ^ w1[10] ^ w1[8]), 1);
-        PW1[25] = rotl((PW1[22] ^ PW1[17] ^ w1[11] ^ w1[9]), 1);
-        PW1[26] = rotl((PW1[23] ^ PW1[18] ^ w1[12] ^ w1[10]), 1);
-        PW1[27] = rotl((PW1[24] ^ PW1[19] ^ w1[13] ^ w1[11]), 1);
-        PW1[28] = rotl((PW1[25] ^ PW1[20] ^ w1[14] ^ w1[12]), 1);
-        PW1[29] = rotl((PW1[26] ^ PW1[21] ^ w1[15] ^ w1[13]), 1);
-        PW1[30] = rotl((PW1[27] ^ PW1[22] ^ PW1[16] ^ w1[14]), 1);
-        PW1[31] = rotl((PW1[28] ^ PW1[23] ^ PW1[17] ^ w1[15]), 1);
-        PW1[32] = rotl((PW1[29] ^ PW1[24] ^ PW1[18] ^ PW1[16]), 1);
-        PW1[33] = rotl((PW1[30] ^ PW1[25] ^ PW1[19] ^ PW1[17]), 1);
-        PW1[34] = rotl((PW1[31] ^ PW1[26] ^ PW1[20] ^ PW1[18]), 1);
-        PW1[35] = rotl((PW1[32] ^ PW1[27] ^ PW1[21] ^ PW1[19]), 1);
-        PW1[36] = rotl((PW1[33] ^ PW1[28] ^ PW1[22] ^ PW1[20]), 1);
-        PW1[37] = rotl((PW1[34] ^ PW1[29] ^ PW1[23] ^ PW1[21]), 1);
-        PW1[38] = rotl((PW1[35] ^ PW1[30] ^ PW1[24] ^ PW1[22]), 1);
-        PW1[39] = rotl((PW1[36] ^ PW1[31] ^ PW1[25] ^ PW1[23]), 1);
-        PW1[40] = rotl((PW1[37] ^ PW1[32] ^ PW1[26] ^ PW1[24]), 1);
-        PW1[41] = rotl((PW1[38] ^ PW1[33] ^ PW1[27] ^ PW1[25]), 1);
-        PW1[42] = rotl((PW1[39] ^ PW1[34] ^ PW1[28] ^ PW1[26]), 1);
-        PW1[43] = rotl((PW1[40] ^ PW1[35] ^ PW1[29] ^ PW1[27]), 1);
-        PW1[44] = rotl((PW1[41] ^ PW1[36] ^ PW1[30] ^ PW1[28]), 1);
-        PW1[45] = rotl((PW1[42] ^ PW1[37] ^ PW1[31] ^ PW1[29]), 1);
-        PW1[46] = rotl((PW1[43] ^ PW1[38] ^ PW1[32] ^ PW1[30]), 1);
-        PW1[47] = rotl((PW1[44] ^ PW1[39] ^ PW1[33] ^ PW1[31]), 1);
-        PW1[48] = rotl((PW1[45] ^ PW1[40] ^ PW1[34] ^ PW1[32]), 1);
-        PW1[49] = rotl((PW1[46] ^ PW1[41] ^ PW1[35] ^ PW1[33]), 1);
-        PW1[50] = rotl((PW1[47] ^ PW1[42] ^ PW1[36] ^ PW1[34]), 1);
-        PW1[51] = rotl((PW1[48] ^ PW1[43] ^ PW1[37] ^ PW1[35]), 1);
-        PW1[52] = rotl((PW1[49] ^ PW1[44] ^ PW1[38] ^ PW1[36]), 1);
-        PW1[53] = rotl((PW1[50] ^ PW1[45] ^ PW1[39] ^ PW1[37]), 1);
-        PW1[54] = rotl((PW1[51] ^ PW1[46] ^ PW1[40] ^ PW1[38]), 1);
-        PW1[55] = rotl((PW1[52] ^ PW1[47] ^ PW1[41] ^ PW1[39]), 1);
-        PW1[56] = rotl((PW1[53] ^ PW1[48] ^ PW1[42] ^ PW1[40]), 1);
-        PW1[57] = rotl((PW1[54] ^ PW1[49] ^ PW1[43] ^ PW1[41]), 1);
-        PW1[58] = rotl((PW1[55] ^ PW1[50] ^ PW1[44] ^ PW1[42]), 1);
-        PW1[59] = rotl((PW1[56] ^ PW1[51] ^ PW1[45] ^ PW1[43]), 1);
-        PW1[60] = rotl((PW1[57] ^ PW1[52] ^ PW1[46] ^ PW1[44]), 1);
-        PW1[61] = rotl((PW1[58] ^ PW1[53] ^ PW1[47] ^ PW1[45]), 1);
-        PW1[62] = rotl((PW1[59] ^ PW1[54] ^ PW1[48] ^ PW1[46]), 1);
-        PW1[63] = rotl((PW1[60] ^ PW1[55] ^ PW1[49] ^ PW1[47]), 1);
-        PW1[64] = rotl((PW1[61] ^ PW1[56] ^ PW1[50] ^ PW1[48]), 1);
-        PW1[65] = rotl((PW1[62] ^ PW1[57] ^ PW1[51] ^ PW1[49]), 1);
-        PW1[66] = rotl((PW1[63] ^ PW1[58] ^ PW1[52] ^ PW1[50]), 1);
-        PW1[67] = rotl((PW1[64] ^ PW1[59] ^ PW1[53] ^ PW1[51]), 1);
-        PW1[68] = rotl((PW1[65] ^ PW1[60] ^ PW1[54] ^ PW1[52]), 1);
-        PW1[69] = rotl((PW1[66] ^ PW1[61] ^ PW1[55] ^ PW1[53]), 1);
-        PW1[70] = rotl((PW1[67] ^ PW1[62] ^ PW1[56] ^ PW1[54]), 1);
-        PW1[71] = rotl((PW1[68] ^ PW1[63] ^ PW1[57] ^ PW1[55]), 1);
-        PW1[72] = rotl((PW1[69] ^ PW1[64] ^ PW1[58] ^ PW1[56]), 1);
-        PW1[73] = rotl((PW1[70] ^ PW1[65] ^ PW1[59] ^ PW1[57]), 1);
-        PW1[74] = rotl((PW1[71] ^ PW1[66] ^ PW1[60] ^ PW1[58]), 1);
-        PW1[75] = rotl((PW1[72] ^ PW1[67] ^ PW1[61] ^ PW1[59]), 1);
-        PW1[76] = rotl((PW1[73] ^ PW1[68] ^ PW1[62] ^ PW1[60]), 1);
-        PW1[77] = rotl((PW1[74] ^ PW1[69] ^ PW1[63] ^ PW1[61]), 1);
-        PW1[78] = rotl((PW1[75] ^ PW1[70] ^ PW1[64] ^ PW1[62]), 1);
-        PW1[79] = rotl((PW1[76] ^ PW1[71] ^ PW1[65] ^ PW1[63]), 1);
+        PW[16] = rotl((w1[13] ^ w1[8] ^ w1[2]), 1);
+        PW[17] = rotl((w1[14] ^ w1[9] ^ w1[3] ^ w1[1]), 1);
+        PW[18] = rotl((w1[15] ^ w1[10] ^ w1[4] ^ w1[2]), 1);
+        PW[19] = rotl((PW[16] ^ w1[11] ^ w1[5] ^ w1[3]), 1);
+        PW[20] = rotl((PW[17] ^ w1[12] ^ w1[6] ^ w1[4]), 1);
+        PW[21] = rotl((PW[18] ^ w1[13] ^ w1[7] ^ w1[5]), 1);
+        PW[22] = rotl((PW[19] ^ w1[14] ^ w1[8] ^ w1[6]), 1);
+        PW[23] = rotl((PW[20] ^ w1[15] ^ w1[9] ^ w1[7]), 1);
+        PW[24] = rotl((PW[21] ^ PW[16] ^ w1[10] ^ w1[8]), 1);
+        PW[25] = rotl((PW[22] ^ PW[17] ^ w1[11] ^ w1[9]), 1);
+        PW[26] = rotl((PW[23] ^ PW[18] ^ w1[12] ^ w1[10]), 1);
+        PW[27] = rotl((PW[24] ^ PW[19] ^ w1[13] ^ w1[11]), 1);
+        PW[28] = rotl((PW[25] ^ PW[20] ^ w1[14] ^ w1[12]), 1);
+        PW[29] = rotl((PW[26] ^ PW[21] ^ w1[15] ^ w1[13]), 1);
+        PW[30] = rotl((PW[27] ^ PW[22] ^ PW[16] ^ w1[14]), 1);
+        PW[31] = rotl((PW[28] ^ PW[23] ^ PW[17] ^ w1[15]), 1);
+        PW[32] = rotl((PW[29] ^ PW[24] ^ PW[18] ^ PW[16]), 1);
+        PW[33] = rotl((PW[30] ^ PW[25] ^ PW[19] ^ PW[17]), 1);
+        PW[34] = rotl((PW[31] ^ PW[26] ^ PW[20] ^ PW[18]), 1);
+        PW[35] = rotl((PW[32] ^ PW[27] ^ PW[21] ^ PW[19]), 1);
+        PW[36] = rotl((PW[33] ^ PW[28] ^ PW[22] ^ PW[20]), 1);
+        PW[37] = rotl((PW[34] ^ PW[29] ^ PW[23] ^ PW[21]), 1);
+        PW[38] = rotl((PW[35] ^ PW[30] ^ PW[24] ^ PW[22]), 1);
+        PW[39] = rotl((PW[36] ^ PW[31] ^ PW[25] ^ PW[23]), 1);
+        PW[40] = rotl((PW[37] ^ PW[32] ^ PW[26] ^ PW[24]), 1);
+        PW[41] = rotl((PW[38] ^ PW[33] ^ PW[27] ^ PW[25]), 1);
+        PW[42] = rotl((PW[39] ^ PW[34] ^ PW[28] ^ PW[26]), 1);
+        PW[43] = rotl((PW[40] ^ PW[35] ^ PW[29] ^ PW[27]), 1);
+        PW[44] = rotl((PW[41] ^ PW[36] ^ PW[30] ^ PW[28]), 1);
+        PW[45] = rotl((PW[42] ^ PW[37] ^ PW[31] ^ PW[29]), 1);
+        PW[46] = rotl((PW[43] ^ PW[38] ^ PW[32] ^ PW[30]), 1);
+        PW[47] = rotl((PW[44] ^ PW[39] ^ PW[33] ^ PW[31]), 1);
+        PW[48] = rotl((PW[45] ^ PW[40] ^ PW[34] ^ PW[32]), 1);
+        PW[49] = rotl((PW[46] ^ PW[41] ^ PW[35] ^ PW[33]), 1);
+        PW[50] = rotl((PW[47] ^ PW[42] ^ PW[36] ^ PW[34]), 1);
+        PW[51] = rotl((PW[48] ^ PW[43] ^ PW[37] ^ PW[35]), 1);
+        PW[52] = rotl((PW[49] ^ PW[44] ^ PW[38] ^ PW[36]), 1);
+        PW[53] = rotl((PW[50] ^ PW[45] ^ PW[39] ^ PW[37]), 1);
+        PW[54] = rotl((PW[51] ^ PW[46] ^ PW[40] ^ PW[38]), 1);
+        PW[55] = rotl((PW[52] ^ PW[47] ^ PW[41] ^ PW[39]), 1);
+        PW[56] = rotl((PW[53] ^ PW[48] ^ PW[42] ^ PW[40]), 1);
+        PW[57] = rotl((PW[54] ^ PW[49] ^ PW[43] ^ PW[41]), 1);
+        PW[58] = rotl((PW[55] ^ PW[50] ^ PW[44] ^ PW[42]), 1);
+        PW[59] = rotl((PW[56] ^ PW[51] ^ PW[45] ^ PW[43]), 1);
+        PW[60] = rotl((PW[57] ^ PW[52] ^ PW[46] ^ PW[44]), 1);
+        PW[61] = rotl((PW[58] ^ PW[53] ^ PW[47] ^ PW[45]), 1);
+        PW[62] = rotl((PW[59] ^ PW[54] ^ PW[48] ^ PW[46]), 1);
+        PW[63] = rotl((PW[60] ^ PW[55] ^ PW[49] ^ PW[47]), 1);
+        PW[64] = rotl((PW[61] ^ PW[56] ^ PW[50] ^ PW[48]), 1);
+        PW[65] = rotl((PW[62] ^ PW[57] ^ PW[51] ^ PW[49]), 1);
+        PW[66] = rotl((PW[63] ^ PW[58] ^ PW[52] ^ PW[50]), 1);
+        PW[67] = rotl((PW[64] ^ PW[59] ^ PW[53] ^ PW[51]), 1);
+        PW[68] = rotl((PW[65] ^ PW[60] ^ PW[54] ^ PW[52]), 1);
+        PW[69] = rotl((PW[66] ^ PW[61] ^ PW[55] ^ PW[53]), 1);
+        PW[70] = rotl((PW[67] ^ PW[62] ^ PW[56] ^ PW[54]), 1);
+        PW[71] = rotl((PW[68] ^ PW[63] ^ PW[57] ^ PW[55]), 1);
+        PW[72] = rotl((PW[69] ^ PW[64] ^ PW[58] ^ PW[56]), 1);
+        PW[73] = rotl((PW[70] ^ PW[65] ^ PW[59] ^ PW[57]), 1);
+        PW[74] = rotl((PW[71] ^ PW[66] ^ PW[60] ^ PW[58]), 1);
+        PW[75] = rotl((PW[72] ^ PW[67] ^ PW[61] ^ PW[59]), 1);
+        PW[76] = rotl((PW[73] ^ PW[68] ^ PW[62] ^ PW[60]), 1);
+        PW[77] = rotl((PW[74] ^ PW[69] ^ PW[63] ^ PW[61]), 1);
+        PW[78] = rotl((PW[75] ^ PW[70] ^ PW[64] ^ PW[62]), 1);
+        PW[79] = rotl((PW[76] ^ PW[71] ^ PW[65] ^ PW[63]), 1);
 
 
         //------------------------------------------------------------
@@ -1317,70 +1313,70 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
         w2[14] = chunk2[14];
         w2[15] = chunk2[15];
 
-        PW2[16] = rotl((w2[13] ^ w2[8] ^ w2[2]), 1);
-        PW2[17] = rotl((w2[14] ^ w2[9] ^ w2[3] ^ w2[1]), 1);
-        PW2[18] = rotl((w2[15] ^ w2[10] ^ w2[4] ^ w2[2]), 1);
-        PW2[19] = rotl((PW2[16] ^ w2[11] ^ w2[5] ^ w2[3]), 1);
-        PW2[20] = rotl((PW2[17] ^ w2[12] ^ w2[6] ^ w2[4]), 1);
-        PW2[21] = rotl((PW2[18] ^ w2[13] ^ w2[7] ^ w2[5]), 1);
-        PW2[22] = rotl((PW2[19] ^ w2[14] ^ w2[8] ^ w2[6]), 1);
-        PW2[23] = rotl((PW2[20] ^ w2[15] ^ w2[9] ^ w2[7]), 1);
-        PW2[24] = rotl((PW2[21] ^ PW2[16] ^ w2[10] ^ w2[8]), 1);
-        PW2[25] = rotl((PW2[22] ^ PW2[17] ^ w2[11] ^ w2[9]), 1);
-        PW2[26] = rotl((PW2[23] ^ PW2[18] ^ w2[12] ^ w2[10]), 1);
-        PW2[27] = rotl((PW2[24] ^ PW2[19] ^ w2[13] ^ w2[11]), 1);
-        PW2[28] = rotl((PW2[25] ^ PW2[20] ^ w2[14] ^ w2[12]), 1);
-        PW2[29] = rotl((PW2[26] ^ PW2[21] ^ w2[15] ^ w2[13]), 1);
-        PW2[30] = rotl((PW2[27] ^ PW2[22] ^ PW2[16] ^ w2[14]), 1);
-        PW2[31] = rotl((PW2[28] ^ PW2[23] ^ PW2[17] ^ w2[15]), 1);
-        PW2[32] = rotl((PW2[29] ^ PW2[24] ^ PW2[18] ^ PW2[16]), 1);
-        PW2[33] = rotl((PW2[30] ^ PW2[25] ^ PW2[19] ^ PW2[17]), 1);
-        PW2[34] = rotl((PW2[31] ^ PW2[26] ^ PW2[20] ^ PW2[18]), 1);
-        PW2[35] = rotl((PW2[32] ^ PW2[27] ^ PW2[21] ^ PW2[19]), 1);
-        PW2[36] = rotl((PW2[33] ^ PW2[28] ^ PW2[22] ^ PW2[20]), 1);
-        PW2[37] = rotl((PW2[34] ^ PW2[29] ^ PW2[23] ^ PW2[21]), 1);
-        PW2[38] = rotl((PW2[35] ^ PW2[30] ^ PW2[24] ^ PW2[22]), 1);
-        PW2[39] = rotl((PW2[36] ^ PW2[31] ^ PW2[25] ^ PW2[23]), 1);
-        PW2[40] = rotl((PW2[37] ^ PW2[32] ^ PW2[26] ^ PW2[24]), 1);
-        PW2[41] = rotl((PW2[38] ^ PW2[33] ^ PW2[27] ^ PW2[25]), 1);
-        PW2[42] = rotl((PW2[39] ^ PW2[34] ^ PW2[28] ^ PW2[26]), 1);
-        PW2[43] = rotl((PW2[40] ^ PW2[35] ^ PW2[29] ^ PW2[27]), 1);
-        PW2[44] = rotl((PW2[41] ^ PW2[36] ^ PW2[30] ^ PW2[28]), 1);
-        PW2[45] = rotl((PW2[42] ^ PW2[37] ^ PW2[31] ^ PW2[29]), 1);
-        PW2[46] = rotl((PW2[43] ^ PW2[38] ^ PW2[32] ^ PW2[30]), 1);
-        PW2[47] = rotl((PW2[44] ^ PW2[39] ^ PW2[33] ^ PW2[31]), 1);
-        PW2[48] = rotl((PW2[45] ^ PW2[40] ^ PW2[34] ^ PW2[32]), 1);
-        PW2[49] = rotl((PW2[46] ^ PW2[41] ^ PW2[35] ^ PW2[33]), 1);
-        PW2[50] = rotl((PW2[47] ^ PW2[42] ^ PW2[36] ^ PW2[34]), 1);
-        PW2[51] = rotl((PW2[48] ^ PW2[43] ^ PW2[37] ^ PW2[35]), 1);
-        PW2[52] = rotl((PW2[49] ^ PW2[44] ^ PW2[38] ^ PW2[36]), 1);
-        PW2[53] = rotl((PW2[50] ^ PW2[45] ^ PW2[39] ^ PW2[37]), 1);
-        PW2[54] = rotl((PW2[51] ^ PW2[46] ^ PW2[40] ^ PW2[38]), 1);
-        PW2[55] = rotl((PW2[52] ^ PW2[47] ^ PW2[41] ^ PW2[39]), 1);
-        PW2[56] = rotl((PW2[53] ^ PW2[48] ^ PW2[42] ^ PW2[40]), 1);
-        PW2[57] = rotl((PW2[54] ^ PW2[49] ^ PW2[43] ^ PW2[41]), 1);
-        PW2[58] = rotl((PW2[55] ^ PW2[50] ^ PW2[44] ^ PW2[42]), 1);
-        PW2[59] = rotl((PW2[56] ^ PW2[51] ^ PW2[45] ^ PW2[43]), 1);
-        PW2[60] = rotl((PW2[57] ^ PW2[52] ^ PW2[46] ^ PW2[44]), 1);
-        PW2[61] = rotl((PW2[58] ^ PW2[53] ^ PW2[47] ^ PW2[45]), 1);
-        PW2[62] = rotl((PW2[59] ^ PW2[54] ^ PW2[48] ^ PW2[46]), 1);
-        PW2[63] = rotl((PW2[60] ^ PW2[55] ^ PW2[49] ^ PW2[47]), 1);
-        PW2[64] = rotl((PW2[61] ^ PW2[56] ^ PW2[50] ^ PW2[48]), 1);
-        PW2[65] = rotl((PW2[62] ^ PW2[57] ^ PW2[51] ^ PW2[49]), 1);
-        PW2[66] = rotl((PW2[63] ^ PW2[58] ^ PW2[52] ^ PW2[50]), 1);
-        PW2[67] = rotl((PW2[64] ^ PW2[59] ^ PW2[53] ^ PW2[51]), 1);
-        PW2[68] = rotl((PW2[65] ^ PW2[60] ^ PW2[54] ^ PW2[52]), 1);
-        PW2[69] = rotl((PW2[66] ^ PW2[61] ^ PW2[55] ^ PW2[53]), 1);
-        PW2[70] = rotl((PW2[67] ^ PW2[62] ^ PW2[56] ^ PW2[54]), 1);
-        PW2[71] = rotl((PW2[68] ^ PW2[63] ^ PW2[57] ^ PW2[55]), 1);
-        PW2[72] = rotl((PW2[69] ^ PW2[64] ^ PW2[58] ^ PW2[56]), 1);
-        PW2[73] = rotl((PW2[70] ^ PW2[65] ^ PW2[59] ^ PW2[57]), 1);
-        PW2[74] = rotl((PW2[71] ^ PW2[66] ^ PW2[60] ^ PW2[58]), 1);
-        PW2[75] = rotl((PW2[72] ^ PW2[67] ^ PW2[61] ^ PW2[59]), 1);
-        PW2[76] = rotl((PW2[73] ^ PW2[68] ^ PW2[62] ^ PW2[60]), 1);
-        PW2[77] = rotl((PW2[74] ^ PW2[69] ^ PW2[63] ^ PW2[61]), 1);
-        PW2[78] = rotl((PW2[75] ^ PW2[70] ^ PW2[64] ^ PW2[62]), 1);
-        PW2[79] = rotl((PW2[76] ^ PW2[71] ^ PW2[65] ^ PW2[63]), 1);
+        /*PW[16] = rotl((w2[13] ^ w2[8] ^ w2[2]), 1);
+        PW[17] = rotl((w2[14] ^ w2[9] ^ w2[3] ^ w2[1]), 1);
+        PW[18] = rotl((w2[15] ^ w2[10] ^ w2[4] ^ w2[2]), 1);
+        PW[19] = rotl((PW[16] ^ w2[11] ^ w2[5] ^ w2[3]), 1);
+        PW[20] = rotl((PW[17] ^ w2[12] ^ w2[6] ^ w2[4]), 1);
+        PW[21] = rotl((PW[18] ^ w2[13] ^ w2[7] ^ w2[5]), 1);
+        PW[22] = rotl((PW[19] ^ w2[14] ^ w2[8] ^ w2[6]), 1);
+        PW[23] = rotl((PW[20] ^ w2[15] ^ w2[9] ^ w2[7]), 1);
+        PW[24] = rotl((PW[21] ^ PW[16] ^ w2[10] ^ w2[8]), 1);
+        PW[25] = rotl((PW[22] ^ PW[17] ^ w2[11] ^ w2[9]), 1);
+        PW[26] = rotl((PW[23] ^ PW[18] ^ w2[12] ^ w2[10]), 1);
+        PW[27] = rotl((PW[24] ^ PW[19] ^ w2[13] ^ w2[11]), 1);
+        PW[28] = rotl((PW[25] ^ PW[20] ^ w2[14] ^ w2[12]), 1);
+        PW[29] = rotl((PW[26] ^ PW[21] ^ w2[15] ^ w2[13]), 1);
+        PW[30] = rotl((PW[27] ^ PW[22] ^ PW[16] ^ w2[14]), 1);
+        PW[31] = rotl((PW[28] ^ PW[23] ^ PW[17] ^ w2[15]), 1);
+        PW[32] = rotl((PW[29] ^ PW[24] ^ PW[18] ^ PW[16]), 1);
+        PW[33] = rotl((PW[30] ^ PW[25] ^ PW[19] ^ PW[17]), 1);
+        PW[34] = rotl((PW[31] ^ PW[26] ^ PW[20] ^ PW[18]), 1);
+        PW[35] = rotl((PW[32] ^ PW[27] ^ PW[21] ^ PW[19]), 1);
+        PW[36] = rotl((PW[33] ^ PW[28] ^ PW[22] ^ PW[20]), 1);
+        PW[37] = rotl((PW[34] ^ PW[29] ^ PW[23] ^ PW[21]), 1);
+        PW[38] = rotl((PW[35] ^ PW[30] ^ PW[24] ^ PW[22]), 1);
+        PW[39] = rotl((PW[36] ^ PW[31] ^ PW[25] ^ PW[23]), 1);
+        PW[40] = rotl((PW[37] ^ PW[32] ^ PW[26] ^ PW[24]), 1);
+        PW[41] = rotl((PW[38] ^ PW[33] ^ PW[27] ^ PW[25]), 1);
+        PW[42] = rotl((PW[39] ^ PW[34] ^ PW[28] ^ PW[26]), 1);
+        PW[43] = rotl((PW[40] ^ PW[35] ^ PW[29] ^ PW[27]), 1);
+        PW[44] = rotl((PW[41] ^ PW[36] ^ PW[30] ^ PW[28]), 1);
+        PW[45] = rotl((PW[42] ^ PW[37] ^ PW[31] ^ PW[29]), 1);
+        PW[46] = rotl((PW[43] ^ PW[38] ^ PW[32] ^ PW[30]), 1);
+        PW[47] = rotl((PW[44] ^ PW[39] ^ PW[33] ^ PW[31]), 1);
+        PW[48] = rotl((PW[45] ^ PW[40] ^ PW[34] ^ PW[32]), 1);
+        PW[49] = rotl((PW[46] ^ PW[41] ^ PW[35] ^ PW[33]), 1);
+        PW[50] = rotl((PW[47] ^ PW[42] ^ PW[36] ^ PW[34]), 1);
+        PW[51] = rotl((PW[48] ^ PW[43] ^ PW[37] ^ PW[35]), 1);
+        PW[52] = rotl((PW[49] ^ PW[44] ^ PW[38] ^ PW[36]), 1);
+        PW[53] = rotl((PW[50] ^ PW[45] ^ PW[39] ^ PW[37]), 1);
+        PW[54] = rotl((PW[51] ^ PW[46] ^ PW[40] ^ PW[38]), 1);
+        PW[55] = rotl((PW[52] ^ PW[47] ^ PW[41] ^ PW[39]), 1);
+        PW[56] = rotl((PW[53] ^ PW[48] ^ PW[42] ^ PW[40]), 1);
+        PW[57] = rotl((PW[54] ^ PW[49] ^ PW[43] ^ PW[41]), 1);
+        PW[58] = rotl((PW[55] ^ PW[50] ^ PW[44] ^ PW[42]), 1);
+        PW[59] = rotl((PW[56] ^ PW[51] ^ PW[45] ^ PW[43]), 1);
+        PW[60] = rotl((PW[57] ^ PW[52] ^ PW[46] ^ PW[44]), 1);
+        PW[61] = rotl((PW[58] ^ PW[53] ^ PW[47] ^ PW[45]), 1);
+        PW[62] = rotl((PW[59] ^ PW[54] ^ PW[48] ^ PW[46]), 1);
+        PW[63] = rotl((PW[60] ^ PW[55] ^ PW[49] ^ PW[47]), 1);
+        PW[64] = rotl((PW[61] ^ PW[56] ^ PW[50] ^ PW[48]), 1);
+        PW[65] = rotl((PW[62] ^ PW[57] ^ PW[51] ^ PW[49]), 1);
+        PW[66] = rotl((PW[63] ^ PW[58] ^ PW[52] ^ PW[50]), 1);
+        PW[67] = rotl((PW[64] ^ PW[59] ^ PW[53] ^ PW[51]), 1);
+        PW[68] = rotl((PW[65] ^ PW[60] ^ PW[54] ^ PW[52]), 1);
+        PW[69] = rotl((PW[66] ^ PW[61] ^ PW[55] ^ PW[53]), 1);
+        PW[70] = rotl((PW[67] ^ PW[62] ^ PW[56] ^ PW[54]), 1);
+        PW[71] = rotl((PW[68] ^ PW[63] ^ PW[57] ^ PW[55]), 1);
+        PW[72] = rotl((PW[69] ^ PW[64] ^ PW[58] ^ PW[56]), 1);
+        PW[73] = rotl((PW[70] ^ PW[65] ^ PW[59] ^ PW[57]), 1);
+        PW[74] = rotl((PW[71] ^ PW[66] ^ PW[60] ^ PW[58]), 1);
+        PW[75] = rotl((PW[72] ^ PW[67] ^ PW[61] ^ PW[59]), 1);
+        PW[76] = rotl((PW[73] ^ PW[68] ^ PW[62] ^ PW[60]), 1);
+        PW[77] = rotl((PW[74] ^ PW[69] ^ PW[63] ^ PW[61]), 1);
+        PW[78] = rotl((PW[75] ^ PW[70] ^ PW[64] ^ PW[62]), 1);
+        PW[79] = rotl((PW[76] ^ PW[71] ^ PW[65] ^ PW[63]), 1);*/
 
 
         //------------------------------------------------------------
@@ -1402,70 +1398,70 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
         w3[14] = chunk3[14];
         w3[15] = chunk3[15];
 
-        PW3[16] = rotl((w3[13] ^ w3[8] ^ w3[2]), 1);
-        PW3[17] = rotl((w3[14] ^ w3[9] ^ w3[3] ^ w3[1]), 1);
-        PW3[18] = rotl((w3[15] ^ w3[10] ^ w3[4] ^ w3[2]), 1);
-        PW3[19] = rotl((PW3[16] ^ w3[11] ^ w3[5] ^ w3[3]), 1);
-        PW3[20] = rotl((PW3[17] ^ w3[12] ^ w3[6] ^ w3[4]), 1);
-        PW3[21] = rotl((PW3[18] ^ w3[13] ^ w3[7] ^ w3[5]), 1);
-        PW3[22] = rotl((PW3[19] ^ w3[14] ^ w3[8] ^ w3[6]), 1);
-        PW3[23] = rotl((PW3[20] ^ w3[15] ^ w3[9] ^ w3[7]), 1);
-        PW3[24] = rotl((PW3[21] ^ PW3[16] ^ w3[10] ^ w3[8]), 1);
-        PW3[25] = rotl((PW3[22] ^ PW3[17] ^ w3[11] ^ w3[9]), 1);
-        PW3[26] = rotl((PW3[23] ^ PW3[18] ^ w3[12] ^ w3[10]), 1);
-        PW3[27] = rotl((PW3[24] ^ PW3[19] ^ w3[13] ^ w3[11]), 1);
-        PW3[28] = rotl((PW3[25] ^ PW3[20] ^ w3[14] ^ w3[12]), 1);
-        PW3[29] = rotl((PW3[26] ^ PW3[21] ^ w3[15] ^ w3[13]), 1);
-        PW3[30] = rotl((PW3[27] ^ PW3[22] ^ PW3[16] ^ w3[14]), 1);
-        PW3[31] = rotl((PW3[28] ^ PW3[23] ^ PW3[17] ^ w3[15]), 1);
-        PW3[32] = rotl((PW3[29] ^ PW3[24] ^ PW3[18] ^ PW3[16]), 1);
-        PW3[33] = rotl((PW3[30] ^ PW3[25] ^ PW3[19] ^ PW3[17]), 1);
-        PW3[34] = rotl((PW3[31] ^ PW3[26] ^ PW3[20] ^ PW3[18]), 1);
-        PW3[35] = rotl((PW3[32] ^ PW3[27] ^ PW3[21] ^ PW3[19]), 1);
-        PW3[36] = rotl((PW3[33] ^ PW3[28] ^ PW3[22] ^ PW3[20]), 1);
-        PW3[37] = rotl((PW3[34] ^ PW3[29] ^ PW3[23] ^ PW3[21]), 1);
-        PW3[38] = rotl((PW3[35] ^ PW3[30] ^ PW3[24] ^ PW3[22]), 1);
-        PW3[39] = rotl((PW3[36] ^ PW3[31] ^ PW3[25] ^ PW3[23]), 1);
-        PW3[40] = rotl((PW3[37] ^ PW3[32] ^ PW3[26] ^ PW3[24]), 1);
-        PW3[41] = rotl((PW3[38] ^ PW3[33] ^ PW3[27] ^ PW3[25]), 1);
-        PW3[42] = rotl((PW3[39] ^ PW3[34] ^ PW3[28] ^ PW3[26]), 1);
-        PW3[43] = rotl((PW3[40] ^ PW3[35] ^ PW3[29] ^ PW3[27]), 1);
-        PW3[44] = rotl((PW3[41] ^ PW3[36] ^ PW3[30] ^ PW3[28]), 1);
-        PW3[45] = rotl((PW3[42] ^ PW3[37] ^ PW3[31] ^ PW3[29]), 1);
-        PW3[46] = rotl((PW3[43] ^ PW3[38] ^ PW3[32] ^ PW3[30]), 1);
-        PW3[47] = rotl((PW3[44] ^ PW3[39] ^ PW3[33] ^ PW3[31]), 1);
-        PW3[48] = rotl((PW3[45] ^ PW3[40] ^ PW3[34] ^ PW3[32]), 1);
-        PW3[49] = rotl((PW3[46] ^ PW3[41] ^ PW3[35] ^ PW3[33]), 1);
-        PW3[50] = rotl((PW3[47] ^ PW3[42] ^ PW3[36] ^ PW3[34]), 1);
-        PW3[51] = rotl((PW3[48] ^ PW3[43] ^ PW3[37] ^ PW3[35]), 1);
-        PW3[52] = rotl((PW3[49] ^ PW3[44] ^ PW3[38] ^ PW3[36]), 1);
-        PW3[53] = rotl((PW3[50] ^ PW3[45] ^ PW3[39] ^ PW3[37]), 1);
-        PW3[54] = rotl((PW3[51] ^ PW3[46] ^ PW3[40] ^ PW3[38]), 1);
-        PW3[55] = rotl((PW3[52] ^ PW3[47] ^ PW3[41] ^ PW3[39]), 1);
-        PW3[56] = rotl((PW3[53] ^ PW3[48] ^ PW3[42] ^ PW3[40]), 1);
-        PW3[57] = rotl((PW3[54] ^ PW3[49] ^ PW3[43] ^ PW3[41]), 1);
-        PW3[58] = rotl((PW3[55] ^ PW3[50] ^ PW3[44] ^ PW3[42]), 1);
-        PW3[59] = rotl((PW3[56] ^ PW3[51] ^ PW3[45] ^ PW3[43]), 1);
-        PW3[60] = rotl((PW3[57] ^ PW3[52] ^ PW3[46] ^ PW3[44]), 1);
-        PW3[61] = rotl((PW3[58] ^ PW3[53] ^ PW3[47] ^ PW3[45]), 1);
-        PW3[62] = rotl((PW3[59] ^ PW3[54] ^ PW3[48] ^ PW3[46]), 1);
-        PW3[63] = rotl((PW3[60] ^ PW3[55] ^ PW3[49] ^ PW3[47]), 1);
-        PW3[64] = rotl((PW3[61] ^ PW3[56] ^ PW3[50] ^ PW3[48]), 1);
-        PW3[65] = rotl((PW3[62] ^ PW3[57] ^ PW3[51] ^ PW3[49]), 1);
-        PW3[66] = rotl((PW3[63] ^ PW3[58] ^ PW3[52] ^ PW3[50]), 1);
-        PW3[67] = rotl((PW3[64] ^ PW3[59] ^ PW3[53] ^ PW3[51]), 1);
-        PW3[68] = rotl((PW3[65] ^ PW3[60] ^ PW3[54] ^ PW3[52]), 1);
-        PW3[69] = rotl((PW3[66] ^ PW3[61] ^ PW3[55] ^ PW3[53]), 1);
-        PW3[70] = rotl((PW3[67] ^ PW3[62] ^ PW3[56] ^ PW3[54]), 1);
-        PW3[71] = rotl((PW3[68] ^ PW3[63] ^ PW3[57] ^ PW3[55]), 1);
-        PW3[72] = rotl((PW3[69] ^ PW3[64] ^ PW3[58] ^ PW3[56]), 1);
-        PW3[73] = rotl((PW3[70] ^ PW3[65] ^ PW3[59] ^ PW3[57]), 1);
-        PW3[74] = rotl((PW3[71] ^ PW3[66] ^ PW3[60] ^ PW3[58]), 1);
-        PW3[75] = rotl((PW3[72] ^ PW3[67] ^ PW3[61] ^ PW3[59]), 1);
-        PW3[76] = rotl((PW3[73] ^ PW3[68] ^ PW3[62] ^ PW3[60]), 1);
-        PW3[77] = rotl((PW3[74] ^ PW3[69] ^ PW3[63] ^ PW3[61]), 1);
-        PW3[78] = rotl((PW3[75] ^ PW3[70] ^ PW3[64] ^ PW3[62]), 1);
-        PW3[79] = rotl((PW3[76] ^ PW3[71] ^ PW3[65] ^ PW3[63]), 1);
+        /*PW[16] = rotl((w3[13] ^ w3[8] ^ w3[2]), 1);
+        PW[17] = rotl((w3[14] ^ w3[9] ^ w3[3] ^ w3[1]), 1);
+        PW[18] = rotl((w3[15] ^ w3[10] ^ w3[4] ^ w3[2]), 1);
+        PW[19] = rotl((PW[16] ^ w3[11] ^ w3[5] ^ w3[3]), 1);
+        PW[20] = rotl((PW[17] ^ w3[12] ^ w3[6] ^ w3[4]), 1);
+        PW[21] = rotl((PW[18] ^ w3[13] ^ w3[7] ^ w3[5]), 1);
+        PW[22] = rotl((PW[19] ^ w3[14] ^ w3[8] ^ w3[6]), 1);
+        PW[23] = rotl((PW[20] ^ w3[15] ^ w3[9] ^ w3[7]), 1);
+        PW[24] = rotl((PW[21] ^ PW[16] ^ w3[10] ^ w3[8]), 1);
+        PW[25] = rotl((PW[22] ^ PW[17] ^ w3[11] ^ w3[9]), 1);
+        PW[26] = rotl((PW[23] ^ PW[18] ^ w3[12] ^ w3[10]), 1);
+        PW[27] = rotl((PW[24] ^ PW[19] ^ w3[13] ^ w3[11]), 1);
+        PW[28] = rotl((PW[25] ^ PW[20] ^ w3[14] ^ w3[12]), 1);
+        PW[29] = rotl((PW[26] ^ PW[21] ^ w3[15] ^ w3[13]), 1);
+        PW[30] = rotl((PW[27] ^ PW[22] ^ PW[16] ^ w3[14]), 1);
+        PW[31] = rotl((PW[28] ^ PW[23] ^ PW[17] ^ w3[15]), 1);
+        PW[32] = rotl((PW[29] ^ PW[24] ^ PW[18] ^ PW[16]), 1);
+        PW[33] = rotl((PW[30] ^ PW[25] ^ PW[19] ^ PW[17]), 1);
+        PW[34] = rotl((PW[31] ^ PW[26] ^ PW[20] ^ PW[18]), 1);
+        PW[35] = rotl((PW[32] ^ PW[27] ^ PW[21] ^ PW[19]), 1);
+        PW[36] = rotl((PW[33] ^ PW[28] ^ PW[22] ^ PW[20]), 1);
+        PW[37] = rotl((PW[34] ^ PW[29] ^ PW[23] ^ PW[21]), 1);
+        PW[38] = rotl((PW[35] ^ PW[30] ^ PW[24] ^ PW[22]), 1);
+        PW[39] = rotl((PW[36] ^ PW[31] ^ PW[25] ^ PW[23]), 1);
+        PW[40] = rotl((PW[37] ^ PW[32] ^ PW[26] ^ PW[24]), 1);
+        PW[41] = rotl((PW[38] ^ PW[33] ^ PW[27] ^ PW[25]), 1);
+        PW[42] = rotl((PW[39] ^ PW[34] ^ PW[28] ^ PW[26]), 1);
+        PW[43] = rotl((PW[40] ^ PW[35] ^ PW[29] ^ PW[27]), 1);
+        PW[44] = rotl((PW[41] ^ PW[36] ^ PW[30] ^ PW[28]), 1);
+        PW[45] = rotl((PW[42] ^ PW[37] ^ PW[31] ^ PW[29]), 1);
+        PW[46] = rotl((PW[43] ^ PW[38] ^ PW[32] ^ PW[30]), 1);
+        PW[47] = rotl((PW[44] ^ PW[39] ^ PW[33] ^ PW[31]), 1);
+        PW[48] = rotl((PW[45] ^ PW[40] ^ PW[34] ^ PW[32]), 1);
+        PW[49] = rotl((PW[46] ^ PW[41] ^ PW[35] ^ PW[33]), 1);
+        PW[50] = rotl((PW[47] ^ PW[42] ^ PW[36] ^ PW[34]), 1);
+        PW[51] = rotl((PW[48] ^ PW[43] ^ PW[37] ^ PW[35]), 1);
+        PW[52] = rotl((PW[49] ^ PW[44] ^ PW[38] ^ PW[36]), 1);
+        PW[53] = rotl((PW[50] ^ PW[45] ^ PW[39] ^ PW[37]), 1);
+        PW[54] = rotl((PW[51] ^ PW[46] ^ PW[40] ^ PW[38]), 1);
+        PW[55] = rotl((PW[52] ^ PW[47] ^ PW[41] ^ PW[39]), 1);
+        PW[56] = rotl((PW[53] ^ PW[48] ^ PW[42] ^ PW[40]), 1);
+        PW[57] = rotl((PW[54] ^ PW[49] ^ PW[43] ^ PW[41]), 1);
+        PW[58] = rotl((PW[55] ^ PW[50] ^ PW[44] ^ PW[42]), 1);
+        PW[59] = rotl((PW[56] ^ PW[51] ^ PW[45] ^ PW[43]), 1);
+        PW[60] = rotl((PW[57] ^ PW[52] ^ PW[46] ^ PW[44]), 1);
+        PW[61] = rotl((PW[58] ^ PW[53] ^ PW[47] ^ PW[45]), 1);
+        PW[62] = rotl((PW[59] ^ PW[54] ^ PW[48] ^ PW[46]), 1);
+        PW[63] = rotl((PW[60] ^ PW[55] ^ PW[49] ^ PW[47]), 1);
+        PW[64] = rotl((PW[61] ^ PW[56] ^ PW[50] ^ PW[48]), 1);
+        PW[65] = rotl((PW[62] ^ PW[57] ^ PW[51] ^ PW[49]), 1);
+        PW[66] = rotl((PW[63] ^ PW[58] ^ PW[52] ^ PW[50]), 1);
+        PW[67] = rotl((PW[64] ^ PW[59] ^ PW[53] ^ PW[51]), 1);
+        PW[68] = rotl((PW[65] ^ PW[60] ^ PW[54] ^ PW[52]), 1);
+        PW[69] = rotl((PW[66] ^ PW[61] ^ PW[55] ^ PW[53]), 1);
+        PW[70] = rotl((PW[67] ^ PW[62] ^ PW[56] ^ PW[54]), 1);
+        PW[71] = rotl((PW[68] ^ PW[63] ^ PW[57] ^ PW[55]), 1);
+        PW[72] = rotl((PW[69] ^ PW[64] ^ PW[58] ^ PW[56]), 1);
+        PW[73] = rotl((PW[70] ^ PW[65] ^ PW[59] ^ PW[57]), 1);
+        PW[74] = rotl((PW[71] ^ PW[66] ^ PW[60] ^ PW[58]), 1);
+        PW[75] = rotl((PW[72] ^ PW[67] ^ PW[61] ^ PW[59]), 1);
+        PW[76] = rotl((PW[73] ^ PW[68] ^ PW[62] ^ PW[60]), 1);
+        PW[77] = rotl((PW[74] ^ PW[69] ^ PW[63] ^ PW[61]), 1);
+        PW[78] = rotl((PW[75] ^ PW[70] ^ PW[64] ^ PW[62]), 1);
+        PW[79] = rotl((PW[76] ^ PW[71] ^ PW[65] ^ PW[63]), 1);*/
 
 
         //------------------------------------------------------------
@@ -1487,373 +1483,373 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
         w4[14] = chunk4[14];
         w4[15] = chunk4[15];
 
-        PW4[16] = rotl((w4[13] ^ w4[8] ^ w4[2]), 1);
-        PW4[17] = rotl((w4[14] ^ w4[9] ^ w4[3] ^ w4[1]), 1);
-        PW4[18] = rotl((w4[15] ^ w4[10] ^ w4[4] ^ w4[2]), 1);
-        PW4[19] = rotl((PW4[16] ^ w4[11] ^ w4[5] ^ w4[3]), 1);
-        PW4[20] = rotl((PW4[17] ^ w4[12] ^ w4[6] ^ w4[4]), 1);
-        PW4[21] = rotl((PW4[18] ^ w4[13] ^ w4[7] ^ w4[5]), 1);
-        PW4[22] = rotl((PW4[19] ^ w4[14] ^ w4[8] ^ w4[6]), 1);
-        PW4[23] = rotl((PW4[20] ^ w4[15] ^ w4[9] ^ w4[7]), 1);
-        PW4[24] = rotl((PW4[21] ^ PW4[16] ^ w4[10] ^ w4[8]), 1);
-        PW4[25] = rotl((PW4[22] ^ PW4[17] ^ w4[11] ^ w4[9]), 1);
-        PW4[26] = rotl((PW4[23] ^ PW4[18] ^ w4[12] ^ w4[10]), 1);
-        PW4[27] = rotl((PW4[24] ^ PW4[19] ^ w4[13] ^ w4[11]), 1);
-        PW4[28] = rotl((PW4[25] ^ PW4[20] ^ w4[14] ^ w4[12]), 1);
-        PW4[29] = rotl((PW4[26] ^ PW4[21] ^ w4[15] ^ w4[13]), 1);
-        PW4[30] = rotl((PW4[27] ^ PW4[22] ^ PW4[16] ^ w4[14]), 1);
-        PW4[31] = rotl((PW4[28] ^ PW4[23] ^ PW4[17] ^ w4[15]), 1);
-        PW4[32] = rotl((PW4[29] ^ PW4[24] ^ PW4[18] ^ PW4[16]), 1);
-        PW4[33] = rotl((PW4[30] ^ PW4[25] ^ PW4[19] ^ PW4[17]), 1);
-        PW4[34] = rotl((PW4[31] ^ PW4[26] ^ PW4[20] ^ PW4[18]), 1);
-        PW4[35] = rotl((PW4[32] ^ PW4[27] ^ PW4[21] ^ PW4[19]), 1);
-        PW4[36] = rotl((PW4[33] ^ PW4[28] ^ PW4[22] ^ PW4[20]), 1);
-        PW4[37] = rotl((PW4[34] ^ PW4[29] ^ PW4[23] ^ PW4[21]), 1);
-        PW4[38] = rotl((PW4[35] ^ PW4[30] ^ PW4[24] ^ PW4[22]), 1);
-        PW4[39] = rotl((PW4[36] ^ PW4[31] ^ PW4[25] ^ PW4[23]), 1);
-        PW4[40] = rotl((PW4[37] ^ PW4[32] ^ PW4[26] ^ PW4[24]), 1);
-        PW4[41] = rotl((PW4[38] ^ PW4[33] ^ PW4[27] ^ PW4[25]), 1);
-        PW4[42] = rotl((PW4[39] ^ PW4[34] ^ PW4[28] ^ PW4[26]), 1);
-        PW4[43] = rotl((PW4[40] ^ PW4[35] ^ PW4[29] ^ PW4[27]), 1);
-        PW4[44] = rotl((PW4[41] ^ PW4[36] ^ PW4[30] ^ PW4[28]), 1);
-        PW4[45] = rotl((PW4[42] ^ PW4[37] ^ PW4[31] ^ PW4[29]), 1);
-        PW4[46] = rotl((PW4[43] ^ PW4[38] ^ PW4[32] ^ PW4[30]), 1);
-        PW4[47] = rotl((PW4[44] ^ PW4[39] ^ PW4[33] ^ PW4[31]), 1);
-        PW4[48] = rotl((PW4[45] ^ PW4[40] ^ PW4[34] ^ PW4[32]), 1);
-        PW4[49] = rotl((PW4[46] ^ PW4[41] ^ PW4[35] ^ PW4[33]), 1);
-        PW4[50] = rotl((PW4[47] ^ PW4[42] ^ PW4[36] ^ PW4[34]), 1);
-        PW4[51] = rotl((PW4[48] ^ PW4[43] ^ PW4[37] ^ PW4[35]), 1);
-        PW4[52] = rotl((PW4[49] ^ PW4[44] ^ PW4[38] ^ PW4[36]), 1);
-        PW4[53] = rotl((PW4[50] ^ PW4[45] ^ PW4[39] ^ PW4[37]), 1);
-        PW4[54] = rotl((PW4[51] ^ PW4[46] ^ PW4[40] ^ PW4[38]), 1);
-        PW4[55] = rotl((PW4[52] ^ PW4[47] ^ PW4[41] ^ PW4[39]), 1);
-        PW4[56] = rotl((PW4[53] ^ PW4[48] ^ PW4[42] ^ PW4[40]), 1);
-        PW4[57] = rotl((PW4[54] ^ PW4[49] ^ PW4[43] ^ PW4[41]), 1);
-        PW4[58] = rotl((PW4[55] ^ PW4[50] ^ PW4[44] ^ PW4[42]), 1);
-        PW4[59] = rotl((PW4[56] ^ PW4[51] ^ PW4[45] ^ PW4[43]), 1);
-        PW4[60] = rotl((PW4[57] ^ PW4[52] ^ PW4[46] ^ PW4[44]), 1);
-        PW4[61] = rotl((PW4[58] ^ PW4[53] ^ PW4[47] ^ PW4[45]), 1);
-        PW4[62] = rotl((PW4[59] ^ PW4[54] ^ PW4[48] ^ PW4[46]), 1);
-        PW4[63] = rotl((PW4[60] ^ PW4[55] ^ PW4[49] ^ PW4[47]), 1);
-        PW4[64] = rotl((PW4[61] ^ PW4[56] ^ PW4[50] ^ PW4[48]), 1);
-        PW4[65] = rotl((PW4[62] ^ PW4[57] ^ PW4[51] ^ PW4[49]), 1);
-        PW4[66] = rotl((PW4[63] ^ PW4[58] ^ PW4[52] ^ PW4[50]), 1);
-        PW4[67] = rotl((PW4[64] ^ PW4[59] ^ PW4[53] ^ PW4[51]), 1);
-        PW4[68] = rotl((PW4[65] ^ PW4[60] ^ PW4[54] ^ PW4[52]), 1);
-        PW4[69] = rotl((PW4[66] ^ PW4[61] ^ PW4[55] ^ PW4[53]), 1);
-        PW4[70] = rotl((PW4[67] ^ PW4[62] ^ PW4[56] ^ PW4[54]), 1);
-        PW4[71] = rotl((PW4[68] ^ PW4[63] ^ PW4[57] ^ PW4[55]), 1);
-        PW4[72] = rotl((PW4[69] ^ PW4[64] ^ PW4[58] ^ PW4[56]), 1);
-        PW4[73] = rotl((PW4[70] ^ PW4[65] ^ PW4[59] ^ PW4[57]), 1);
-        PW4[74] = rotl((PW4[71] ^ PW4[66] ^ PW4[60] ^ PW4[58]), 1);
-        PW4[75] = rotl((PW4[72] ^ PW4[67] ^ PW4[61] ^ PW4[59]), 1);
-        PW4[76] = rotl((PW4[73] ^ PW4[68] ^ PW4[62] ^ PW4[60]), 1);
-        PW4[77] = rotl((PW4[74] ^ PW4[69] ^ PW4[63] ^ PW4[61]), 1);
-        PW4[78] = rotl((PW4[75] ^ PW4[70] ^ PW4[64] ^ PW4[62]), 1);
-        PW4[79] = rotl((PW4[76] ^ PW4[71] ^ PW4[65] ^ PW4[63]), 1);
+        /*PW[16] = rotl((w4[13] ^ w4[8] ^ w4[2]), 1);
+        PW[17] = rotl((w4[14] ^ w4[9] ^ w4[3] ^ w4[1]), 1);
+        PW[18] = rotl((w4[15] ^ w4[10] ^ w4[4] ^ w4[2]), 1);
+        PW[19] = rotl((PW[16] ^ w4[11] ^ w4[5] ^ w4[3]), 1);
+        PW[20] = rotl((PW[17] ^ w4[12] ^ w4[6] ^ w4[4]), 1);
+        PW[21] = rotl((PW[18] ^ w4[13] ^ w4[7] ^ w4[5]), 1);
+        PW[22] = rotl((PW[19] ^ w4[14] ^ w4[8] ^ w4[6]), 1);
+        PW[23] = rotl((PW[20] ^ w4[15] ^ w4[9] ^ w4[7]), 1);
+        PW[24] = rotl((PW[21] ^ PW[16] ^ w4[10] ^ w4[8]), 1);
+        PW[25] = rotl((PW[22] ^ PW[17] ^ w4[11] ^ w4[9]), 1);
+        PW[26] = rotl((PW[23] ^ PW[18] ^ w4[12] ^ w4[10]), 1);
+        PW[27] = rotl((PW[24] ^ PW[19] ^ w4[13] ^ w4[11]), 1);
+        PW[28] = rotl((PW[25] ^ PW[20] ^ w4[14] ^ w4[12]), 1);
+        PW[29] = rotl((PW[26] ^ PW[21] ^ w4[15] ^ w4[13]), 1);
+        PW[30] = rotl((PW[27] ^ PW[22] ^ PW[16] ^ w4[14]), 1);
+        PW[31] = rotl((PW[28] ^ PW[23] ^ PW[17] ^ w4[15]), 1);
+        PW[32] = rotl((PW[29] ^ PW[24] ^ PW[18] ^ PW[16]), 1);
+        PW[33] = rotl((PW[30] ^ PW[25] ^ PW[19] ^ PW[17]), 1);
+        PW[34] = rotl((PW[31] ^ PW[26] ^ PW[20] ^ PW[18]), 1);
+        PW[35] = rotl((PW[32] ^ PW[27] ^ PW[21] ^ PW[19]), 1);
+        PW[36] = rotl((PW[33] ^ PW[28] ^ PW[22] ^ PW[20]), 1);
+        PW[37] = rotl((PW[34] ^ PW[29] ^ PW[23] ^ PW[21]), 1);
+        PW[38] = rotl((PW[35] ^ PW[30] ^ PW[24] ^ PW[22]), 1);
+        PW[39] = rotl((PW[36] ^ PW[31] ^ PW[25] ^ PW[23]), 1);
+        PW[40] = rotl((PW[37] ^ PW[32] ^ PW[26] ^ PW[24]), 1);
+        PW[41] = rotl((PW[38] ^ PW[33] ^ PW[27] ^ PW[25]), 1);
+        PW[42] = rotl((PW[39] ^ PW[34] ^ PW[28] ^ PW[26]), 1);
+        PW[43] = rotl((PW[40] ^ PW[35] ^ PW[29] ^ PW[27]), 1);
+        PW[44] = rotl((PW[41] ^ PW[36] ^ PW[30] ^ PW[28]), 1);
+        PW[45] = rotl((PW[42] ^ PW[37] ^ PW[31] ^ PW[29]), 1);
+        PW[46] = rotl((PW[43] ^ PW[38] ^ PW[32] ^ PW[30]), 1);
+        PW[47] = rotl((PW[44] ^ PW[39] ^ PW[33] ^ PW[31]), 1);
+        PW[48] = rotl((PW[45] ^ PW[40] ^ PW[34] ^ PW[32]), 1);
+        PW[49] = rotl((PW[46] ^ PW[41] ^ PW[35] ^ PW[33]), 1);
+        PW[50] = rotl((PW[47] ^ PW[42] ^ PW[36] ^ PW[34]), 1);
+        PW[51] = rotl((PW[48] ^ PW[43] ^ PW[37] ^ PW[35]), 1);
+        PW[52] = rotl((PW[49] ^ PW[44] ^ PW[38] ^ PW[36]), 1);
+        PW[53] = rotl((PW[50] ^ PW[45] ^ PW[39] ^ PW[37]), 1);
+        PW[54] = rotl((PW[51] ^ PW[46] ^ PW[40] ^ PW[38]), 1);
+        PW[55] = rotl((PW[52] ^ PW[47] ^ PW[41] ^ PW[39]), 1);
+        PW[56] = rotl((PW[53] ^ PW[48] ^ PW[42] ^ PW[40]), 1);
+        PW[57] = rotl((PW[54] ^ PW[49] ^ PW[43] ^ PW[41]), 1);
+        PW[58] = rotl((PW[55] ^ PW[50] ^ PW[44] ^ PW[42]), 1);
+        PW[59] = rotl((PW[56] ^ PW[51] ^ PW[45] ^ PW[43]), 1);
+        PW[60] = rotl((PW[57] ^ PW[52] ^ PW[46] ^ PW[44]), 1);
+        PW[61] = rotl((PW[58] ^ PW[53] ^ PW[47] ^ PW[45]), 1);
+        PW[62] = rotl((PW[59] ^ PW[54] ^ PW[48] ^ PW[46]), 1);
+        PW[63] = rotl((PW[60] ^ PW[55] ^ PW[49] ^ PW[47]), 1);
+        PW[64] = rotl((PW[61] ^ PW[56] ^ PW[50] ^ PW[48]), 1);
+        PW[65] = rotl((PW[62] ^ PW[57] ^ PW[51] ^ PW[49]), 1);
+        PW[66] = rotl((PW[63] ^ PW[58] ^ PW[52] ^ PW[50]), 1);
+        PW[67] = rotl((PW[64] ^ PW[59] ^ PW[53] ^ PW[51]), 1);
+        PW[68] = rotl((PW[65] ^ PW[60] ^ PW[54] ^ PW[52]), 1);
+        PW[69] = rotl((PW[66] ^ PW[61] ^ PW[55] ^ PW[53]), 1);
+        PW[70] = rotl((PW[67] ^ PW[62] ^ PW[56] ^ PW[54]), 1);
+        PW[71] = rotl((PW[68] ^ PW[63] ^ PW[57] ^ PW[55]), 1);
+        PW[72] = rotl((PW[69] ^ PW[64] ^ PW[58] ^ PW[56]), 1);
+        PW[73] = rotl((PW[70] ^ PW[65] ^ PW[59] ^ PW[57]), 1);
+        PW[74] = rotl((PW[71] ^ PW[66] ^ PW[60] ^ PW[58]), 1);
+        PW[75] = rotl((PW[72] ^ PW[67] ^ PW[61] ^ PW[59]), 1);
+        PW[76] = rotl((PW[73] ^ PW[68] ^ PW[62] ^ PW[60]), 1);
+        PW[77] = rotl((PW[74] ^ PW[69] ^ PW[63] ^ PW[61]), 1);
+        PW[78] = rotl((PW[75] ^ PW[70] ^ PW[64] ^ PW[62]), 1);
+        PW[79] = rotl((PW[76] ^ PW[71] ^ PW[65] ^ PW[63]), 1);*/
     }
 
     //------------------------------------------------------------
     //      OPTIMIZED OPERATIONS
     //------------------------------------------------------------
     // Extend the 16 32-bit words into 80 32-bit words w1
-    w1[16] = PW1[16] ^ w1_0_1;
-    w1[17] = PW1[17];
-    w1[18] = PW1[18];
-    w1[19] = PW1[19] ^ w1_0_2;
-    w1[20] = PW1[20];
-    w1[21] = PW1[21];
-    w1[22] = PW1[22] ^ w1_0_3;
-    w1[23] = PW1[23];
-    w1[24] = PW1[24] ^ w1_0_2;
-    w1[25] = PW1[25] ^ w1_0_4;
-    w1[26] = PW1[26];
-    w1[27] = PW1[27];
-    w1[28] = PW1[28] ^ w1_0_5;
-    w1[29] = PW1[29];
-    w1[30] = PW1[30] ^ w1_0_4 ^ w1_0_2;
-    w1[31] = PW1[31] ^ w1_0_6;
-    w1[32] = PW1[32] ^ w1_0_3 ^ w1_0_2;
-    w1[33] = PW1[33];
-    w1[34] = PW1[34] ^ w1_0_7;
-    w1[35] = PW1[35] ^ w1_0_4;
-    w1[36] = PW1[36] ^ w1_0_6___w1_0_4;
-    w1[37] = PW1[37] ^ w1_0_8;
-    w1[38] = PW1[38] ^ w1_0_4;
-    w1[39] = PW1[39];
-    w1[40] = PW1[40] ^ w1_0_4 ^ w1_0_9;
-    w1[41] = PW1[41];
-    w1[42] = PW1[42] ^ w1_0_6 ^ w1_0_8;
-    w1[43] = PW1[43] ^ w1_0_10;
-    w1[44] = PW1[44] ^ w1_0_6 ^ w1_0_3 ^ w1_0_7;
-    w1[45] = PW1[45];
-    w1[46] = PW1[46] ^ w1_0_4 ^ w1_0_11;
-    w1[47] = PW1[47] ^ w1_0_8___w1_0_4;
-    w1[48] = PW1[48] ^ w1_0_8___w1_0_4 ^ w1_0_3 ^ w1_0_10 ^ w1_0_5;
-    w1[49] = PW1[49] ^ w1_0_12;
-    w1[50] = PW1[50] ^ w1_0_8;
-    w1[51] = PW1[51] ^ w1_0_6___w1_0_4;
-    w1[52] = PW1[52] ^ w1_0_8___w1_0_4 ^ w1_0_13;
-    w1[53] = PW1[53];
-    w1[54] = PW1[54] ^ w1_0_7 ^ w1_0_10 ^ w1_0_12;
-    w1[55] = PW1[55] ^ w1_0_14;
-    w1[56] = PW1[56] ^ w1_0_6___w1_0_4___w1_0_7 ^ w1_0_11 ^ w1_0_10;
-    w1[57] = PW1[57] ^ w1_0_8;
-    w1[58] = PW1[58] ^ w1_0_8___w1_0_4 ^ w1_0_15;
-    w1[59] = PW1[59] ^ w1_0_8___w1_0_12;
-    w1[60] = PW1[60] ^ w1_0_8___w1_0_12 ^ w1_0_4 ^ w1_0_7 ^ w1_0_14;
-    w1[61] = PW1[61] ^ w1_0_16;
-    w1[62] = PW1[62] ^ w1_0_6___w1_0_4 ^ w1_0_8___w1_0_12;
-    w1[63] = PW1[63] ^ w1_0_8;
-    w1[64] = PW1[64] ^ w1_0_6___w1_0_4___w1_0_7 ^ w1_0_8___w1_0_12 ^ w1_0_17;
-    w1[65] = PW1[65];
-    w1[66] = PW1[66] ^ w1_0_14 ^ w1_0_16;
-    w1[67] = PW1[67] ^ w1_0_8 ^ w1_0_18;
-    w1[68] = PW1[68] ^ w1_0_11 ^ w1_0_14 ^ w1_0_15;
-    w1[69] = PW1[69];
-    w1[70] = PW1[70] ^ w1_0_12 ^ w1_0_19;
-    w1[71] = PW1[71] ^ w1_0_12 ^ w1_0_16;
-    w1[72] = PW1[72] ^ w1_0_11 ^ w1_0_12 ^ w1_0_18 ^ w1_0_13 ^ w1_0_16 ^ w1_0_5;
-    w1[73] = PW1[73] ^ w1_0_20;
-    w1[74] = PW1[74] ^ w1_0_8 ^ w1_0_16;
-    w1[75] = PW1[75] ^ w1_0_6 ^ w1_0_12 ^ w1_0_14;
+    w1[16] = PW[16] ^ w1_0_1;
+    w1[17] = PW[17];
+    w1[18] = PW[18];
+    w1[19] = PW[19] ^ w1_0_2;
+    w1[20] = PW[20];
+    w1[21] = PW[21];
+    w1[22] = PW[22] ^ w1_0_3;
+    w1[23] = PW[23];
+    w1[24] = PW[24] ^ w1_0_2;
+    w1[25] = PW[25] ^ w1_0_4;
+    w1[26] = PW[26];
+    w1[27] = PW[27];
+    w1[28] = PW[28] ^ w1_0_5;
+    w1[29] = PW[29];
+    w1[30] = PW[30] ^ w1_0_4 ^ w1_0_2;
+    w1[31] = PW[31] ^ w1_0_6;
+    w1[32] = PW[32] ^ w1_0_3 ^ w1_0_2;
+    w1[33] = PW[33];
+    w1[34] = PW[34] ^ w1_0_7;
+    w1[35] = PW[35] ^ w1_0_4;
+    w1[36] = PW[36] ^ w1_0_6___w1_0_4;
+    w1[37] = PW[37] ^ w1_0_8;
+    w1[38] = PW[38] ^ w1_0_4;
+    w1[39] = PW[39];
+    w1[40] = PW[40] ^ w1_0_4 ^ w1_0_9;
+    w1[41] = PW[41];
+    w1[42] = PW[42] ^ w1_0_6 ^ w1_0_8;
+    w1[43] = PW[43] ^ w1_0_10;
+    w1[44] = PW[44] ^ w1_0_6 ^ w1_0_3 ^ w1_0_7;
+    w1[45] = PW[45];
+    w1[46] = PW[46] ^ w1_0_4 ^ w1_0_11;
+    w1[47] = PW[47] ^ w1_0_8___w1_0_4;
+    w1[48] = PW[48] ^ w1_0_8___w1_0_4 ^ w1_0_3 ^ w1_0_10 ^ w1_0_5;
+    w1[49] = PW[49] ^ w1_0_12;
+    w1[50] = PW[50] ^ w1_0_8;
+    w1[51] = PW[51] ^ w1_0_6___w1_0_4;
+    w1[52] = PW[52] ^ w1_0_8___w1_0_4 ^ w1_0_13;
+    w1[53] = PW[53];
+    w1[54] = PW[54] ^ w1_0_7 ^ w1_0_10 ^ w1_0_12;
+    w1[55] = PW[55] ^ w1_0_14;
+    w1[56] = PW[56] ^ w1_0_6___w1_0_4___w1_0_7 ^ w1_0_11 ^ w1_0_10;
+    w1[57] = PW[57] ^ w1_0_8;
+    w1[58] = PW[58] ^ w1_0_8___w1_0_4 ^ w1_0_15;
+    w1[59] = PW[59] ^ w1_0_8___w1_0_12;
+    w1[60] = PW[60] ^ w1_0_8___w1_0_12 ^ w1_0_4 ^ w1_0_7 ^ w1_0_14;
+    w1[61] = PW[61] ^ w1_0_16;
+    w1[62] = PW[62] ^ w1_0_6___w1_0_4 ^ w1_0_8___w1_0_12;
+    w1[63] = PW[63] ^ w1_0_8;
+    w1[64] = PW[64] ^ w1_0_6___w1_0_4___w1_0_7 ^ w1_0_8___w1_0_12 ^ w1_0_17;
+    w1[65] = PW[65];
+    w1[66] = PW[66] ^ w1_0_14 ^ w1_0_16;
+    w1[67] = PW[67] ^ w1_0_8 ^ w1_0_18;
+    w1[68] = PW[68] ^ w1_0_11 ^ w1_0_14 ^ w1_0_15;
+    w1[69] = PW[69];
+    w1[70] = PW[70] ^ w1_0_12 ^ w1_0_19;
+    w1[71] = PW[71] ^ w1_0_12 ^ w1_0_16;
+    w1[72] = PW[72] ^ w1_0_11 ^ w1_0_12 ^ w1_0_18 ^ w1_0_13 ^ w1_0_16 ^ w1_0_5;
+    w1[73] = PW[73] ^ w1_0_20;
+    w1[74] = PW[74] ^ w1_0_8 ^ w1_0_16;
+    w1[75] = PW[75] ^ w1_0_6 ^ w1_0_12 ^ w1_0_14;
 
-    w1[76] = PW1[76] ^ w1_0_7 ^ w1_0_8___w1_0_12 ^ w1_0_16 ^ w1_0_21;
-    w1[77] = PW1[77];
-    w1[78] = PW1[78] ^ w1_0_7 ^ w1_0_8 ^ w1_0_15 ^ w1_0_18 ^ w1_0_20;
-    w1[79] = PW1[79] ^ w1_0_8 ^ w1_0_22;
+    w1[76] = PW[76] ^ w1_0_7 ^ w1_0_8___w1_0_12 ^ w1_0_16 ^ w1_0_21;
+    w1[77] = PW[77];
+    w1[78] = PW[78] ^ w1_0_7 ^ w1_0_8 ^ w1_0_15 ^ w1_0_18 ^ w1_0_20;
+    w1[79] = PW[79] ^ w1_0_8 ^ w1_0_22;
 
     // for(i = 0; i < 80; i++){
     //     printf("w1[%d] : %8X\n", i, w1[i]);
     // }
 
 
-    // PW1[76] = rotl((w1[73] ^ w1[68] ^ w1[62] ^ w1[60]), 1);
+    // PW[76] = rotl((w1[73] ^ w1[68] ^ w1[62] ^ w1[60]), 1);
     //     ^ w1_0_20;                                      |REMOVE         ^ w1_0_6   |+1 to all|-->   
     //     ^ w1_0_11 ^ w1_0_14 ^ w1_0_15;                      REPEATS|--> ^ w1_0_7
     //     ^ w1_0_6___w1_0_4 ^ w1_0_8___w1_0_12;                           ^ w1_0_11
     //     ^ w1_0_8___w1_0_12 ^ w1_0_4 ^ w1_0_7 ^ w1_0_14;                 ^ w1_0_15
     //                                                                     ^ w1_0_20                                                                  
 
-    // PW1[77] = rotl((w1[74] ^ w1[69] ^ w1[63] ^ w1[61]), 1);
+    // PW[77] = rotl((w1[74] ^ w1[69] ^ w1[63] ^ w1[61]), 1);
     //     ^ w1_0_8 ^ w1_0_16;     |REMOVE             
     //     ^ w1_0_8;                   REPEATS|-->
     //     ^ w1_0_16;
 
-    // PW1[78] = rotl((w1[75] ^ w1[70] ^ w1[64] ^ w1[62]), 1);
+    // PW[78] = rotl((w1[75] ^ w1[70] ^ w1[64] ^ w1[62]), 1);
     //    ^ w1_0_6 ^ w1_0_12 ^ w1_0_14;                            |REMOVE         ^ w1_0_6    |+1 to all|-->
     //    ^ w1_0_12 ^ w1_0_19;                                         REPEATS|--> ^ w1_0_7
     //    ^ w1_0_6___w1_0_4___w1_0_7 ^ w1_0_8___w1_0_12 ^ w1_0_17;                 ^ w1_0_14
     //    ^ w1_0_6___w1_0_4 ^ w1_0_8___w1_0_12;                                    ^ w1_0_17
     //                                                                             ^ w1_0_19
 
-    // PW1[79] = rotl((w1[76] ^ w1[71] ^ w1[65] ^ w1[63]), 1);
+    // PW[79] = rotl((w1[76] ^ w1[71] ^ w1[65] ^ w1[63]), 1);
     //     ^ w1_0_7 ^ w1_0_8 ^ w1_0_12 ^ w1_0_16 ^ w1_0_21; |REMOVE         ^ w1_0_7    |+1 to all|-->
     //     ^ w1_0_12 ^ w1_0_16;                                 REPEATS|--> ^ w1_0_21
     //     ^ w1_0_8;
 
     // Extend the 16 32-bit words into 80 32-bit words w2
-    w2[16] = PW2[16] ^ w2_0_1;
-    w2[17] = PW2[17];
-    w2[18] = PW2[18];
-    w2[19] = PW2[19] ^ w2_0_2;
-    w2[20] = PW2[20];
-    w2[21] = PW2[21];
-    w2[22] = PW2[22] ^ w2_0_3;
-    w2[23] = PW2[23];
-    w2[24] = PW2[24] ^ w2_0_2;
-    w2[25] = PW2[25] ^ w2_0_4;
-    w2[26] = PW2[26];
-    w2[27] = PW2[27];
-    w2[28] = PW2[28] ^ w2_0_5;
-    w2[29] = PW2[29];
-    w2[30] = PW2[30] ^ w2_0_4 ^ w2_0_2;
-    w2[31] = PW2[31] ^ w2_0_6;
-    w2[32] = PW2[32] ^ w2_0_3 ^ w2_0_2;
-    w2[33] = PW2[33];
-    w2[34] = PW2[34] ^ w2_0_7;
-    w2[35] = PW2[35] ^ w2_0_4;
-    w2[36] = PW2[36] ^ w2_0_6___w2_0_4;
-    w2[37] = PW2[37] ^ w2_0_8;
-    w2[38] = PW2[38] ^ w2_0_4;
-    w2[39] = PW2[39];
-    w2[40] = PW2[40] ^ w2_0_4 ^ w2_0_9;
-    w2[41] = PW2[41];
-    w2[42] = PW2[42] ^ w2_0_6 ^ w2_0_8;
-    w2[43] = PW2[43] ^ w2_0_10;
-    w2[44] = PW2[44] ^ w2_0_6 ^ w2_0_3 ^ w2_0_7;
-    w2[45] = PW2[45];
-    w2[46] = PW2[46] ^ w2_0_4 ^ w2_0_11;
-    w2[47] = PW2[47] ^ w2_0_8___w2_0_4;
-    w2[48] = PW2[48] ^ w2_0_8___w2_0_4 ^ w2_0_3 ^ w2_0_10 ^ w2_0_5;
-    w2[49] = PW2[49] ^ w2_0_12;
-    w2[50] = PW2[50] ^ w2_0_8;
-    w2[51] = PW2[51] ^ w2_0_6___w2_0_4;
-    w2[52] = PW2[52] ^ w2_0_8___w2_0_4 ^ w2_0_13;
-    w2[53] = PW2[53];
-    w2[54] = PW2[54] ^ w2_0_7 ^ w2_0_10 ^ w2_0_12;
-    w2[55] = PW2[55] ^ w2_0_14;
-    w2[56] = PW2[56] ^ w2_0_6___w2_0_4___w2_0_7 ^ w2_0_11 ^ w2_0_10;
-    w2[57] = PW2[57] ^ w2_0_8;
-    w2[58] = PW2[58] ^ w2_0_8___w2_0_4 ^ w2_0_15;
-    w2[59] = PW2[59] ^ w2_0_8___w2_0_12;
-    w2[60] = PW2[60] ^ w2_0_8___w2_0_12 ^ w2_0_4 ^ w2_0_7 ^ w2_0_14;
-    w2[61] = PW2[61] ^ w2_0_16;
-    w2[62] = PW2[62] ^ w2_0_6___w2_0_4 ^ w2_0_8___w2_0_12;
-    w2[63] = PW2[63] ^ w2_0_8;
-    w2[64] = PW2[64] ^ w2_0_6___w2_0_4___w2_0_7 ^ w2_0_8___w2_0_12 ^ w2_0_17;
-    w2[65] = PW2[65];
-    w2[66] = PW2[66] ^ w2_0_14 ^ w2_0_16;
-    w2[67] = PW2[67] ^ w2_0_8 ^ w2_0_18;
-    w2[68] = PW2[68] ^ w2_0_11 ^ w2_0_14 ^ w2_0_15;
-    w2[69] = PW2[69];
-    w2[70] = PW2[70] ^ w2_0_12 ^ w2_0_19;
-    w2[71] = PW2[71] ^ w2_0_12 ^ w2_0_16;
-    w2[72] = PW2[72] ^ w2_0_11 ^ w2_0_12 ^ w2_0_18 ^ w2_0_13 ^ w2_0_16 ^ w2_0_5;
-    w2[73] = PW2[73] ^ w2_0_20;
-    w2[74] = PW2[74] ^ w2_0_8 ^ w2_0_16;
-    w2[75] = PW2[75] ^ w2_0_6 ^ w2_0_12 ^ w2_0_14;
+    w2[16] = PW[16] ^ w2_0_1;
+    w2[17] = PW[17];
+    w2[18] = PW[18];
+    w2[19] = PW[19] ^ w2_0_2;
+    w2[20] = PW[20];
+    w2[21] = PW[21];
+    w2[22] = PW[22] ^ w2_0_3;
+    w2[23] = PW[23];
+    w2[24] = PW[24] ^ w2_0_2;
+    w2[25] = PW[25] ^ w2_0_4;
+    w2[26] = PW[26];
+    w2[27] = PW[27];
+    w2[28] = PW[28] ^ w2_0_5;
+    w2[29] = PW[29];
+    w2[30] = PW[30] ^ w2_0_4 ^ w2_0_2;
+    w2[31] = PW[31] ^ w2_0_6;
+    w2[32] = PW[32] ^ w2_0_3 ^ w2_0_2;
+    w2[33] = PW[33];
+    w2[34] = PW[34] ^ w2_0_7;
+    w2[35] = PW[35] ^ w2_0_4;
+    w2[36] = PW[36] ^ w2_0_6___w2_0_4;
+    w2[37] = PW[37] ^ w2_0_8;
+    w2[38] = PW[38] ^ w2_0_4;
+    w2[39] = PW[39];
+    w2[40] = PW[40] ^ w2_0_4 ^ w2_0_9;
+    w2[41] = PW[41];
+    w2[42] = PW[42] ^ w2_0_6 ^ w2_0_8;
+    w2[43] = PW[43] ^ w2_0_10;
+    w2[44] = PW[44] ^ w2_0_6 ^ w2_0_3 ^ w2_0_7;
+    w2[45] = PW[45];
+    w2[46] = PW[46] ^ w2_0_4 ^ w2_0_11;
+    w2[47] = PW[47] ^ w2_0_8___w2_0_4;
+    w2[48] = PW[48] ^ w2_0_8___w2_0_4 ^ w2_0_3 ^ w2_0_10 ^ w2_0_5;
+    w2[49] = PW[49] ^ w2_0_12;
+    w2[50] = PW[50] ^ w2_0_8;
+    w2[51] = PW[51] ^ w2_0_6___w2_0_4;
+    w2[52] = PW[52] ^ w2_0_8___w2_0_4 ^ w2_0_13;
+    w2[53] = PW[53];
+    w2[54] = PW[54] ^ w2_0_7 ^ w2_0_10 ^ w2_0_12;
+    w2[55] = PW[55] ^ w2_0_14;
+    w2[56] = PW[56] ^ w2_0_6___w2_0_4___w2_0_7 ^ w2_0_11 ^ w2_0_10;
+    w2[57] = PW[57] ^ w2_0_8;
+    w2[58] = PW[58] ^ w2_0_8___w2_0_4 ^ w2_0_15;
+    w2[59] = PW[59] ^ w2_0_8___w2_0_12;
+    w2[60] = PW[60] ^ w2_0_8___w2_0_12 ^ w2_0_4 ^ w2_0_7 ^ w2_0_14;
+    w2[61] = PW[61] ^ w2_0_16;
+    w2[62] = PW[62] ^ w2_0_6___w2_0_4 ^ w2_0_8___w2_0_12;
+    w2[63] = PW[63] ^ w2_0_8;
+    w2[64] = PW[64] ^ w2_0_6___w2_0_4___w2_0_7 ^ w2_0_8___w2_0_12 ^ w2_0_17;
+    w2[65] = PW[65];
+    w2[66] = PW[66] ^ w2_0_14 ^ w2_0_16;
+    w2[67] = PW[67] ^ w2_0_8 ^ w2_0_18;
+    w2[68] = PW[68] ^ w2_0_11 ^ w2_0_14 ^ w2_0_15;
+    w2[69] = PW[69];
+    w2[70] = PW[70] ^ w2_0_12 ^ w2_0_19;
+    w2[71] = PW[71] ^ w2_0_12 ^ w2_0_16;
+    w2[72] = PW[72] ^ w2_0_11 ^ w2_0_12 ^ w2_0_18 ^ w2_0_13 ^ w2_0_16 ^ w2_0_5;
+    w2[73] = PW[73] ^ w2_0_20;
+    w2[74] = PW[74] ^ w2_0_8 ^ w2_0_16;
+    w2[75] = PW[75] ^ w2_0_6 ^ w2_0_12 ^ w2_0_14;
 
-    w2[76] = PW2[76] ^ w2_0_7 ^ w2_0_8___w2_0_12 ^ w2_0_16 ^ w2_0_21;
-    w2[77] = PW2[77];
-    w2[78] = PW2[78] ^ w2_0_7 ^ w2_0_8 ^ w2_0_15 ^ w2_0_18 ^ w2_0_20;
-    w2[79] = PW2[79] ^ w2_0_8 ^ w2_0_22;   
+    w2[76] = PW[76] ^ w2_0_7 ^ w2_0_8___w2_0_12 ^ w2_0_16 ^ w2_0_21;
+    w2[77] = PW[77];
+    w2[78] = PW[78] ^ w2_0_7 ^ w2_0_8 ^ w2_0_15 ^ w2_0_18 ^ w2_0_20;
+    w2[79] = PW[79] ^ w2_0_8 ^ w2_0_22;   
 
     
     // Extend the 16 32-bit words into 80 32-bit words w3
-    w3[16] = PW3[16] ^ w3_0_1;
-    w3[17] = PW3[17];
-    w3[18] = PW3[18];
-    w3[19] = PW3[19] ^ w3_0_2;
-    w3[20] = PW3[20];
-    w3[21] = PW3[21];
-    w3[22] = PW3[22] ^ w3_0_3;
-    w3[23] = PW3[23];
-    w3[24] = PW3[24] ^ w3_0_2;
-    w3[25] = PW3[25] ^ w3_0_4;
-    w3[26] = PW3[26];
-    w3[27] = PW3[27];
-    w3[28] = PW3[28] ^ w3_0_5;
-    w3[29] = PW3[29];
-    w3[30] = PW3[30] ^ w3_0_4 ^ w3_0_2;
-    w3[31] = PW3[31] ^ w3_0_6;
-    w3[32] = PW3[32] ^ w3_0_3 ^ w3_0_2;
-    w3[33] = PW3[33];
-    w3[34] = PW3[34] ^ w3_0_7;
-    w3[35] = PW3[35] ^ w3_0_4;
-    w3[36] = PW3[36] ^ w3_0_6___w3_0_4;
-    w3[37] = PW3[37] ^ w3_0_8;
-    w3[38] = PW3[38] ^ w3_0_4;
-    w3[39] = PW3[39];
-    w3[40] = PW3[40] ^ w3_0_4 ^ w3_0_9;
-    w3[41] = PW3[41];
-    w3[42] = PW3[42] ^ w3_0_6 ^ w3_0_8;
-    w3[43] = PW3[43] ^ w3_0_10;
-    w3[44] = PW3[44] ^ w3_0_6 ^ w3_0_3 ^ w3_0_7;
-    w3[45] = PW3[45];
-    w3[46] = PW3[46] ^ w3_0_4 ^ w3_0_11;
-    w3[47] = PW3[47] ^ w3_0_8___w3_0_4;
-    w3[48] = PW3[48] ^ w3_0_8___w3_0_4 ^ w3_0_3 ^ w3_0_10 ^ w3_0_5;
-    w3[49] = PW3[49] ^ w3_0_12;
-    w3[50] = PW3[50] ^ w3_0_8;
-    w3[51] = PW3[51] ^ w3_0_6___w3_0_4;
-    w3[52] = PW3[52] ^ w3_0_8___w3_0_4 ^ w3_0_13;
-    w3[53] = PW3[53];
-    w3[54] = PW3[54] ^ w3_0_7 ^ w3_0_10 ^ w3_0_12;
-    w3[55] = PW3[55] ^ w3_0_14;
-    w3[56] = PW3[56] ^ w3_0_6___w3_0_4___w3_0_7 ^ w3_0_11 ^ w3_0_10;
-    w3[57] = PW3[57] ^ w3_0_8;
-    w3[58] = PW3[58] ^ w3_0_8___w3_0_4 ^ w3_0_15;
-    w3[59] = PW3[59] ^ w3_0_8___w3_0_12;
-    w3[60] = PW3[60] ^ w3_0_8___w3_0_12 ^ w3_0_4 ^ w3_0_7 ^ w3_0_14;
-    w3[61] = PW3[61] ^ w3_0_16;
-    w3[62] = PW3[62] ^ w3_0_6___w3_0_4 ^ w3_0_8___w3_0_12;
-    w3[63] = PW3[63] ^ w3_0_8;
-    w3[64] = PW3[64] ^ w3_0_6___w3_0_4___w3_0_7 ^ w3_0_8___w3_0_12 ^ w3_0_17;
-    w3[65] = PW3[65];
-    w3[66] = PW3[66] ^ w3_0_14 ^ w3_0_16;
-    w3[67] = PW3[67] ^ w3_0_8 ^ w3_0_18;
-    w3[68] = PW3[68] ^ w3_0_11 ^ w3_0_14 ^ w3_0_15;
-    w3[69] = PW3[69];
-    w3[70] = PW3[70] ^ w3_0_12 ^ w3_0_19;
-    w3[71] = PW3[71] ^ w3_0_12 ^ w3_0_16;
-    w3[72] = PW3[72] ^ w3_0_11 ^ w3_0_12 ^ w3_0_18 ^ w3_0_13 ^ w3_0_16 ^ w3_0_5;
-    w3[73] = PW3[73] ^ w3_0_20;
-    w3[74] = PW3[74] ^ w3_0_8 ^ w3_0_16;
-    w3[75] = PW3[75] ^ w3_0_6 ^ w3_0_12 ^ w3_0_14;
+    w3[16] = PW[16] ^ w3_0_1;
+    w3[17] = PW[17];
+    w3[18] = PW[18];
+    w3[19] = PW[19] ^ w3_0_2;
+    w3[20] = PW[20];
+    w3[21] = PW[21];
+    w3[22] = PW[22] ^ w3_0_3;
+    w3[23] = PW[23];
+    w3[24] = PW[24] ^ w3_0_2;
+    w3[25] = PW[25] ^ w3_0_4;
+    w3[26] = PW[26];
+    w3[27] = PW[27];
+    w3[28] = PW[28] ^ w3_0_5;
+    w3[29] = PW[29];
+    w3[30] = PW[30] ^ w3_0_4 ^ w3_0_2;
+    w3[31] = PW[31] ^ w3_0_6;
+    w3[32] = PW[32] ^ w3_0_3 ^ w3_0_2;
+    w3[33] = PW[33];
+    w3[34] = PW[34] ^ w3_0_7;
+    w3[35] = PW[35] ^ w3_0_4;
+    w3[36] = PW[36] ^ w3_0_6___w3_0_4;
+    w3[37] = PW[37] ^ w3_0_8;
+    w3[38] = PW[38] ^ w3_0_4;
+    w3[39] = PW[39];
+    w3[40] = PW[40] ^ w3_0_4 ^ w3_0_9;
+    w3[41] = PW[41];
+    w3[42] = PW[42] ^ w3_0_6 ^ w3_0_8;
+    w3[43] = PW[43] ^ w3_0_10;
+    w3[44] = PW[44] ^ w3_0_6 ^ w3_0_3 ^ w3_0_7;
+    w3[45] = PW[45];
+    w3[46] = PW[46] ^ w3_0_4 ^ w3_0_11;
+    w3[47] = PW[47] ^ w3_0_8___w3_0_4;
+    w3[48] = PW[48] ^ w3_0_8___w3_0_4 ^ w3_0_3 ^ w3_0_10 ^ w3_0_5;
+    w3[49] = PW[49] ^ w3_0_12;
+    w3[50] = PW[50] ^ w3_0_8;
+    w3[51] = PW[51] ^ w3_0_6___w3_0_4;
+    w3[52] = PW[52] ^ w3_0_8___w3_0_4 ^ w3_0_13;
+    w3[53] = PW[53];
+    w3[54] = PW[54] ^ w3_0_7 ^ w3_0_10 ^ w3_0_12;
+    w3[55] = PW[55] ^ w3_0_14;
+    w3[56] = PW[56] ^ w3_0_6___w3_0_4___w3_0_7 ^ w3_0_11 ^ w3_0_10;
+    w3[57] = PW[57] ^ w3_0_8;
+    w3[58] = PW[58] ^ w3_0_8___w3_0_4 ^ w3_0_15;
+    w3[59] = PW[59] ^ w3_0_8___w3_0_12;
+    w3[60] = PW[60] ^ w3_0_8___w3_0_12 ^ w3_0_4 ^ w3_0_7 ^ w3_0_14;
+    w3[61] = PW[61] ^ w3_0_16;
+    w3[62] = PW[62] ^ w3_0_6___w3_0_4 ^ w3_0_8___w3_0_12;
+    w3[63] = PW[63] ^ w3_0_8;
+    w3[64] = PW[64] ^ w3_0_6___w3_0_4___w3_0_7 ^ w3_0_8___w3_0_12 ^ w3_0_17;
+    w3[65] = PW[65];
+    w3[66] = PW[66] ^ w3_0_14 ^ w3_0_16;
+    w3[67] = PW[67] ^ w3_0_8 ^ w3_0_18;
+    w3[68] = PW[68] ^ w3_0_11 ^ w3_0_14 ^ w3_0_15;
+    w3[69] = PW[69];
+    w3[70] = PW[70] ^ w3_0_12 ^ w3_0_19;
+    w3[71] = PW[71] ^ w3_0_12 ^ w3_0_16;
+    w3[72] = PW[72] ^ w3_0_11 ^ w3_0_12 ^ w3_0_18 ^ w3_0_13 ^ w3_0_16 ^ w3_0_5;
+    w3[73] = PW[73] ^ w3_0_20;
+    w3[74] = PW[74] ^ w3_0_8 ^ w3_0_16;
+    w3[75] = PW[75] ^ w3_0_6 ^ w3_0_12 ^ w3_0_14;
 
-    w3[76] = PW3[76] ^ w3_0_7 ^ w3_0_8___w3_0_12 ^ w3_0_16 ^ w3_0_21;
-    w3[77] = PW3[77];
-    w3[78] = PW3[78] ^ w3_0_7 ^ w3_0_8 ^ w3_0_15 ^ w3_0_18 ^ w3_0_20;
-    w3[79] = PW3[79] ^ w3_0_8 ^ w3_0_22;
+    w3[76] = PW[76] ^ w3_0_7 ^ w3_0_8___w3_0_12 ^ w3_0_16 ^ w3_0_21;
+    w3[77] = PW[77];
+    w3[78] = PW[78] ^ w3_0_7 ^ w3_0_8 ^ w3_0_15 ^ w3_0_18 ^ w3_0_20;
+    w3[79] = PW[79] ^ w3_0_8 ^ w3_0_22;
 
 
     // Extend the 16 32-bit words into 80 32-bit words w4
-    w4[16] = PW4[16] ^ w4_0_1;
-    w4[17] = PW4[17];
-    w4[18] = PW4[18];
-    w4[19] = PW4[19] ^ w4_0_2;
-    w4[20] = PW4[20];
-    w4[21] = PW4[21];
-    w4[22] = PW4[22] ^ w4_0_3;
-    w4[23] = PW4[23];
-    w4[24] = PW4[24] ^ w4_0_2;
-    w4[25] = PW4[25] ^ w4_0_4;
-    w4[26] = PW4[26];
-    w4[27] = PW4[27];
-    w4[28] = PW4[28] ^ w4_0_5;
-    w4[29] = PW4[29];
-    w4[30] = PW4[30] ^ w4_0_4 ^ w4_0_2;
-    w4[31] = PW4[31] ^ w4_0_6;
-    w4[32] = PW4[32] ^ w4_0_3 ^ w4_0_2;
-    w4[33] = PW4[33];
-    w4[34] = PW4[34] ^ w4_0_7;
-    w4[35] = PW4[35] ^ w4_0_4;
-    w4[36] = PW4[36] ^ w4_0_6___w4_0_4;
-    w4[37] = PW4[37] ^ w4_0_8;
-    w4[38] = PW4[38] ^ w4_0_4;
-    w4[39] = PW4[39];
-    w4[40] = PW4[40] ^ w4_0_4 ^ w4_0_9;
-    w4[41] = PW4[41];
-    w4[42] = PW4[42] ^ w4_0_6 ^ w4_0_8;
-    w4[43] = PW4[43] ^ w4_0_10;
-    w4[44] = PW4[44] ^ w4_0_6 ^ w4_0_3 ^ w4_0_7;
-    w4[45] = PW4[45];
-    w4[46] = PW4[46] ^ w4_0_4 ^ w4_0_11;
-    w4[47] = PW4[47] ^ w4_0_8___w4_0_4;
-    w4[48] = PW4[48] ^ w4_0_8___w4_0_4 ^ w4_0_3 ^ w4_0_10 ^ w4_0_5;
-    w4[49] = PW4[49] ^ w4_0_12;
-    w4[50] = PW4[50] ^ w4_0_8;
-    w4[51] = PW4[51] ^ w4_0_6___w4_0_4;
-    w4[52] = PW4[52] ^ w4_0_8___w4_0_4 ^ w4_0_13;
-    w4[53] = PW4[53];
-    w4[54] = PW4[54] ^ w4_0_7 ^ w4_0_10 ^ w4_0_12;
-    w4[55] = PW4[55] ^ w4_0_14;
-    w4[56] = PW4[56] ^ w4_0_6___w4_0_4___w4_0_7 ^ w4_0_11 ^ w4_0_10;
-    w4[57] = PW4[57] ^ w4_0_8;
-    w4[58] = PW4[58] ^ w4_0_8___w4_0_4 ^ w4_0_15;
-    w4[59] = PW4[59] ^ w4_0_8___w4_0_12;
-    w4[60] = PW4[60] ^ w4_0_8___w4_0_12 ^ w4_0_4 ^ w4_0_7 ^ w4_0_14;
-    w4[61] = PW4[61] ^ w4_0_16;
-    w4[62] = PW4[62] ^ w4_0_6___w4_0_4 ^ w4_0_8___w4_0_12;
-    w4[63] = PW4[63] ^ w4_0_8;
-    w4[64] = PW4[64] ^ w4_0_6___w4_0_4___w4_0_7 ^ w4_0_8___w4_0_12 ^ w4_0_17;
-    w4[65] = PW4[65];
-    w4[66] = PW4[66] ^ w4_0_14 ^ w4_0_16;
-    w4[67] = PW4[67] ^ w4_0_8 ^ w4_0_18;
-    w4[68] = PW4[68] ^ w4_0_11 ^ w4_0_14 ^ w4_0_15;
-    w4[69] = PW4[69];
-    w4[70] = PW4[70] ^ w4_0_12 ^ w4_0_19;
-    w4[71] = PW4[71] ^ w4_0_12 ^ w4_0_16;
-    w4[72] = PW4[72] ^ w4_0_11 ^ w4_0_12 ^ w4_0_18 ^ w4_0_13 ^ w4_0_16 ^ w4_0_5;
-    w4[73] = PW4[73] ^ w4_0_20;
-    w4[74] = PW4[74] ^ w4_0_8 ^ w4_0_16;
-    w4[75] = PW4[75] ^ w4_0_6 ^ w4_0_12 ^ w4_0_14;
+    w4[16] = PW[16] ^ w4_0_1;
+    w4[17] = PW[17];
+    w4[18] = PW[18];
+    w4[19] = PW[19] ^ w4_0_2;
+    w4[20] = PW[20];
+    w4[21] = PW[21];
+    w4[22] = PW[22] ^ w4_0_3;
+    w4[23] = PW[23];
+    w4[24] = PW[24] ^ w4_0_2;
+    w4[25] = PW[25] ^ w4_0_4;
+    w4[26] = PW[26];
+    w4[27] = PW[27];
+    w4[28] = PW[28] ^ w4_0_5;
+    w4[29] = PW[29];
+    w4[30] = PW[30] ^ w4_0_4 ^ w4_0_2;
+    w4[31] = PW[31] ^ w4_0_6;
+    w4[32] = PW[32] ^ w4_0_3 ^ w4_0_2;
+    w4[33] = PW[33];
+    w4[34] = PW[34] ^ w4_0_7;
+    w4[35] = PW[35] ^ w4_0_4;
+    w4[36] = PW[36] ^ w4_0_6___w4_0_4;
+    w4[37] = PW[37] ^ w4_0_8;
+    w4[38] = PW[38] ^ w4_0_4;
+    w4[39] = PW[39];
+    w4[40] = PW[40] ^ w4_0_4 ^ w4_0_9;
+    w4[41] = PW[41];
+    w4[42] = PW[42] ^ w4_0_6 ^ w4_0_8;
+    w4[43] = PW[43] ^ w4_0_10;
+    w4[44] = PW[44] ^ w4_0_6 ^ w4_0_3 ^ w4_0_7;
+    w4[45] = PW[45];
+    w4[46] = PW[46] ^ w4_0_4 ^ w4_0_11;
+    w4[47] = PW[47] ^ w4_0_8___w4_0_4;
+    w4[48] = PW[48] ^ w4_0_8___w4_0_4 ^ w4_0_3 ^ w4_0_10 ^ w4_0_5;
+    w4[49] = PW[49] ^ w4_0_12;
+    w4[50] = PW[50] ^ w4_0_8;
+    w4[51] = PW[51] ^ w4_0_6___w4_0_4;
+    w4[52] = PW[52] ^ w4_0_8___w4_0_4 ^ w4_0_13;
+    w4[53] = PW[53];
+    w4[54] = PW[54] ^ w4_0_7 ^ w4_0_10 ^ w4_0_12;
+    w4[55] = PW[55] ^ w4_0_14;
+    w4[56] = PW[56] ^ w4_0_6___w4_0_4___w4_0_7 ^ w4_0_11 ^ w4_0_10;
+    w4[57] = PW[57] ^ w4_0_8;
+    w4[58] = PW[58] ^ w4_0_8___w4_0_4 ^ w4_0_15;
+    w4[59] = PW[59] ^ w4_0_8___w4_0_12;
+    w4[60] = PW[60] ^ w4_0_8___w4_0_12 ^ w4_0_4 ^ w4_0_7 ^ w4_0_14;
+    w4[61] = PW[61] ^ w4_0_16;
+    w4[62] = PW[62] ^ w4_0_6___w4_0_4 ^ w4_0_8___w4_0_12;
+    w4[63] = PW[63] ^ w4_0_8;
+    w4[64] = PW[64] ^ w4_0_6___w4_0_4___w4_0_7 ^ w4_0_8___w4_0_12 ^ w4_0_17;
+    w4[65] = PW[65];
+    w4[66] = PW[66] ^ w4_0_14 ^ w4_0_16;
+    w4[67] = PW[67] ^ w4_0_8 ^ w4_0_18;
+    w4[68] = PW[68] ^ w4_0_11 ^ w4_0_14 ^ w4_0_15;
+    w4[69] = PW[69];
+    w4[70] = PW[70] ^ w4_0_12 ^ w4_0_19;
+    w4[71] = PW[71] ^ w4_0_12 ^ w4_0_16;
+    w4[72] = PW[72] ^ w4_0_11 ^ w4_0_12 ^ w4_0_18 ^ w4_0_13 ^ w4_0_16 ^ w4_0_5;
+    w4[73] = PW[73] ^ w4_0_20;
+    w4[74] = PW[74] ^ w4_0_8 ^ w4_0_16;
+    w4[75] = PW[75] ^ w4_0_6 ^ w4_0_12 ^ w4_0_14;
 
-    w4[76] = PW4[76] ^ w4_0_7 ^ w4_0_8___w4_0_12 ^ w4_0_16 ^ w4_0_21;
-    w4[77] = PW4[77];
-    w4[78] = PW4[78] ^ w4_0_7 ^ w4_0_8 ^ w4_0_15 ^ w4_0_18 ^ w4_0_20;
-    w4[79] = PW4[79] ^ w4_0_8 ^ w4_0_22;
+    w4[76] = PW[76] ^ w4_0_7 ^ w4_0_8___w4_0_12 ^ w4_0_16 ^ w4_0_21;
+    w4[77] = PW[77];
+    w4[78] = PW[78] ^ w4_0_7 ^ w4_0_8 ^ w4_0_15 ^ w4_0_18 ^ w4_0_20;
+    w4[79] = PW[79] ^ w4_0_8 ^ w4_0_22;
 
     // Initialize hash value for this chunk
     //a = hash_buffer[0];
