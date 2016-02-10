@@ -18,8 +18,63 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module SHA1();
-
+module SHA1(clk, hash);
+	input clk;
+	output [159:0] hash;
+	
+	//Test password: aabb
+	parameter [31:0] M1  = 32'h61616262;
+	parameter [31:0] M2  = 32'h80000000;
+	parameter [31:0] M3  = 32'h00000000;
+	parameter [31:0] M4  = 32'h00000000;
+	parameter [31:0] M5  = 32'h00000000;
+	parameter [31:0] M6  = 32'h00000000;
+	parameter [31:0] M7  = 32'h00000000;
+	parameter [31:0] M8  = 32'h00000000;
+	parameter [31:0] M9  = 32'h00000000;
+	parameter [31:0] M10 = 32'h00000000;
+	parameter [31:0] M11 = 32'h00000000;
+	parameter [31:0] M12 = 32'h00000000;
+	parameter [31:0] M13 = 32'h00000000;
+	parameter [31:0] M14 = 32'h00000000;
+	parameter [31:0] M15 = 32'h00000000;
+	parameter [31:0] M16 = 32'h00000020;
+	
+	//Initial Buffer Values
+	parameter [31:0] h0 = 32'h67452301;
+	parameter [31:0] h1 = 32'hEFCDAB89;
+	parameter [31:0] h2 = 32'h98BADCFE;
+	parameter [31:0] h3 = 32'h10325476;
+	parameter [31:0] h4 = 32'hC3D2E1F0;
+	
+	//w[0] through w[15]
+	wire [32:0] w0,w1,w2,w3;
+	wire [32:0] w4,w5,w6,w7;
+	wire [32:0] w8,w9,w10,w11;
+	wire [32:0] w12,w13,w14,w15;
+	
+	//w[16] through w[79]
+	wire [32:0] w16,w17,w18,w19;
+	wire [32:0] w20,w21,w22,w23;
+	wire [32:0] w24,w25,w26,w27;
+	wire [32:0] w28,w29,w30,w31;
+	wire [32:0] w32,w33,w34,w35;
+	wire [32:0] w36,w37,w38,w39;
+	wire [32:0] w40,w41,w42,w43;
+	wire [32:0] w44,w45,w46,w47;
+	wire [32:0] w48,w49,w50,w51;
+	wire [32:0] w52,w53,w54,w55;
+	wire [32:0] w56,w57,w58,w59;
+	wire [32:0] w60,w61,w62,w63;
+	wire [32:0] w64,w65,w66,w67;
+	wire [32:0] w68,w69,w70,w71;
+	wire [32:0] w72,w73,w74,w75;
+	wire [32:0] w76,w77,w78,w79;
+	
+	
+	
+	
+	
 
 
 endmodule
@@ -294,5 +349,117 @@ module f3(b, c, d, y);
 	
 	xor_gate32 xor1(b,c,wire1);
 	xor_gate32 xor2(wire1,d,y);
+	
+endmodule
+
+module round1(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
+	input [31:0] a, b, c, d, e, w, k;
+	output reg [31:0] aOut, bOut, cOut, dOut, eOut;
+	
+	wire [31:0] f, t1, t2, t3, t4, t5, temp;
+	
+	f1 F1(b, c, d, f);
+	
+	//temp = (a leftrotate 5) + f + e + k + w[i] --> t1 + t3 + t2 --> temp = t1 + t4
+	left_rotate5 rotate(a,t1);
+	add_gate32 addkw(k,w,t2);
+	add_gate32 addfe(f,e,t3);
+	add_gate32 addt3t2(t3,t2,t4);
+	add_gate32 addtemp(t1,t4,temp);
+	
+	always@(a or b or c or d or e or w or k)		
+	begin	
+	
+		eOut = d;
+		dOut = c;
+		left_rotate30 rotateC(b,cOut);
+		bOut = a;
+		aOut = temp;
+	
+	end
+	
+endmodule
+
+module round2(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
+	input [31:0] a, b, c, d, e, w, k;
+	output reg [31:0] aOut, bOut, cOut, dOut, eOut;
+	
+	wire [31:0] f, t1, t2, t3, t4, t5, temp;
+	
+	f2 F2(b, c, d, f);
+	
+	//temp = (a leftrotate 5) + f + e + k + w[i] --> t1 + t3 + t2 --> temp = t1 + t4
+	left_rotate5 rotate(a,t1);
+	add_gate32 addkw(k,w,t2);
+	add_gate32 addfe(f,e,t3);
+	add_gate32 addt3t2(t3,t2,t4);
+	add_gate32 addtemp(t1,t4,temp);
+	
+	always@(a or b or c or d or e or w or k)		
+	begin	
+	
+		eOut = d;
+		dOut = c;
+		left_rotate30 rotateC(b,cOut);
+		bOut = a;
+		aOut = temp;
+	
+	end
+	
+endmodule
+
+module round3(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
+	input [31:0] a, b, c, d, e, w, k;
+	output reg [31:0] aOut, bOut, cOut, dOut, eOut;
+	
+	wire [31:0] f, t1, t2, t3, t4, t5, temp;
+	
+	f3 F3(b, c, d, f);
+	
+	//temp = (a leftrotate 5) + f + e + k + w[i] --> t1 + t3 + t2 --> temp = t1 + t4
+	left_rotate5 rotate(a,t1);
+	add_gate32 addkw(k,w,t2);
+	add_gate32 addfe(f,e,t3);
+	add_gate32 addt3t2(t3,t2,t4);
+	add_gate32 addtemp(t1,t4,temp);
+	
+	always@(a or b or c or d or e or w or k)		
+	begin	
+	
+		eOut = d;
+		dOut = c;
+		left_rotate30 rotateC(b,cOut);
+		bOut = a;
+		aOut = temp;
+	
+	end
+	
+endmodule
+
+module round4(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
+	input [31:0] a, b, c, d, e, w, k;
+	output reg [31:0] aOut, bOut, cOut, dOut, eOut;
+	
+	wire [31:0] f, t1, t2, t3, t4, t5, temp;
+	
+	f4 F4(b, c, d, f);
+	
+	//temp = (a leftrotate 5) + f + e + k + w[i] --> t1 + t3 + t2 --> temp = t1 + t4
+	left_rotate5 rotate(a,t1);
+	add_gate32 addkw(k,w,t2);
+	add_gate32 addfe(f,e,t3);
+	add_gate32 addt3t2(t3,t2,t4);
+	add_gate32 addtemp(t1,t4,temp);
+	
+	always@(a or b or c or d or e or w or k)		
+	begin	
+	
+		eOut = d;
+		dOut = c;
+		left_rotate30 rotateC(b,cOut);
+		bOut = a;
+		aOut = temp;
+	
+	end
 	
 endmodule
