@@ -2137,7 +2137,7 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
 
 void printSHA(uint32_t hash_buffer[5])
 {
-    printf("SHA-1: %X%X%X%X%X\n", hash_buffer[0], hash_buffer[1], hash_buffer[2], hash_buffer[3], hash_buffer[4]);
+    printf("SHA-1: %x%x%x%x%x\n", hash_buffer[0], hash_buffer[1], hash_buffer[2], hash_buffer[3], hash_buffer[4]);
     //printf("SHA-1: %X%X%X%X%X\n", hash_buffer[4], hash_buffer[3], hash_buffer[2], hash_buffer[1], hash_buffer[0]);
 }
 
