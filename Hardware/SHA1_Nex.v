@@ -18,14 +18,12 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module SHA1(clk, L);
+module SHA1(clk, hash);
 	input clk;
-	output L;
-	
-	wire [159:0] hash;
+	output [159:0] hash;
 	
 	//Test password: aabb
-	parameter [31:0] M0  = 32'h62800000;
+	parameter [31:0] M0  = 32'h61800000;
 	parameter [31:0] M1  = 32'h00000000;
 	parameter [31:0] M2  = 32'h00000000;
 	parameter [31:0] M3  = 32'h00000000;
@@ -348,10 +346,6 @@ module SHA1(clk, L);
 	add_32 finalC(h2,cF,hash[95:64]);
 	add_32 finalD(h3,dF,hash[63:32]);
 	add_32 finalE(h4,eF,hash[31:0]);
-	
-	parameter [159:0] expected_hash = 160'h86f7e437faa5a7fce15d1ddcb9eaeaea377667b8;
-	
-	assign L = !(expected_hash ^ hash);
 
 endmodule
 
