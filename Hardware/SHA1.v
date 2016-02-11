@@ -1,9 +1,9 @@
-`timescale 1ns / 1ps
+`timescale 1ns / 100ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
-// Engineer:
+// Engineer: 
 // 
-// Create Date:    20:31:52 02/09/2016 
+// Create Date:    17:40:13 02/10/2016 
 // Design Name: 
 // Module Name:    SHA1 
 // Project Name: 
@@ -23,8 +23,8 @@ module SHA1(clk, hash);
 	output [159:0] hash;
 	
 	//Test password: aabb
-	parameter [31:0] M0  = 32'h61616262;
-	parameter [31:0] M1  = 32'h80000000;
+	parameter [31:0] M0  = 32'h61800000;
+	parameter [31:0] M1  = 32'h00000000;
 	parameter [31:0] M2  = 32'h00000000;
 	parameter [31:0] M3  = 32'h00000000;
 	parameter [31:0] M4  = 32'h00000000;
@@ -32,13 +32,13 @@ module SHA1(clk, hash);
 	parameter [31:0] M6  = 32'h00000000;
 	parameter [31:0] M7  = 32'h00000000;
 	parameter [31:0] M8  = 32'h00000000;
-	parameter [31:0] M9 = 32'h00000000;
+	parameter [31:0] M9  = 32'h00000000;
 	parameter [31:0] M10 = 32'h00000000;
 	parameter [31:0] M11 = 32'h00000000;
 	parameter [31:0] M12 = 32'h00000000;
 	parameter [31:0] M13 = 32'h00000000;
 	parameter [31:0] M14 = 32'h00000000;
-	parameter [31:0] M15 = 32'h00000020;
+	parameter [31:0] M15 = 32'h00000008;
 	
 	//Initial Buffer Values
 	parameter [31:0] h0 = 32'h67452301;
@@ -182,70 +182,70 @@ module SHA1(clk, hash);
 	assign w15 = M15;
 	
 	//Expand 16 32-bit words into 80 32-bit words
-	w_expand expandWords16(.w1(w13), .w2(w8), .w3(w2), .w4(0), .wout(w16));
-	w_expand expandWords17(.w1(w14), .w2(w9), .w3(w3), .w4(1), .wout(w17));
-	w_expand expandWords18(.w1(w15), .w2(w10), .w3(w4), .w4(2), .wout(w18));
-	w_expand expandWords19(.w1(w16), .w2(w11), .w3(w5), .w4(3), .wout(w19));
-	w_expand expandWords20(.w1(w17), .w2(w12), .w3(w6), .w4(4), .wout(w20));
-	w_expand expandWords21(.w1(w18), .w2(w13), .w3(w7), .w4(5), .wout(w21));
-	w_expand expandWords22(.w1(w19), .w2(w14), .w3(w8), .w4(6), .wout(w22));
-	w_expand expandWords23(.w1(w20), .w2(w15), .w3(w9), .w4(7), .wout(w23));
-	w_expand expandWords24(.w1(w21), .w2(w16), .w3(w10), .w4(8), .wout(w24));
-	w_expand expandWords25(.w1(w22), .w2(w17), .w3(w11), .w4(9), .wout(w25));
-	w_expand expandWords26(.w1(w23), .w2(w18), .w3(w12), .w4(10), .wout(w26));
-	w_expand expandWords27(.w1(w24), .w2(w19), .w3(w13), .w4(11), .wout(w27));
-	w_expand expandWords28(.w1(w25), .w2(w20), .w3(w14), .w4(12), .wout(w28));
-	w_expand expandWords29(.w1(w26), .w2(w21), .w3(w15), .w4(13), .wout(w29));
-	w_expand expandWords30(.w1(w27), .w2(w22), .w3(w16), .w4(14), .wout(w30));
-	w_expand expandWords31(.w1(w28), .w2(w23), .w3(w17), .w4(15), .wout(w31));
-	w_expand expandWords32(.w1(w29), .w2(w24), .w3(w18), .w4(16), .wout(w32));
-	w_expand expandWords33(.w1(w30), .w2(w25), .w3(w19), .w4(17), .wout(w33));
-	w_expand expandWords34(.w1(w31), .w2(w26), .w3(w20), .w4(18), .wout(w34));
-	w_expand expandWords35(.w1(w32), .w2(w27), .w3(w21), .w4(19), .wout(w35));
-	w_expand expandWords36(.w1(w33), .w2(w28), .w3(w22), .w4(20), .wout(w36));
-	w_expand expandWords37(.w1(w34), .w2(w29), .w3(w23), .w4(21), .wout(w37));
-	w_expand expandWords38(.w1(w35), .w2(w30), .w3(w24), .w4(22), .wout(w38));
-	w_expand expandWords39(.w1(w36), .w2(w31), .w3(w25), .w4(23), .wout(w39));
-	w_expand expandWords40(.w1(w37), .w2(w32), .w3(w26), .w4(24), .wout(w40));
-	w_expand expandWords41(.w1(w38), .w2(w33), .w3(w27), .w4(25), .wout(w41));
-	w_expand expandWords42(.w1(w39), .w2(w34), .w3(w28), .w4(26), .wout(w42));
-	w_expand expandWords43(.w1(w40), .w2(w35), .w3(w29), .w4(27), .wout(w43));
-	w_expand expandWords44(.w1(w41), .w2(w36), .w3(w30), .w4(28), .wout(w44));
-	w_expand expandWords45(.w1(w42), .w2(w37), .w3(w31), .w4(29), .wout(w45));
-	w_expand expandWords46(.w1(w43), .w2(w38), .w3(w32), .w4(30), .wout(w46));
-	w_expand expandWords47(.w1(w44), .w2(w39), .w3(w33), .w4(31), .wout(w47));
-	w_expand expandWords48(.w1(w45), .w2(w40), .w3(w34), .w4(32), .wout(w48));
-	w_expand expandWords49(.w1(w46), .w2(w41), .w3(w35), .w4(33), .wout(w49));
-	w_expand expandWords50(.w1(w47), .w2(w42), .w3(w36), .w4(34), .wout(w50));
-	w_expand expandWords51(.w1(w48), .w2(w43), .w3(w37), .w4(35), .wout(w51));
-	w_expand expandWords52(.w1(w49), .w2(w44), .w3(w38), .w4(36), .wout(w52));
-	w_expand expandWords53(.w1(w50), .w2(w45), .w3(w39), .w4(37), .wout(w53));
-	w_expand expandWords54(.w1(w51), .w2(w46), .w3(w40), .w4(38), .wout(w54));
-	w_expand expandWords55(.w1(w52), .w2(w47), .w3(w41), .w4(39), .wout(w55));
-	w_expand expandWords56(.w1(w53), .w2(w48), .w3(w42), .w4(40), .wout(w56));
-	w_expand expandWords57(.w1(w54), .w2(w49), .w3(w43), .w4(41), .wout(w57));
-	w_expand expandWords58(.w1(w55), .w2(w50), .w3(w44), .w4(42), .wout(w58));
-	w_expand expandWords59(.w1(w56), .w2(w51), .w3(w45), .w4(43), .wout(w59));
-	w_expand expandWords60(.w1(w57), .w2(w52), .w3(w46), .w4(44), .wout(w60));
-	w_expand expandWords61(.w1(w58), .w2(w53), .w3(w47), .w4(45), .wout(w61));
-	w_expand expandWords62(.w1(w59), .w2(w54), .w3(w48), .w4(46), .wout(w62));
-	w_expand expandWords63(.w1(w60), .w2(w55), .w3(w49), .w4(47), .wout(w63));
-	w_expand expandWords64(.w1(w61), .w2(w56), .w3(w50), .w4(48), .wout(w64));
-	w_expand expandWords65(.w1(w62), .w2(w57), .w3(w51), .w4(49), .wout(w65));
-	w_expand expandWords66(.w1(w63), .w2(w58), .w3(w52), .w4(50), .wout(w66));
-	w_expand expandWords67(.w1(w64), .w2(w59), .w3(w53), .w4(51), .wout(w67));
-	w_expand expandWords68(.w1(w65), .w2(w60), .w3(w54), .w4(52), .wout(w68));
-	w_expand expandWords69(.w1(w66), .w2(w61), .w3(w55), .w4(53), .wout(w69));
-	w_expand expandWords70(.w1(w67), .w2(w62), .w3(w56), .w4(54), .wout(w70));
-	w_expand expandWords71(.w1(w68), .w2(w63), .w3(w57), .w4(55), .wout(w71));
-	w_expand expandWords72(.w1(w69), .w2(w64), .w3(w58), .w4(56), .wout(w72));
-	w_expand expandWords73(.w1(w70), .w2(w65), .w3(w59), .w4(57), .wout(w73));
-	w_expand expandWords74(.w1(w71), .w2(w66), .w3(w60), .w4(58), .wout(w74));
-	w_expand expandWords75(.w1(w72), .w2(w67), .w3(w61), .w4(59), .wout(w75));
-	w_expand expandWords76(.w1(w73), .w2(w68), .w3(w62), .w4(60), .wout(w76));
-	w_expand expandWords77(.w1(w74), .w2(w69), .w3(w63), .w4(61), .wout(w77));
-	w_expand expandWords78(.w1(w75), .w2(w70), .w3(w64), .w4(62), .wout(w78));
-	w_expand expandWords79(.w1(w76), .w2(w71), .w3(w65), .w4(63), .wout(w79));
+	w_expand expandWords16(.w1(w13), .w2(w8), .w3(w2), .w4(w0), .wout(w16));
+	w_expand expandWords17(.w1(w14), .w2(w9), .w3(w3), .w4(w1), .wout(w17));
+	w_expand expandWords18(.w1(w15), .w2(w10), .w3(w4), .w4(w2), .wout(w18));
+	w_expand expandWords19(.w1(w16), .w2(w11), .w3(w5), .w4(w3), .wout(w19));
+	w_expand expandWords20(.w1(w17), .w2(w12), .w3(w6), .w4(w4), .wout(w20));
+	w_expand expandWords21(.w1(w18), .w2(w13), .w3(w7), .w4(w5), .wout(w21));
+	w_expand expandWords22(.w1(w19), .w2(w14), .w3(w8), .w4(w6), .wout(w22));
+	w_expand expandWords23(.w1(w20), .w2(w15), .w3(w9), .w4(w7), .wout(w23));
+	w_expand expandWords24(.w1(w21), .w2(w16), .w3(w10), .w4(w8), .wout(w24));
+	w_expand expandWords25(.w1(w22), .w2(w17), .w3(w11), .w4(w9), .wout(w25));
+	w_expand expandWords26(.w1(w23), .w2(w18), .w3(w12), .w4(w10), .wout(w26));
+	w_expand expandWords27(.w1(w24), .w2(w19), .w3(w13), .w4(w11), .wout(w27));
+	w_expand expandWords28(.w1(w25), .w2(w20), .w3(w14), .w4(w12), .wout(w28));
+	w_expand expandWords29(.w1(w26), .w2(w21), .w3(w15), .w4(w13), .wout(w29));
+	w_expand expandWords30(.w1(w27), .w2(w22), .w3(w16), .w4(w14), .wout(w30));
+	w_expand expandWords31(.w1(w28), .w2(w23), .w3(w17), .w4(w15), .wout(w31));
+	w_expand expandWords32(.w1(w29), .w2(w24), .w3(w18), .w4(w16), .wout(w32));
+	w_expand expandWords33(.w1(w30), .w2(w25), .w3(w19), .w4(w17), .wout(w33));
+	w_expand expandWords34(.w1(w31), .w2(w26), .w3(w20), .w4(w18), .wout(w34));
+	w_expand expandWords35(.w1(w32), .w2(w27), .w3(w21), .w4(w19), .wout(w35));
+	w_expand expandWords36(.w1(w33), .w2(w28), .w3(w22), .w4(w20), .wout(w36));
+	w_expand expandWords37(.w1(w34), .w2(w29), .w3(w23), .w4(w21), .wout(w37));
+	w_expand expandWords38(.w1(w35), .w2(w30), .w3(w24), .w4(w22), .wout(w38));
+	w_expand expandWords39(.w1(w36), .w2(w31), .w3(w25), .w4(w23), .wout(w39));
+	w_expand expandWords40(.w1(w37), .w2(w32), .w3(w26), .w4(w24), .wout(w40));
+	w_expand expandWords41(.w1(w38), .w2(w33), .w3(w27), .w4(w25), .wout(w41));
+	w_expand expandWords42(.w1(w39), .w2(w34), .w3(w28), .w4(w26), .wout(w42));
+	w_expand expandWords43(.w1(w40), .w2(w35), .w3(w29), .w4(w27), .wout(w43));
+	w_expand expandWords44(.w1(w41), .w2(w36), .w3(w30), .w4(w28), .wout(w44));
+	w_expand expandWords45(.w1(w42), .w2(w37), .w3(w31), .w4(w29), .wout(w45));
+	w_expand expandWords46(.w1(w43), .w2(w38), .w3(w32), .w4(w30), .wout(w46));
+	w_expand expandWords47(.w1(w44), .w2(w39), .w3(w33), .w4(w31), .wout(w47));
+	w_expand expandWords48(.w1(w45), .w2(w40), .w3(w34), .w4(w32), .wout(w48));
+	w_expand expandWords49(.w1(w46), .w2(w41), .w3(w35), .w4(w33), .wout(w49));
+	w_expand expandWords50(.w1(w47), .w2(w42), .w3(w36), .w4(w34), .wout(w50));
+	w_expand expandWords51(.w1(w48), .w2(w43), .w3(w37), .w4(w35), .wout(w51));
+	w_expand expandWords52(.w1(w49), .w2(w44), .w3(w38), .w4(w36), .wout(w52));
+	w_expand expandWords53(.w1(w50), .w2(w45), .w3(w39), .w4(w37), .wout(w53));
+	w_expand expandWords54(.w1(w51), .w2(w46), .w3(w40), .w4(w38), .wout(w54));
+	w_expand expandWords55(.w1(w52), .w2(w47), .w3(w41), .w4(w39), .wout(w55));
+	w_expand expandWords56(.w1(w53), .w2(w48), .w3(w42), .w4(w40), .wout(w56));
+	w_expand expandWords57(.w1(w54), .w2(w49), .w3(w43), .w4(w41), .wout(w57));
+	w_expand expandWords58(.w1(w55), .w2(w50), .w3(w44), .w4(w42), .wout(w58));
+	w_expand expandWords59(.w1(w56), .w2(w51), .w3(w45), .w4(w43), .wout(w59));
+	w_expand expandWords60(.w1(w57), .w2(w52), .w3(w46), .w4(w44), .wout(w60));
+	w_expand expandWords61(.w1(w58), .w2(w53), .w3(w47), .w4(w45), .wout(w61));
+	w_expand expandWords62(.w1(w59), .w2(w54), .w3(w48), .w4(w46), .wout(w62));
+	w_expand expandWords63(.w1(w60), .w2(w55), .w3(w49), .w4(w47), .wout(w63));
+	w_expand expandWords64(.w1(w61), .w2(w56), .w3(w50), .w4(w48), .wout(w64));
+	w_expand expandWords65(.w1(w62), .w2(w57), .w3(w51), .w4(w49), .wout(w65));
+	w_expand expandWords66(.w1(w63), .w2(w58), .w3(w52), .w4(w50), .wout(w66));
+	w_expand expandWords67(.w1(w64), .w2(w59), .w3(w53), .w4(w51), .wout(w67));
+	w_expand expandWords68(.w1(w65), .w2(w60), .w3(w54), .w4(w52), .wout(w68));
+	w_expand expandWords69(.w1(w66), .w2(w61), .w3(w55), .w4(w53), .wout(w69));
+	w_expand expandWords70(.w1(w67), .w2(w62), .w3(w56), .w4(w54), .wout(w70));
+	w_expand expandWords71(.w1(w68), .w2(w63), .w3(w57), .w4(w55), .wout(w71));
+	w_expand expandWords72(.w1(w69), .w2(w64), .w3(w58), .w4(w56), .wout(w72));
+	w_expand expandWords73(.w1(w70), .w2(w65), .w3(w59), .w4(w57), .wout(w73));
+	w_expand expandWords74(.w1(w71), .w2(w66), .w3(w60), .w4(w58), .wout(w74));
+	w_expand expandWords75(.w1(w72), .w2(w67), .w3(w61), .w4(w59), .wout(w75));
+	w_expand expandWords76(.w1(w73), .w2(w68), .w3(w62), .w4(w60), .wout(w76));
+	w_expand expandWords77(.w1(w74), .w2(w69), .w3(w63), .w4(w61), .wout(w77));
+	w_expand expandWords78(.w1(w75), .w2(w70), .w3(w64), .w4(w62), .wout(w78));
+	w_expand expandWords79(.w1(w76), .w2(w71), .w3(w65), .w4(w63), .wout(w79));
 	
 	//Round 1 (i = 0 through i = 19)
 	round1 i0(h0, h1, h2, h3, h4, w0, k0, a1, b1, c1, d1, e1);
@@ -639,7 +639,7 @@ module round1(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
 	
 	left_rotate30 rotateC(b,ctemp);
 	
-	always@(a or b or c or d or e or w or k)		
+	always@(a or c or d or temp or ctemp)		
 	begin	
 	
 		eOut = d;
@@ -669,7 +669,7 @@ module round2(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
 	
 	left_rotate30 rotateC(b,ctemp);
 	
-	always@(a or b or c or d or e or w or k)		
+	always@(a or c or d or temp or ctemp)		
 	begin	
 	
 		eOut = d;
@@ -699,7 +699,7 @@ module round3(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
 	
 	left_rotate30 rotateC(b,ctemp);
 	
-	always@(a or b or c or d or e or w or k)		
+	always@(a or c or d or temp or ctemp)		
 	begin	
 	
 		eOut = d;
@@ -729,7 +729,7 @@ module round4(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
 	
 	left_rotate30 rotateC(b,ctemp);
 	
-	always@(a or b or c or d or e or w or k)		
+	always@(a or c or d or temp or ctemp)		
 	begin	
 	
 		eOut = d;
