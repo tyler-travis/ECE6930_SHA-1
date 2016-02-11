@@ -9,16 +9,7 @@
 //	Some Ideas for future optimization/readability
 //********************************************************************
 //
-//  -  Use a struct to carry all the information besides the message
-//     and chunks array, that way we can condense the information
-//     better.
-//
-//  -  Optimize the SHA_Iteration function to better use the boolean
-//     expressions.
-//
 //	-  pthreads
-//
-//	-  Figure out how to do the SHA-1 XOR optimizations
 //
 //********************************************************************
 
@@ -32,6 +23,7 @@
 #include <string.h>
 #include <immintrin.h>
 #include <time.h>
+#include <pthread.h>
 #include <sys/time.h>
 
 //********************************************************************
@@ -86,41 +78,113 @@ bool SHAcompareVEC(__m128i vecInput1, __m128i vecResult1, uint32_t vecInput2, ui
 uint32_t rotl(uint32_t value, uint16_t shift);
 
 //********************************************************************
+//	Function for Threads setup
+//********************************************************************
+
+typedef struct character_set_thread_data
+{
+    uint32_t thread_no;
+    char starting_password[10];
+    char ending_password[10];
+    uint32_t starting_length;
+    uint32_t compare_hash[5];
+} thread_data;
+
+void generateCharacterSet(void *ptr);
+
+//********************************************************************
 //	Main Function
 //********************************************************************
 
 int main(int argc, char** argv)
 {
+    // Input hash
     uint32_t input_hash[5];
     printf("argv[1] = %s\n", argv[1]);
 
     sscanf(argv[1], "%8x%8x%8x%8x%8x", &input_hash[0], &input_hash[1],
             &input_hash[2], &input_hash[3], &input_hash[4]);
 
+    // Define the variables for timing
     struct timeval start, end;
 
+    // Declare the threads
+    pthread_t thread0, thread1, thread2, thread3;
+
+
+    // get the start time
     gettimeofday(&start, NULL);
 
+    
+    
+    // Get the end time
+    gettimeofday(&end, NULL);
+    // Take the difference to get the total time taken
+    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
+                - (start.tv_sec * 1000000 + start.tv_usec)));
+
     // Initialize hash_buffer
+    //End program
+    return 0;
+}
+
+//********************************************************************
+//	Function Definitions
+//********************************************************************
+
+void generateCharacterSet(void *ptr)
+{
+    // declare a thread_data pointer
+    // to hold all the input data
+    thread_data *data;
+
+    // set the data equal to the input
+    data = (thread_data*)ptr;
+
+    // declare the compare_hash array
+    uint32_t compare_hash[5];
+
+    // declare the starting and ending password for
+    // this function
+    char starting_password[10];
+    char ending_password[10];
+
+    // declare the starting length
+    uint32_t starting_length = data->starting_length;
+
+    // Copy over the character set and the hash to compare against
+    memcpy(starting_password, data->starting_password, sizeof(starting_password));
+    memcpy(ending_password, data->ending_password, sizeof(ending_password));
+    memcpy(compare_hash, data->compare_hash, sizeof(compare_hash));
+
+    // Start generating passwords up to length 10 for the character_set given
+
+    // Declare the hash_buffers for SHA1
     uint32_t hash_buffer1[5];
     uint32_t hash_buffer2[5];
     uint32_t hash_buffer3[5];
     uint32_t hash_buffer4[5];
 
-    char password1[11];
-    char password2[11];
-    char password3[11];
-    char password4[11];
+    char password1[10];
+    char password2[10];
+    char password3[10];
+    char password4[10];
+
+    // Copy over the starting passworrd to the password string
+    memcpy(password1, starting_password, sizeof(password1));
+    memcpy(password2, starting_password, sizeof(password2));
+    memcpy(password3, starting_password, sizeof(password3));
+    memcpy(password4, starting_password, sizeof(password4));
+
+    // Increment password 2, 3, and 4 
+    password2[0] += 1;
+    password3[0] += 2;
+    password4[0] += 3;
 
     uint32_t i,j,k,l,m,n,o,p,q,r,s;
 
-    for(i = 0; i < string_size; ++i)
+    for(i = starting_length - 1; i < string_size; ++i)
     {
-        // Set the null terminator in the correct location
-        //password1[i + 1] = 0x00;
-        //password2[i + 1] = 0x00;
-        //password3[i + 1] = 0x00;
-        //password4[i + 1] = 0x00;
         for(j = 0; (j < N); j++)
         {
             // If this is the first time here,
@@ -132,51 +196,30 @@ int main(int argc, char** argv)
                 password4[0] = character_set[j];
                 SHA1(password1, password2, password3, password4,
                         hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 1);
-                //printf("password1: %s\n", password1);
-                //printSHA(hash_buffer1);
-                //printf("password2: %s\n", password2);
-                //printSHA(hash_buffer2);
-                //printf("password3: %s\n", password3);
-                //printSHA(hash_buffer3);
-                //printf("password4: %s\n", password4);
-                //printSHA(hash_buffer4);
 
-
-                if(SHAcompare(hash_buffer1, input_hash))
+                if(SHAcompare(hash_buffer1, compare_hash))
                 {
                     printf("Found match!\nPassword: %s\n", password1);
                     printSHA(hash_buffer1);
-                    gettimeofday(&end, NULL);
-                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                - (start.tv_sec * 1000000 + start.tv_usec)));
-                    return 0;
+                    pthread_exit(0);
                 }
-                else if(SHAcompare(hash_buffer2, input_hash))
+                else if(SHAcompare(hash_buffer2, compare_hash))
                 {
                     printf("Found match!\nPassword: %s\n", password2);
                     printSHA(hash_buffer2);
-                    gettimeofday(&end, NULL);
-                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                - (start.tv_sec * 1000000 + start.tv_usec)));
-                    return 0;
+                    pthread_exit(0);
                 }
-                else if(SHAcompare(hash_buffer3, input_hash))
+                else if(SHAcompare(hash_buffer3, compare_hash))
                 {
                     printf("Found match!\nPassword: %s\n", password3);
                     printSHA(hash_buffer3);
-                    gettimeofday(&end, NULL);
-                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                - (start.tv_sec * 1000000 + start.tv_usec)));
-                    return 0;
+                    pthread_exit(0);
                 }
-                else if(SHAcompare(hash_buffer4, input_hash))
+                else if(SHAcompare(hash_buffer4, compare_hash))
                 {
                     printf("Found match!\nPassword: %s\n", password4);
                     printSHA(hash_buffer4);
-                    gettimeofday(&end, NULL);
-                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                - (start.tv_sec * 1000000 + start.tv_usec)));
-                    return 0;
+                    pthread_exit(0);
                 }
             }
             else
@@ -196,41 +239,28 @@ int main(int argc, char** argv)
                     password4[1] = character_set[k];
                     SHA1(password1, password2, password3, password4,
                             hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 2);
-                    if(SHAcompare(hash_buffer1, input_hash))
+                    if(SHAcompare(hash_buffer1, compare_hash))
                     {
                         printf("Found match!\nPassword: %s\n", password1);
                         printSHA(hash_buffer1);
-                        gettimeofday(&end, NULL);
-                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                    - (start.tv_sec * 1000000 + start.tv_usec)));
-                        return 0;
+                        pthread_exit(0);
                     }
-                    else if(SHAcompare(hash_buffer2, input_hash))
+                    else if(SHAcompare(hash_buffer2, compare_hash))
                     {
                         printf("Found match!\nPassword: %s\n", password2);
                         printSHA(hash_buffer2);
-                        gettimeofday(&end, NULL);
-                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                    - (start.tv_sec * 1000000 + start.tv_usec)));
-                        return 0;
+                        pthread_exit(0);
                     }
-                    else if(SHAcompare(hash_buffer3, input_hash))
+                    else if(SHAcompare(hash_buffer3, compare_hash))
                     {
                         printf("Found match!\nPassword: %s\n", password3);
                         printSHA(hash_buffer3);
-                        gettimeofday(&end, NULL);
-                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                    - (start.tv_sec * 1000000 + start.tv_usec)));
-                        return 0;
                     }
-                    else if(SHAcompare(hash_buffer4, input_hash))
+                    else if(SHAcompare(hash_buffer4, compare_hash))
                     {
                         printf("Found match!\nPassword: %s\n", password4);
                         printSHA(hash_buffer4);
-                        gettimeofday(&end, NULL);
-                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                    - (start.tv_sec * 1000000 + start.tv_usec)));
-                        return 0;
+                        pthread_exit(0);
                     }
                 }
                 else
@@ -251,41 +281,29 @@ int main(int argc, char** argv)
                         password4[2] = character_set[l];
                         SHA1(password1, password2, password3, password4,
                                 hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 3);
-                        if(SHAcompare(hash_buffer1, input_hash))
+                        if(SHAcompare(hash_buffer1, compare_hash))
                         {
                             printf("Found match!\nPassword: %s\n", password1);
                             printSHA(hash_buffer1);
-                            gettimeofday(&end, NULL);
-                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                        - (start.tv_sec * 1000000 + start.tv_usec)));
-                            return 0;
+                            pthread_exit(0);
                         }
-                        else if(SHAcompare(hash_buffer2, input_hash))
+                        else if(SHAcompare(hash_buffer2, compare_hash))
                         {
                             printf("Found match!\nPassword: %s\n", password2);
                             printSHA(hash_buffer2);
-                            gettimeofday(&end, NULL);
-                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                        - (start.tv_sec * 1000000 + start.tv_usec)));
-                            return 0;
+                            pthread_exit(0);
                         }
-                        else if(SHAcompare(hash_buffer3, input_hash))
+                        else if(SHAcompare(hash_buffer3, compare_hash))
                         {
                             printf("Found match!\nPassword: %s\n", password3);
                             printSHA(hash_buffer3);
-                            gettimeofday(&end, NULL);
-                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                        - (start.tv_sec * 1000000 + start.tv_usec)));
-                            return 0;
+                            pthread_exit(0);
                         }
-                        else if(SHAcompare(hash_buffer4, input_hash))
+                        else if(SHAcompare(hash_buffer4, compare_hash))
                         {
                             printf("Found match!\nPassword: %s\n", password4);
                             printSHA(hash_buffer4);
-                            gettimeofday(&end, NULL);
-                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                        - (start.tv_sec * 1000000 + start.tv_usec)));
-                            return 0;
+                            pthread_exit(0);
                         }
                     }
                     else
@@ -305,41 +323,29 @@ int main(int argc, char** argv)
                             password4[3] = character_set[m];
                             SHA1(password1, password2, password3, password4,
                                     hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 4);
-                            if(SHAcompare(hash_buffer1, input_hash))
+                            if(SHAcompare(hash_buffer1, compare_hash))
                             {
                                 printf("Found match!\nPassword: %s\n", password1);
                                 printSHA(hash_buffer1);
-                                gettimeofday(&end, NULL);
-                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                            - (start.tv_sec * 1000000 + start.tv_usec)));
-                                return 0;
+                                pthread_exit(0);
                             }
-                            else if(SHAcompare(hash_buffer2, input_hash))
+                            else if(SHAcompare(hash_buffer2, compare_hash))
                             {
                                 printf("Found match!\nPassword: %s\n", password2);
                                 printSHA(hash_buffer2);
-                                gettimeofday(&end, NULL);
-                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                            - (start.tv_sec * 1000000 + start.tv_usec)));
-                                return 0;
+                                pthread_exit(0);
                             }
-                            else if(SHAcompare(hash_buffer3, input_hash))
+                            else if(SHAcompare(hash_buffer3, compare_hash))
                             {
                                 printf("Found match!\nPassword: %s\n", password3);
                                 printSHA(hash_buffer3);
-                                gettimeofday(&end, NULL);
-                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                            - (start.tv_sec * 1000000 + start.tv_usec)));
-                                return 0;
+                                pthread_exit(0);
                             }
-                            else if(SHAcompare(hash_buffer4, input_hash))
+                            else if(SHAcompare(hash_buffer4, compare_hash))
                             {
                                 printf("Found match!\nPassword: %s\n", password4);
                                 printSHA(hash_buffer4);
-                                gettimeofday(&end, NULL);
-                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                            - (start.tv_sec * 1000000 + start.tv_usec)));
-                                return 0;
+                                pthread_exit(0);
                             }
                         }
                         else
@@ -359,41 +365,29 @@ int main(int argc, char** argv)
                                 password4[4] = character_set[n];
                                 SHA1(password1, password2, password3, password4,
                                         hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 5);
-                                if(SHAcompare(hash_buffer1, input_hash))
+                                if(SHAcompare(hash_buffer1, compare_hash))
                                 {
                                     printf("Found match!\nPassword: %s\n", password1);
                                     printSHA(hash_buffer1);
-                                    gettimeofday(&end, NULL);
-                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                - (start.tv_sec * 1000000 + start.tv_usec)));
-                                    return 0;
+                                    pthread_exit(0);
                                 }
-                                else if(SHAcompare(hash_buffer2, input_hash))
+                                else if(SHAcompare(hash_buffer2, compare_hash))
                                 {
                                     printf("Found match!\nPassword: %s\n", password2);
                                     printSHA(hash_buffer2);
-                                    gettimeofday(&end, NULL);
-                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                - (start.tv_sec * 1000000 + start.tv_usec)));
-                                    return 0;
+                                    pthread_exit(0);
                                 }
-                                else if(SHAcompare(hash_buffer3, input_hash))
+                                else if(SHAcompare(hash_buffer3, compare_hash))
                                 {
                                     printf("Found match!\nPassword: %s\n", password3);
                                     printSHA(hash_buffer3);
-                                    gettimeofday(&end, NULL);
-                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                - (start.tv_sec * 1000000 + start.tv_usec)));
-                                    return 0;
+                                    pthread_exit(0);
                                 }
-                                else if(SHAcompare(hash_buffer4, input_hash))
+                                else if(SHAcompare(hash_buffer4, compare_hash))
                                 {
                                     printf("Found match!\nPassword: %s\n", password4);
                                     printSHA(hash_buffer4);
-                                    gettimeofday(&end, NULL);
-                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                - (start.tv_sec * 1000000 + start.tv_usec)));
-                                    return 0;
+                                    pthread_exit(0);
                                 }
                             }
                             else
@@ -413,41 +407,29 @@ int main(int argc, char** argv)
                                     password4[5] = character_set[o];
                                     SHA1(password1, password2, password3, password4,
                                             hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 6);
-                                    if(SHAcompare(hash_buffer1, input_hash))
+                                    if(SHAcompare(hash_buffer1, compare_hash))
                                     {
                                         printf("Found match!\nPassword: %s\n", password1);
                                         printSHA(hash_buffer1);
-                                        gettimeofday(&end, NULL);
-                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                    - (start.tv_sec * 1000000 + start.tv_usec)));
-                                        return 0;
+                                        pthread_exit(0);
                                     }
-                                    else if(SHAcompare(hash_buffer2, input_hash))
+                                    else if(SHAcompare(hash_buffer2, compare_hash))
                                     {
                                         printf("Found match!\nPassword: %s\n", password2);
                                         printSHA(hash_buffer2);
-                                        gettimeofday(&end, NULL);
-                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                    - (start.tv_sec * 1000000 + start.tv_usec)));
-                                        return 0;
+                                        pthread_exit(0);
                                     }
-                                    else if(SHAcompare(hash_buffer3, input_hash))
+                                    else if(SHAcompare(hash_buffer3, compare_hash))
                                     {
                                         printf("Found match!\nPassword: %s\n", password3);
                                         printSHA(hash_buffer3);
-                                        gettimeofday(&end, NULL);
-                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                    - (start.tv_sec * 1000000 + start.tv_usec)));
-                                        return 0;
+                                        pthread_exit(0);
                                     }
-                                    else if(SHAcompare(hash_buffer4, input_hash))
+                                    else if(SHAcompare(hash_buffer4, compare_hash))
                                     {
                                         printf("Found match!\nPassword: %s\n", password4);
                                         printSHA(hash_buffer4);
-                                        gettimeofday(&end, NULL);
-                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                    - (start.tv_sec * 1000000 + start.tv_usec)));
-                                        return 0;
+                                        pthread_exit(0);
                                     }
                                 }
                                 else
@@ -467,41 +449,29 @@ int main(int argc, char** argv)
                                         password4[6] = character_set[p];
                                         SHA1(password1, password2, password3, password4,
                                                 hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 7);
-                                        if(SHAcompare(hash_buffer1, input_hash))
+                                        if(SHAcompare(hash_buffer1, compare_hash))
                                         {
                                             printf("Found match!\nPassword: %s\n", password1);
                                             printSHA(hash_buffer1);
-                                            gettimeofday(&end, NULL);
-                                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                        - (start.tv_sec * 1000000 + start.tv_usec)));
-                                            return 0;
+                                            pthread_exit(0);
                                         }
-                                        else if(SHAcompare(hash_buffer2, input_hash))
+                                        else if(SHAcompare(hash_buffer2, compare_hash))
                                         {
                                             printf("Found match!\nPassword: %s\n", password2);
                                             printSHA(hash_buffer2);
-                                            gettimeofday(&end, NULL);
-                                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                        - (start.tv_sec * 1000000 + start.tv_usec)));
-                                            return 0;
+                                            pthread_exit(0);
                                         }
-                                        else if(SHAcompare(hash_buffer3, input_hash))
+                                        else if(SHAcompare(hash_buffer3, compare_hash))
                                         {
                                             printf("Found match!\nPassword: %s\n", password3);
                                             printSHA(hash_buffer3);
-                                            gettimeofday(&end, NULL);
-                                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                        - (start.tv_sec * 1000000 + start.tv_usec)));
-                                            return 0;
+                                            pthread_exit(0);
                                         }
-                                        else if(SHAcompare(hash_buffer4, input_hash))
+                                        else if(SHAcompare(hash_buffer4, compare_hash))
                                         {
                                             printf("Found match!\nPassword: %s\n", password4);
                                             printSHA(hash_buffer4);
-                                            gettimeofday(&end, NULL);
-                                            printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                        - (start.tv_sec * 1000000 + start.tv_usec)));
-                                            return 0;
+                                            pthread_exit(0);
                                         }
                                     }
                                     else
@@ -521,41 +491,29 @@ int main(int argc, char** argv)
                                             password4[7] = character_set[q];
                                             SHA1(password1, password2, password3, password4,
                                                     hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 8);
-                                            if(SHAcompare(hash_buffer1, input_hash))
+                                            if(SHAcompare(hash_buffer1, compare_hash))
                                             {
                                                 printf("Found match!\nPassword: %s\n", password1);
                                                 printSHA(hash_buffer1);
-                                                gettimeofday(&end, NULL);
-                                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                            - (start.tv_sec * 1000000 + start.tv_usec)));
-                                                return 0;
+                                                pthread_exit(0);
                                             }
-                                            else if(SHAcompare(hash_buffer2, input_hash))
+                                            else if(SHAcompare(hash_buffer2, compare_hash))
                                             {
                                                 printf("Found match!\nPassword: %s\n", password2);
                                                 printSHA(hash_buffer2);
-                                                gettimeofday(&end, NULL);
-                                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                            - (start.tv_sec * 1000000 + start.tv_usec)));
-                                                return 0;
+                                                pthread_exit(0);
                                             }
-                                            else if(SHAcompare(hash_buffer3, input_hash))
+                                            else if(SHAcompare(hash_buffer3, compare_hash))
                                             {
                                                 printf("Found match!\nPassword: %s\n", password3);
                                                 printSHA(hash_buffer3);
-                                                gettimeofday(&end, NULL);
-                                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                            - (start.tv_sec * 1000000 + start.tv_usec)));
-                                                return 0;
+                                                pthread_exit(0);
                                             }
-                                            else if(SHAcompare(hash_buffer4, input_hash))
+                                            else if(SHAcompare(hash_buffer4, compare_hash))
                                             {
                                                 printf("Found match!\nPassword: %s\n", password4);
                                                 printSHA(hash_buffer4);
-                                                gettimeofday(&end, NULL);
-                                                printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                            - (start.tv_sec * 1000000 + start.tv_usec)));
-                                                return 0;
+                                                pthread_exit(0);
                                             }
                                         }
                                         else
@@ -575,41 +533,29 @@ int main(int argc, char** argv)
                                                 password4[8] = character_set[r];
                                                 SHA1(password1, password2, password3, password4,
                                                         hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 9);
-                                                if(SHAcompare(hash_buffer1, input_hash))
+                                                if(SHAcompare(hash_buffer1, compare_hash))
                                                 {
                                                     printf("Found match!\nPassword: %s\n", password1);
                                                     printSHA(hash_buffer1);
-                                                    gettimeofday(&end, NULL);
-                                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                                - (start.tv_sec * 1000000 + start.tv_usec)));
-                                                    return 0;
+                                                    pthread_exit(0);
                                                 }
-                                                else if(SHAcompare(hash_buffer2, input_hash))
+                                                else if(SHAcompare(hash_buffer2, compare_hash))
                                                 {
                                                     printf("Found match!\nPassword: %s\n", password2);
                                                     printSHA(hash_buffer2);
-                                                    gettimeofday(&end, NULL);
-                                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                                - (start.tv_sec * 1000000 + start.tv_usec)));
-                                                    return 0;
+                                                    pthread_exit(0);
                                                 }
-                                                else if(SHAcompare(hash_buffer3, input_hash))
+                                                else if(SHAcompare(hash_buffer3, compare_hash))
                                                 {
                                                     printf("Found match!\nPassword: %s\n", password3);
                                                     printSHA(hash_buffer3);
-                                                    gettimeofday(&end, NULL);
-                                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                                - (start.tv_sec * 1000000 + start.tv_usec)));
-                                                    return 0;
+                                                    pthread_exit(0);
                                                 }
-                                                else if(SHAcompare(hash_buffer4, input_hash))
+                                                else if(SHAcompare(hash_buffer4, compare_hash))
                                                 {
                                                     printf("Found match!\nPassword: %s\n", password4);
                                                     printSHA(hash_buffer4);
-                                                    gettimeofday(&end, NULL);
-                                                    printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                                - (start.tv_sec * 1000000 + start.tv_usec)));
-                                                    return 0;
+                                                    pthread_exit(0);
                                                 }
                                             }
                                             else
@@ -629,41 +575,29 @@ int main(int argc, char** argv)
                                                     password4[9] = character_set[s];
                                                     SHA1(password1, password2, password3, password4,
                                                             hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 10);
-                                                    if(SHAcompare(hash_buffer1, input_hash))
+                                                    if(SHAcompare(hash_buffer1, compare_hash))
                                                     {
                                                         printf("Found match!\nPassword: %s\n", password1);
                                                         printSHA(hash_buffer1);
-                                                        gettimeofday(&end, NULL);
-                                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                                    - (start.tv_sec * 1000000 + start.tv_usec)));
-                                                        return 0;
+                                                        pthread_exit(0);
                                                     }
-                                                    else if(SHAcompare(hash_buffer2, input_hash))
+                                                    else if(SHAcompare(hash_buffer2, compare_hash))
                                                     {
                                                         printf("Found match!\nPassword: %s\n", password2);
                                                         printSHA(hash_buffer2);
-                                                        gettimeofday(&end, NULL);
-                                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                                    - (start.tv_sec * 1000000 + start.tv_usec)));
-                                                        return 0;
+                                                        pthread_exit(0);
                                                     }
-                                                    else if(SHAcompare(hash_buffer3, input_hash))
+                                                    else if(SHAcompare(hash_buffer3, compare_hash))
                                                     {
                                                         printf("Found match!\nPassword: %s\n", password3);
                                                         printSHA(hash_buffer3);
-                                                        gettimeofday(&end, NULL);
-                                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                                    - (start.tv_sec * 1000000 + start.tv_usec)));
-                                                        return 0;
+                                                        pthread_exit(0);
                                                     }
-                                                    else if(SHAcompare(hash_buffer4, input_hash))
+                                                    else if(SHAcompare(hash_buffer4, compare_hash))
                                                     {
                                                         printf("Found match!\nPassword: %s\n", password4);
                                                         printSHA(hash_buffer4);
-                                                        gettimeofday(&end, NULL);
-                                                        printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
-                                                                    - (start.tv_sec * 1000000 + start.tv_usec)));
-                                                        return 0;
+                                                        pthread_exit(0);
                                                     }
                                                 }
                                                 else
@@ -684,44 +618,10 @@ int main(int argc, char** argv)
             }
         }
     }
-    printf("Unable to find hash: %s\n", argv[1]);
+    printf("Unable to find hash: %x%x%x%x%x\n", compare_hash[0], compare_hash[1], compare_hash[2], compare_hash[3], compare_hash[4]);
 
-    /*char* message1 = "barfoo";
-      char* message2 = "Hello1";
-      char* message3 = "World1";
-      char* message4 = "foobar";
 
-      uint32_t fsize = 6;
-
-      printf("Input Message: %s\n", message1);
-      printf("Input Message size: %d\n\n", fsize);
-
-    // Initialize hash_buffer
-    uint32_t hash_buffer1[5];
-    uint32_t hash_buffer2[5];
-    uint32_t hash_buffer3[5];
-    uint32_t hash_buffer4[5];
-
-    // Call SHA1 algorithm
-    SHA1(message1, message2, message3, message4,
-    hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, fsize);
-
-    printf("\n\nMessage: %s\n", message1);
-    printSHA(hash_buffer1);
-    printf("\n\nMessage: %s\n", message2);
-    printSHA(hash_buffer2);
-    printf("\n\nMessage: %s\n", message3);
-    printSHA(hash_buffer3);
-    printf("\n\nMessage: %s\n", message4);
-    printSHA(hash_buffer4);*/
-
-    //End program
-    return 0;
 }
-
-//********************************************************************
-//	Function Definitions
-//********************************************************************
 
 void SHA1(char* message1, char* message2, char* message3, char* message4, uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t hash_buffer3[5], uint32_t hash_buffer4[5], uint32_t message_size)
 {

@@ -16,16 +16,16 @@ pwck1_O3: sha1Op1.c
 	gcc -O3 -fomit-frame-pointer -mavx -o pwck1_O3 sha1Op1.c
 
 pwck2_O0: sha1Op2.c
-	gcc -O0 -mavx -o pwck2_O0 sha1Op2.c
+	gcc -O0 -mavx -lpthread -o pwck2_O0 sha1Op2.c
 
 pwck2_O1: sha1Op2.c
-	gcc -O1 -fomit-frame-pointer -mavx -o pwck2_O1 sha1Op2.c
+	gcc -O1 -fomit-frame-pointer -lpthread -mavx -o pwck2_O1 sha1Op2.c
 
 pwck2_O2: sha1Op2.c
-	gcc -O2 -fomit-frame-pointer -mavx -o pwck2_O2 sha1Op2.c
+	gcc -O2 -fomit-frame-pointer -lpthread -mavx -o pwck2_O2 sha1Op2.c
 
 pwck2_O3: sha1Op2.c
-	gcc -O3 -fomit-frame-pointer -mavx -o pwck2_O3 sha1Op2.c
+	gcc -O3 -fomit-frame-pointer -lpthread -mavx -o pwck2_O3 sha1Op2.c
 
 
 clean:
