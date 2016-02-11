@@ -23,22 +23,22 @@ module SHA1(clk, hash);
 	output [159:0] hash;
 	
 	//Test password: aabb
-	parameter [31:0] M1  = 32'h61616262;
-	parameter [31:0] M2  = 32'h80000000;
+	parameter [31:0] M0  = 32'h61616262;
+	parameter [31:0] M1  = 32'h80000000;
+	parameter [31:0] M2  = 32'h00000000;
 	parameter [31:0] M3  = 32'h00000000;
 	parameter [31:0] M4  = 32'h00000000;
 	parameter [31:0] M5  = 32'h00000000;
 	parameter [31:0] M6  = 32'h00000000;
 	parameter [31:0] M7  = 32'h00000000;
 	parameter [31:0] M8  = 32'h00000000;
-	parameter [31:0] M9  = 32'h00000000;
+	parameter [31:0] M9 = 32'h00000000;
 	parameter [31:0] M10 = 32'h00000000;
 	parameter [31:0] M11 = 32'h00000000;
 	parameter [31:0] M12 = 32'h00000000;
 	parameter [31:0] M13 = 32'h00000000;
 	parameter [31:0] M14 = 32'h00000000;
-	parameter [31:0] M15 = 32'h00000000;
-	parameter [31:0] M16 = 32'h00000020;
+	parameter [31:0] M15 = 32'h00000020;
 	
 	//Initial Buffer Values
 	parameter [31:0] h0 = 32'h67452301;
@@ -161,6 +161,25 @@ module SHA1(clk, hash);
 	wire [31:0] a79,b79,c79,d79,e79;
 	
 	wire [31:0] aF,bF,cF,dF,eF;
+	
+	
+	//Split 512-bit chunk into 16 32-bit words
+	assign w0 = M0;
+	assign w1 = M1;
+	assign w2 = M2;
+	assign w3 = M3;
+	assign w4 = M4;
+	assign w5 = M5;
+	assign w6 = M6;
+	assign w7 = M7;
+	assign w8 = M8;
+	assign w9 = M9;
+	assign w10 = M10;
+	assign w11 = M11;
+	assign w12 = M12;
+	assign w13 = M13;
+	assign w14 = M14;
+	assign w15 = M15;
 	
 	//Expand 16 32-bit words into 80 32-bit words
 	w_expand expandWords16(.w1(w13), .w2(w8), .w3(w2), .w4(0), .wout(w16));
