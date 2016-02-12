@@ -43,6 +43,7 @@
 #define setC(vecB) (_mm_setr_epi32(rotl(((uint32_t*)&vecB)[0], 30), rotl(((uint32_t*)&vecB)[1], 30), \
             rotl(((uint32_t*)&vecB)[2], 30), rotl(((uint32_t*)&vecB)[3], 30)))
 
+#define rotl(value, shift) ((value << shift) | (value >> (32 - shift)))
 
 //********************************************************************
 //	Define a bool
@@ -74,8 +75,6 @@ void shaIteration(uint32_t hash_buffer1[5], uint32_t hash_buffer2[5], uint32_t h
 void printSHA(uint32_t hash_buffer[5]);
 bool SHAcompare(uint32_t hash_buffer[5], uint32_t input_hash[5]);
 bool SHAcompareVEC(__m128i vecInput1, __m128i vecResult1, uint32_t vecInput2, uint32_t vecResult2);
-
-uint32_t rotl(uint32_t value, uint16_t shift);
 
 //********************************************************************
 //	Function for Threads setup
@@ -2200,12 +2199,6 @@ void printSHA(uint32_t hash_buffer[5])
 {
     printf("SHA-1: %x%x%x%x%x\n", hash_buffer[0], hash_buffer[1], hash_buffer[2], hash_buffer[3], hash_buffer[4]);
     //printf("SHA-1: %X%X%X%X%X\n", hash_buffer[4], hash_buffer[3], hash_buffer[2], hash_buffer[1], hash_buffer[0]);
-}
-
-// Does a rotation to the left on value by shift
-uint32_t rotl(uint32_t value, uint16_t shift)
-{
-    return (value << shift) | (value >> (32 - shift));
 }
 
 bool SHAcompare(uint32_t hash_buffer[5], uint32_t input_hash[5])

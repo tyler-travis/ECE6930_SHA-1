@@ -1,26 +1,13 @@
 # ECE6930_SHA-1
 
-## HOW TO USE
-git remote add origin URL
+## Compile
 
-git pull origin master
+make all
 
-git add files_to_add
+## Running the code
 
-git status
+./(program name) (hash code to find)
 
-git commit -m "message"
+## NOTES:
 
-git push origin master
-
-## Make
-
-cd Software/
-
-cmake .
-
-make
-
-## VALIDATE RESULTS
-
-$ sha1sum <filename>
+for pwck2 and pwck, the O1, O2, and O3 variants don't work but the O0 work.
