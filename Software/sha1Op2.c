@@ -59,7 +59,7 @@ const char character_set[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
     'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
 
-#define N 26
+#define N 52
 #define string_size 10
 
 //********************************************************************
@@ -92,6 +92,8 @@ typedef struct character_set_thread_data
 
 void generateCharacterSet(void *ptr);
 
+int8_t password_found = -1;
+
 //********************************************************************
 //	Main Function
 //********************************************************************
@@ -109,19 +111,69 @@ int main(int argc, char** argv)
     struct timeval start, end;
 
     // Declare the threads
-    pthread_t thread0, thread1, thread2, thread3;
+    pthread_t thread0, thread1;
 
+    // Create the staring and ending strings to check for
+    char starting_password1[] = { 'a' };
+    char starting_password2[] = { 'a' , 'a', 'a', 'a', 'a', 'A'};
 
+    char ending_password1[] = { 'Z' , 'Z', 'Z', 'Z', 'Z', 'z'};
+    char ending_password2[] = { 'Z' , 'Z', 'Z', 'Z', 'Z', 'Z'};
+
+    thread_data data0, data1;
+
+    // number the threads
+    data0.thread_no = 0;
+    data1.thread_no = 1;
+
+    // Copy over the starting password
+    memcpy(data0.starting_password, starting_password1, sizeof(data0.starting_password));
+    memcpy(data1.starting_password, starting_password2, sizeof(data1.starting_password));
+
+    // Copy over the ending password
+    memcpy(data0.ending_password, ending_password1, sizeof(data0.ending_password));
+    memcpy(data1.ending_password, ending_password2, sizeof(data1.ending_password));
+
+    // Give the correct lengths
+    data0.starting_length = 1;
+    data1.starting_length = 6;
+
+    // Copy over the hash to compare
+    memcpy(data0.compare_hash, input_hash, sizeof(data0.compare_hash));
+    memcpy(data1.compare_hash, input_hash, sizeof(data1.compare_hash));
+    
     // get the start time
     gettimeofday(&start, NULL);
 
+    // Spawn the threads
+    pthread_create(&thread0, NULL, (void*)&generateCharacterSet, (void*)&data0);
+    pthread_create(&thread1, NULL, (void*)&generateCharacterSet, (void*)&data1);
     
-    
-    // Get the end time
+    while(password_found < 0) 
+    {
+    }
+
     gettimeofday(&end, NULL);
     // Take the difference to get the total time taken
     printf("TIME: %ldus\n", ((end.tv_sec * 1000000 + end.tv_usec)
                 - (start.tv_sec * 1000000 + start.tv_usec)));
+
+    printf("password_found: %d\n", password_found);
+
+    switch(password_found)
+    {
+        case 0:
+            printf("Canceling threads: 1\n");
+            pthread_join(thread0, NULL);
+            pthread_kill(thread1, 1);
+            break;
+        case 1:
+            printf("Canceling threads: 0\n");
+            pthread_join(thread1, NULL);
+            pthread_kill(thread0, 1);
+            break;
+    }
+
 
     // Initialize hash_buffer
     //End program
@@ -134,12 +186,15 @@ int main(int argc, char** argv)
 
 void generateCharacterSet(void *ptr)
 {
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
     // declare a thread_data pointer
     // to hold all the input data
     thread_data *data;
 
     // set the data equal to the input
     data = (thread_data*)ptr;
+
+    uint32_t thread_number = data->thread_no;
 
     // declare the compare_hash array
     uint32_t compare_hash[5];
@@ -176,16 +231,74 @@ void generateCharacterSet(void *ptr)
     memcpy(password3, starting_password, sizeof(password3));
     memcpy(password4, starting_password, sizeof(password4));
 
-    // Increment password 2, 3, and 4 
-    password2[0] += 1;
-    password3[0] += 2;
-    password4[0] += 3;
+    uint32_t i,j,k,l,m,n,o,p,q,r,s,index1,index2;
 
-    uint32_t i,j,k,l,m,n,o,p,q,r,s;
+    uint32_t j0,k0,l0,m0,n0,o0,q0,p0,r0,s0;
+
+    // Figure out the starting position for all the loops
+    for(index1 = 0; index1 < starting_length; ++index1)
+    {
+        for(index2 = 0; index2 < N; ++index2)
+        {
+           if(character_set[index2] == starting_password[index1])
+           {
+               if(starting_length - 1 - index1 == 0)
+               {
+                    j0 = index2;
+                    //printf("j0: %d\n", j0);
+               }
+               else if(starting_length - 1 - index1 == 1)
+               {
+                    k0 = index2;
+                    //printf("k0: %d\n", k0);
+               }
+               else if(starting_length - 1 - index1 == 2)
+               {
+                    l0 = index2;
+                    //printf("l0: %d\n", l0);
+               }
+               else if(starting_length - 1 - index1 == 3)
+               {
+                    m0 = index2;
+                    //printf("m0: %d\n", m0);
+               }
+               else if(starting_length - 1 - index1 == 4)
+               {
+                    n0 = index2;
+                    //printf("n0: %d\n", n0);
+               }
+               else if(starting_length - 1 - index1 == 5)
+               {
+                    o0 = index2;
+                    //printf("o0: %d\n", o0);
+               }
+               else if(starting_length - 1 - index1 == 6)
+               {
+                    p0 = index2;
+                    //printf("p0: %d\n", p0);
+               }
+               else if(starting_length - 1 - index1 == 7)
+               {
+                    q0 = index2;
+                    //printf("q0: %d\n", q0);
+               }
+               else if(starting_length - 1 - index1 == 8)
+               {
+                    r0 = index2;
+                    //printf("r0: %d\n", r0);
+               }
+               else if(starting_length - 1 - index1 == 9)
+               {
+                    s0 = index2;
+                    //printf("s0: %d\n", s0);
+               }
+           }
+        }
+    }
 
     for(i = starting_length - 1; i < string_size; ++i)
     {
-        for(j = 0; (j < N); j++)
+        for(j = j0; (j < N); j++)
         {
             // If this is the first time here,
             if(i == 0)
@@ -199,413 +312,461 @@ void generateCharacterSet(void *ptr)
 
                 if(SHAcompare(hash_buffer1, compare_hash))
                 {
-                    printf("Found match!\nPassword: %s\n", password1);
+                    printf("Found match!\nPassword %s\nThread: %d\n", password1, thread_number);
                     printSHA(hash_buffer1);
+                    password_found = thread_number;
                     pthread_exit(0);
                 }
                 else if(SHAcompare(hash_buffer2, compare_hash))
                 {
-                    printf("Found match!\nPassword: %s\n", password2);
+                    printf("Found match!\nPassword %s\nThread: %d\n", password2, thread_number);
                     printSHA(hash_buffer2);
+                    password_found = thread_number;
                     pthread_exit(0);
                 }
                 else if(SHAcompare(hash_buffer3, compare_hash))
                 {
-                    printf("Found match!\nPassword: %s\n", password3);
+                    printf("Found match!\nPassword %s\nThread: %d\n", password3, thread_number);
                     printSHA(hash_buffer3);
+                    password_found = thread_number;
                     pthread_exit(0);
                 }
                 else if(SHAcompare(hash_buffer4, compare_hash))
                 {
-                    printf("Found match!\nPassword: %s\n", password4);
+                    printf("Found match!\nPassword %s\nThread: %d\n", password4, thread_number);
                     printSHA(hash_buffer4);
+                    password_found = thread_number;
                     pthread_exit(0);
                 }
             }
             else
             {
-                password1[0] = character_set[j];
-                password2[0] = character_set[j];
-                password3[0] = character_set[j];
-                password4[0] = character_set[j];
+                password1[i] = character_set[j];
+                password2[i] = character_set[j];
+                password3[i] = character_set[j];
+                password4[i] = character_set[j];
             }
-            for(k = 0; (k < N) && (i >= 1); k++)
+            for(k = k0; (k < N) && (i >= 1); k++)
             {
                 if(i == 1)
                 {
-                    password1[1] = character_set[k++];
-                    password2[1] = character_set[k++];
-                    password3[1] = character_set[k++];
-                    password4[1] = character_set[k];
+                    password1[0] = character_set[k++];
+                    password2[0] = character_set[k++];
+                    password3[0] = character_set[k++];
+                    password4[0] = character_set[k];
                     SHA1(password1, password2, password3, password4,
                             hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 2);
                     if(SHAcompare(hash_buffer1, compare_hash))
                     {
-                        printf("Found match!\nPassword: %s\n", password1);
+                        printf("Found match!\nPassword %s\nThread: %d\n", password1, thread_number);
                         printSHA(hash_buffer1);
+                        password_found = thread_number;
                         pthread_exit(0);
                     }
                     else if(SHAcompare(hash_buffer2, compare_hash))
                     {
-                        printf("Found match!\nPassword: %s\n", password2);
+                        printf("Found match!\nPassword %s\nThread: %d\n", password2, thread_number);
                         printSHA(hash_buffer2);
+                        password_found = thread_number;
                         pthread_exit(0);
                     }
                     else if(SHAcompare(hash_buffer3, compare_hash))
                     {
-                        printf("Found match!\nPassword: %s\n", password3);
+                        printf("Found match!\nPassword %s\nThread: %d\n", password3, thread_number);
                         printSHA(hash_buffer3);
+                        password_found = thread_number;
+                        pthread_exit(0);
                     }
                     else if(SHAcompare(hash_buffer4, compare_hash))
                     {
-                        printf("Found match!\nPassword: %s\n", password4);
+                        printf("Found match!\nPassword %s\nThread: %d\n", password4, thread_number);
                         printSHA(hash_buffer4);
+                        password_found = thread_number;
                         pthread_exit(0);
                     }
                 }
                 else
                 {
-                    password1[1] = character_set[k];
-                    password2[1] = character_set[k];
-                    password3[1] = character_set[k];
-                    password4[1] = character_set[k];
+                    password1[i - 1] = character_set[k];
+                    password2[i - 1] = character_set[k];
+                    password3[i - 1] = character_set[k];
+                    password4[i - 1] = character_set[k];
                 }
 
-                for(l = 0; (l < N) && (i >= 2); l++)
+                for(l = l0; (l < N) && (i >= 2); l++)
                 {
                     if(i == 2)
                     {
-                        password1[2] = character_set[l++];
-                        password2[2] = character_set[l++];
-                        password3[2] = character_set[l++];
-                        password4[2] = character_set[l];
+                        password1[0] = character_set[l++];
+                        password2[0] = character_set[l++];
+                        password3[0] = character_set[l++];
+                        password4[0] = character_set[l];
                         SHA1(password1, password2, password3, password4,
                                 hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 3);
                         if(SHAcompare(hash_buffer1, compare_hash))
                         {
-                            printf("Found match!\nPassword: %s\n", password1);
+                            printf("Found match!\nPassword %s\nThread: %d\n", password1, thread_number);
                             printSHA(hash_buffer1);
+                            password_found = thread_number;
                             pthread_exit(0);
                         }
                         else if(SHAcompare(hash_buffer2, compare_hash))
                         {
-                            printf("Found match!\nPassword: %s\n", password2);
+                            printf("Found match!\nPassword %s\nThread: %d\n", password2, thread_number);
                             printSHA(hash_buffer2);
+                            password_found = thread_number;
                             pthread_exit(0);
                         }
                         else if(SHAcompare(hash_buffer3, compare_hash))
                         {
-                            printf("Found match!\nPassword: %s\n", password3);
+                            printf("Found match!\nPassword %s\nThread: %d\n", password3, thread_number);
                             printSHA(hash_buffer3);
+                            password_found = thread_number;
                             pthread_exit(0);
                         }
                         else if(SHAcompare(hash_buffer4, compare_hash))
                         {
-                            printf("Found match!\nPassword: %s\n", password4);
+                            printf("Found match!\nPassword %s\nThread: %d\n", password4, thread_number);
                             printSHA(hash_buffer4);
+                            password_found = thread_number;
                             pthread_exit(0);
                         }
                     }
                     else
                     {
-                        password1[2] = character_set[l];
-                        password2[2] = character_set[l];
-                        password3[2] = character_set[l];
-                        password4[2] = character_set[l];
+                        password1[i - 2] = character_set[l];
+                        password2[i - 2] = character_set[l];
+                        password3[i - 2] = character_set[l];
+                        password4[i - 2] = character_set[l];
                     }
-                    for(m = 0; (m < N) && (i >= 3); m++)
+                    for(m = m0; (m < N) && (i >= 3); m++)
                     {
                         if(i == 3)
                         {
-                            password1[3] = character_set[m++];
-                            password2[3] = character_set[m++];
-                            password3[3] = character_set[m++];
-                            password4[3] = character_set[m];
+                            password1[0] = character_set[m++];
+                            password2[0] = character_set[m++];
+                            password3[0] = character_set[m++];
+                            password4[0] = character_set[m];
                             SHA1(password1, password2, password3, password4,
                                     hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 4);
                             if(SHAcompare(hash_buffer1, compare_hash))
                             {
-                                printf("Found match!\nPassword: %s\n", password1);
+                                printf("Found match!\nPassword %s\nThread: %d\n", password1, thread_number);
                                 printSHA(hash_buffer1);
+                                password_found = thread_number;
                                 pthread_exit(0);
                             }
                             else if(SHAcompare(hash_buffer2, compare_hash))
                             {
-                                printf("Found match!\nPassword: %s\n", password2);
+                                printf("Found match!\nPassword %s\nThread: %d\n", password2, thread_number);
                                 printSHA(hash_buffer2);
+                                password_found = thread_number;
                                 pthread_exit(0);
                             }
                             else if(SHAcompare(hash_buffer3, compare_hash))
                             {
-                                printf("Found match!\nPassword: %s\n", password3);
+                                printf("Found match!\nPassword %s\nThread: %d\n", password3, thread_number);
                                 printSHA(hash_buffer3);
+                                password_found = thread_number;
                                 pthread_exit(0);
                             }
                             else if(SHAcompare(hash_buffer4, compare_hash))
                             {
-                                printf("Found match!\nPassword: %s\n", password4);
+                                printf("Found match!\nPassword %s\nThread: %d\n", password4, thread_number);
                                 printSHA(hash_buffer4);
+                                password_found = thread_number;
                                 pthread_exit(0);
                             }
                         }
                         else
                         {
-                            password1[3] = character_set[m];
-                            password2[3] = character_set[m];
-                            password3[3] = character_set[m];
-                            password4[3] = character_set[m];
+                            password1[i - 3] = character_set[m];
+                            password2[i - 3] = character_set[m];
+                            password3[i - 3] = character_set[m];
+                            password4[i - 3] = character_set[m];
                         }
-                        for(n = 0; (n < N) && (i >= 4); n++)
+                        for(n = n0; (n < N) && (i >= 4); n++)
                         {
                             if(i == 4)
                             {
-                                password1[4] = character_set[n++];
-                                password2[4] = character_set[n++];
-                                password3[4] = character_set[n++];
-                                password4[4] = character_set[n];
+                                password1[0] = character_set[n++];
+                                password2[0] = character_set[n++];
+                                password3[0] = character_set[n++];
+                                password4[0] = character_set[n];
                                 SHA1(password1, password2, password3, password4,
                                         hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 5);
                                 if(SHAcompare(hash_buffer1, compare_hash))
                                 {
-                                    printf("Found match!\nPassword: %s\n", password1);
+                                    printf("Found match!\nPassword %s\nThread: %d\n", password1, thread_number);
                                     printSHA(hash_buffer1);
+                                    password_found = thread_number;
                                     pthread_exit(0);
                                 }
                                 else if(SHAcompare(hash_buffer2, compare_hash))
                                 {
-                                    printf("Found match!\nPassword: %s\n", password2);
+                                    printf("Found match!\nPassword %s\nThread: %d\n", password2, thread_number);
                                     printSHA(hash_buffer2);
+                                    password_found = thread_number;
                                     pthread_exit(0);
                                 }
                                 else if(SHAcompare(hash_buffer3, compare_hash))
                                 {
-                                    printf("Found match!\nPassword: %s\n", password3);
+                                    printf("Found match!\nPassword %s\nThread: %d\n", password3, thread_number);
                                     printSHA(hash_buffer3);
+                                    password_found = thread_number;
                                     pthread_exit(0);
                                 }
                                 else if(SHAcompare(hash_buffer4, compare_hash))
                                 {
-                                    printf("Found match!\nPassword: %s\n", password4);
+                                    printf("Found match!\nPassword %s\nThread: %d\n", password4, thread_number);
                                     printSHA(hash_buffer4);
+                                    password_found = thread_number;
                                     pthread_exit(0);
                                 }
                             }
                             else
                             {
-                                password1[4] = character_set[n];
-                                password2[4] = character_set[n];
-                                password3[4] = character_set[n];
-                                password4[4] = character_set[n];
+                                password1[i - 4] = character_set[n];
+                                password2[i - 4] = character_set[n];
+                                password3[i - 4] = character_set[n];
+                                password4[i - 4] = character_set[n];
                             }
-                            for(o = 0; (o < N) && (i >= 5); o++)
+                            for(o = o0; (o < N) && (i >= 5); o++)
                             {
                                 if(i == 5)
                                 {
-                                    password1[5] = character_set[o++];
-                                    password2[5] = character_set[o++];
-                                    password3[5] = character_set[o++];
-                                    password4[5] = character_set[o];
+                                    password1[0] = character_set[o++];
+                                    password2[0] = character_set[o++];
+                                    password3[0] = character_set[o++];
+                                    password4[0] = character_set[o];
                                     SHA1(password1, password2, password3, password4,
                                             hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 6);
                                     if(SHAcompare(hash_buffer1, compare_hash))
                                     {
-                                        printf("Found match!\nPassword: %s\n", password1);
+                                        printf("Found match!\nPassword %s\nThread: %d\n", password1, thread_number);
                                         printSHA(hash_buffer1);
+                                        password_found = thread_number;
                                         pthread_exit(0);
                                     }
                                     else if(SHAcompare(hash_buffer2, compare_hash))
                                     {
-                                        printf("Found match!\nPassword: %s\n", password2);
+                                        printf("Found match!\nPassword %s\nThread: %d\n", password2, thread_number);
                                         printSHA(hash_buffer2);
+                                        password_found = thread_number;
                                         pthread_exit(0);
                                     }
                                     else if(SHAcompare(hash_buffer3, compare_hash))
                                     {
-                                        printf("Found match!\nPassword: %s\n", password3);
+                                        printf("Found match!\nPassword %s\nThread: %d\n", password3, thread_number);
                                         printSHA(hash_buffer3);
+                                        password_found = thread_number;
                                         pthread_exit(0);
                                     }
                                     else if(SHAcompare(hash_buffer4, compare_hash))
                                     {
-                                        printf("Found match!\nPassword: %s\n", password4);
+                                        printf("Found match!\nPassword %s\nThread: %d\n", password4, thread_number);
                                         printSHA(hash_buffer4);
+                                        password_found = thread_number;
                                         pthread_exit(0);
                                     }
                                 }
                                 else
                                 {
-                                    password1[5] = character_set[o];
-                                    password2[5] = character_set[o];
-                                    password3[5] = character_set[o];
-                                    password4[5] = character_set[o];
+                                    password1[i - 5] = character_set[o];
+                                    password2[i - 5] = character_set[o];
+                                    password3[i - 5] = character_set[o];
+                                    password4[i - 5] = character_set[o];
                                 }
-                                for(p = 0; (p < N) && (i >= 6); p++)
+                                for(p = p0; (p < N) && (i >= 6); p++)
                                 {
                                     if(i == 6)
                                     {
-                                        password1[6] = character_set[p++];
-                                        password2[6] = character_set[p++];
-                                        password3[6] = character_set[p++];
-                                        password4[6] = character_set[p];
+                                        password1[0] = character_set[p++];
+                                        password2[0] = character_set[p++];
+                                        password3[0] = character_set[p++];
+                                        password4[0] = character_set[p];
                                         SHA1(password1, password2, password3, password4,
                                                 hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 7);
                                         if(SHAcompare(hash_buffer1, compare_hash))
                                         {
-                                            printf("Found match!\nPassword: %s\n", password1);
+                                            printf("Found match!\nPassword %s\nThread: %d\n", password1, thread_number);
                                             printSHA(hash_buffer1);
+                                            password_found = thread_number;
                                             pthread_exit(0);
                                         }
                                         else if(SHAcompare(hash_buffer2, compare_hash))
                                         {
-                                            printf("Found match!\nPassword: %s\n", password2);
+                                            printf("Found match!\nPassword %s\nThread: %d\n", password2, thread_number);
                                             printSHA(hash_buffer2);
+                                            password_found = thread_number;
                                             pthread_exit(0);
                                         }
                                         else if(SHAcompare(hash_buffer3, compare_hash))
                                         {
-                                            printf("Found match!\nPassword: %s\n", password3);
+                                            printf("Found match!\nPassword %s\nThread: %d\n", password3, thread_number);
                                             printSHA(hash_buffer3);
+                                            password_found = thread_number;
                                             pthread_exit(0);
                                         }
                                         else if(SHAcompare(hash_buffer4, compare_hash))
                                         {
-                                            printf("Found match!\nPassword: %s\n", password4);
+                                            printf("Found match!\nPassword %s\nThread: %d\n", password4, thread_number);
                                             printSHA(hash_buffer4);
+                                            password_found = thread_number;
                                             pthread_exit(0);
                                         }
                                     }
                                     else
                                     {
-                                        password1[6] = character_set[p];
-                                        password2[6] = character_set[p];
-                                        password3[6] = character_set[p];
-                                        password4[6] = character_set[p];
+                                        password1[i - 6] = character_set[p];
+                                        password2[i - 6] = character_set[p];
+                                        password3[i - 6] = character_set[p];
+                                        password4[i - 6] = character_set[p];
                                     }
-                                    for(q = 0; (q < N) && (i >= 7); q++)
+                                    if(!memcmp(password1, ending_password, sizeof(ending_password))
+                                            || !memcmp(password2, ending_password, sizeof(ending_password))
+                                            || !memcmp(password3, ending_password, sizeof(ending_password))
+                                            || !memcmp(password4, ending_password, sizeof(ending_password)))
+                                    {
+                                        pthread_exit(0);
+                                    }
+                                    for(q = q0; (q < N) && (i >= 7); q++)
                                     {
                                         if(i == 7)
                                         {
-                                            password1[7] = character_set[q++];
-                                            password2[7] = character_set[q++];
-                                            password3[7] = character_set[q++];
-                                            password4[7] = character_set[q];
+                                            password1[0] = character_set[q++];
+                                            password2[0] = character_set[q++];
+                                            password3[0] = character_set[q++];
+                                            password4[0] = character_set[q];
                                             SHA1(password1, password2, password3, password4,
                                                     hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 8);
                                             if(SHAcompare(hash_buffer1, compare_hash))
                                             {
-                                                printf("Found match!\nPassword: %s\n", password1);
+                                                printf("Found match!\nPassword %s\nThread: %d\n", password1, thread_number);
                                                 printSHA(hash_buffer1);
+                                                password_found = thread_number;
                                                 pthread_exit(0);
                                             }
                                             else if(SHAcompare(hash_buffer2, compare_hash))
                                             {
-                                                printf("Found match!\nPassword: %s\n", password2);
+                                                printf("Found match!\nPassword %s\nThread: %d\n", password2, thread_number);
                                                 printSHA(hash_buffer2);
+                                                password_found = thread_number;
                                                 pthread_exit(0);
                                             }
                                             else if(SHAcompare(hash_buffer3, compare_hash))
                                             {
-                                                printf("Found match!\nPassword: %s\n", password3);
+                                                printf("Found match!\nPassword %s\nThread: %d\n", password3, thread_number);
                                                 printSHA(hash_buffer3);
+                                                password_found = thread_number;
                                                 pthread_exit(0);
                                             }
                                             else if(SHAcompare(hash_buffer4, compare_hash))
                                             {
-                                                printf("Found match!\nPassword: %s\n", password4);
+                                                printf("Found match!\nPassword %s\nThread: %d\n", password4, thread_number);
                                                 printSHA(hash_buffer4);
+                                                password_found = thread_number;
                                                 pthread_exit(0);
                                             }
                                         }
                                         else
                                         {
-                                            password1[7] = character_set[q];
-                                            password2[7] = character_set[q];
-                                            password3[7] = character_set[q];
-                                            password4[7] = character_set[q];
+                                            password1[i - 7] = character_set[q];
+                                            password2[i - 7] = character_set[q];
+                                            password3[i - 7] = character_set[q];
+                                            password4[i - 7] = character_set[q];
                                         }
-                                        for(r = 0; (r < N) && (i >= 8); r++)
+                                        for(r = r0; (r < N) && (i >= 8); r++)
                                         {
                                             if(i == 8)
                                             {
-                                                password1[8] = character_set[r++];
-                                                password2[8] = character_set[r++];
-                                                password3[8] = character_set[r++];
-                                                password4[8] = character_set[r];
+                                                password1[0] = character_set[r++];
+                                                password2[0] = character_set[r++];
+                                                password3[0] = character_set[r++];
+                                                password4[0] = character_set[r];
                                                 SHA1(password1, password2, password3, password4,
                                                         hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 9);
                                                 if(SHAcompare(hash_buffer1, compare_hash))
                                                 {
-                                                    printf("Found match!\nPassword: %s\n", password1);
+                                                    printf("Found match!\nPassword %s\nThread: %d\n", password1, thread_number);
                                                     printSHA(hash_buffer1);
+                                                    password_found = thread_number;
                                                     pthread_exit(0);
                                                 }
                                                 else if(SHAcompare(hash_buffer2, compare_hash))
                                                 {
-                                                    printf("Found match!\nPassword: %s\n", password2);
+                                                    printf("Found match!\nPassword %s\nThread: %d\n", password2, thread_number);
                                                     printSHA(hash_buffer2);
+                                                    password_found = thread_number;
                                                     pthread_exit(0);
                                                 }
                                                 else if(SHAcompare(hash_buffer3, compare_hash))
                                                 {
-                                                    printf("Found match!\nPassword: %s\n", password3);
+                                                    printf("Found match!\nPassword %s\nThread: %d\n", password3, thread_number);
                                                     printSHA(hash_buffer3);
+                                                    password_found = thread_number;
                                                     pthread_exit(0);
                                                 }
                                                 else if(SHAcompare(hash_buffer4, compare_hash))
                                                 {
-                                                    printf("Found match!\nPassword: %s\n", password4);
+                                                    printf("Found match!\nPassword %s\nThread: %d\n", password4, thread_number);
                                                     printSHA(hash_buffer4);
+                                                    password_found = thread_number;
                                                     pthread_exit(0);
                                                 }
                                             }
                                             else
                                             {
-                                                password1[8] = character_set[r];
-                                                password2[8] = character_set[r];
-                                                password3[8] = character_set[r];
-                                                password4[8] = character_set[r];
+                                                password1[i - 8] = character_set[r];
+                                                password2[i - 8] = character_set[r];
+                                                password3[i - 8] = character_set[r];
+                                                password4[i - 8] = character_set[r];
                                             }
-                                            for(s = 0; (s < N) && (i >= 9); s++)
+                                            for(s = s0; (s < N) && (i >= 9); s++)
                                             {
                                                 if(i == 9)
                                                 {
-                                                    password1[9] = character_set[s++];
-                                                    password2[9] = character_set[s++];
-                                                    password3[9] = character_set[s++];
-                                                    password4[9] = character_set[s];
+                                                    password1[0] = character_set[s++];
+                                                    password2[0] = character_set[s++];
+                                                    password3[0] = character_set[s++];
+                                                    password4[0] = character_set[s];
                                                     SHA1(password1, password2, password3, password4,
                                                             hash_buffer1, hash_buffer2, hash_buffer3, hash_buffer4, 10);
                                                     if(SHAcompare(hash_buffer1, compare_hash))
                                                     {
-                                                        printf("Found match!\nPassword: %s\n", password1);
+                                                        printf("Found match!\nPassword %s\nThread: %d\n", password1, thread_number);
                                                         printSHA(hash_buffer1);
+                                                        password_found = thread_number;
                                                         pthread_exit(0);
                                                     }
                                                     else if(SHAcompare(hash_buffer2, compare_hash))
                                                     {
-                                                        printf("Found match!\nPassword: %s\n", password2);
+                                                        printf("Found match!\nPassword %s\nThread: %d\n", password2, thread_number);
                                                         printSHA(hash_buffer2);
+                                                        password_found = thread_number;
                                                         pthread_exit(0);
                                                     }
                                                     else if(SHAcompare(hash_buffer3, compare_hash))
                                                     {
-                                                        printf("Found match!\nPassword: %s\n", password3);
+                                                        printf("Found match!\nPassword %s\nThread: %d\n", password3, thread_number);
                                                         printSHA(hash_buffer3);
+                                                        password_found = thread_number;
                                                         pthread_exit(0);
                                                     }
                                                     else if(SHAcompare(hash_buffer4, compare_hash))
                                                     {
-                                                        printf("Found match!\nPassword: %s\n", password4);
+                                                        printf("Found match!\nPassword %s\nThread: %d\n", password4, thread_number);
                                                         printSHA(hash_buffer4);
+                                                        password_found = thread_number;
                                                         pthread_exit(0);
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    password1[9] = character_set[s];
-                                                    password2[9] = character_set[s];
-                                                    password3[9] = character_set[s];
-                                                    password4[9] = character_set[s];
+                                                    password1[i - 9] = character_set[s];
+                                                    password2[i - 9] = character_set[s];
+                                                    password3[i - 9] = character_set[s];
+                                                    password4[i - 9] = character_set[s];
                                                 }
                                             }
                                         }
@@ -618,7 +779,7 @@ void generateCharacterSet(void *ptr)
             }
         }
     }
-    printf("Unable to find hash: %x%x%x%x%x\n", compare_hash[0], compare_hash[1], compare_hash[2], compare_hash[3], compare_hash[4]);
+    printf("Unable to find hash on thread %d: %x%x%x%x%x\n", thread_number, compare_hash[0], compare_hash[1], compare_hash[2], compare_hash[3], compare_hash[4]);
 
 
 }
