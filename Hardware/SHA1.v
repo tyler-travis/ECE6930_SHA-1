@@ -19,13 +19,47 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module SHA1(clk, L);
+	
+	output reg L;
 	input clk;
-	output L;
 	
-	wire [159:0] hash;
+	reg [159:0] hash;
 	
-	//Test password: aabb
-	parameter [31:0] M0  = 32'h62800000;
+	reg [31:0] k0r, k1r, k2r, k3r;
+	reg [2:0] iter;
+	reg [2:0] iterNext;
+	
+	//reg [32:0] M0,M1,M2,M3,M4,M5,M6,M7,M8,M9,M10,M11,M12,M13,M14,M15;
+	
+	parameter [159:0] expected_hash = 160'h86f7e437faa5a7fce15d1ddcb9eaeaea377667b8;
+	
+	//reg clk;
+/*	
+	always
+	begin
+		#10 clk = !clk;
+	end
+*/
+	
+	always @(*) begin
+		iterNext = iter + 1;
+	end
+		
+	
+	initial begin
+		L = 0;
+		iter = 0;
+		//clk = 0;
+		iterNext = 0;
+	end
+	
+	always @(posedge clk)
+	begin
+		iter = iterNext;
+	end
+	
+	//Test password: a
+	parameter [31:0] M0  = 32'h61800000;
 	parameter [31:0] M1  = 32'h00000000;
 	parameter [31:0] M2  = 32'h00000000;
 	parameter [31:0] M3  = 32'h00000000;
@@ -164,6 +198,8 @@ module SHA1(clk, L);
 	
 	wire [31:0] aF,bF,cF,dF,eF;
 	
+	wire [31:0] tempA, tempB, tempC, tempD, tempE;
+	
 	
 	//Split 512-bit chunk into 16 32-bit words
 	assign w0 = M0;
@@ -249,93 +285,103 @@ module SHA1(clk, L);
 	w_expand expandWords78(.w1(w75), .w2(w70), .w3(w64), .w4(w62), .wout(w78));
 	w_expand expandWords79(.w1(w76), .w2(w71), .w3(w65), .w4(w63), .wout(w79));
 	
+	always @ (*)
+	begin
+		case(iter)
+       0 : k0r = k0;
+       1 : k1r = k1;
+       2 : k2r = k2;
+       3 : k3r = k3;
+   endcase
+	end
+	
 	//Round 1 (i = 0 through i = 19)
-	round1 i0(h0, h1, h2, h3, h4, w0, k0, a1, b1, c1, d1, e1);
-	round1 i1(a1, b1, c1, d1, e1, w1, k0, a2, b2, c2, d2, e2);
-	round1 i2(a2, b2, c2, d2, e2, w2, k0, a3, b3, c3, d3, e3);
-	round1 i3(a3, b3, c3, d3, e3, w3, k0, a4, b4, c4, d4, e4);
-	round1 i4(a4, b4, c4, d4, e4, w4, k0, a5, b5, c5, d5, e5);
-	round1 i5(a5, b5, c5, d5, e5, w5, k0, a6, b6, c6, d6, e6);
-	round1 i6(a6, b6, c6, d6, e6, w6, k0, a7, b7, c7, d7, e7);
-	round1 i7(a7, b7, c7, d7, e7, w7, k0, a8, b8, c8, d8, e8);
-	round1 i8(a8, b8, c8, d8, e8, w8, k0, a9, b9, c9, d9, e9);
-	round1 i9(a9, b9, c9, d9, e9, w9, k0, a10, b10, c10, d10, e10);
-	round1 i10(a10, b10, c10, d10, e10, w10, k0, a11, b11, c11, d11, e11);
-	round1 i11(a11, b11, c11, d11, e11, w11, k0, a12, b12, c12, d12, e12);
-	round1 i12(a12, b12, c12, d12, e12, w12, k0, a13, b13, c13, d13, e13);
-	round1 i13(a13, b13, c13, d13, e13, w13, k0, a14, b14, c14, d14, e14);
-	round1 i14(a14, b14, c14, d14, e14, w14, k0, a15, b15, c15, d15, e15);
-	round1 i15(a15, b15, c15, d15, e15, w15, k0, a16, b16, c16, d16, e16);
-	round1 i16(a16, b16, c16, d16, e16, w16, k0, a17, b17, c17, d17, e17);
-	round1 i17(a17, b17, c17, d17, e17, w17, k0, a18, b18, c18, d18, e18);
-	round1 i18(a18, b18, c18, d18, e18, w18, k0, a19, b19, c19, d19, e19);
-	round1 i19(a19, b19, c19, d19, e19, w19, k0, a20, b20, c20, d20, e20);
+	round1 i0(h0, h1, h2, h3, h4, w0, k0r, a1, b1, c1, d1, e1,clk);
+	round1 i1(a1, b1, c1, d1, e1, w1, k0r, a2, b2, c2, d2, e2,clk);
+	round1 i2(a2, b2, c2, d2, e2, w2, k0r, a3, b3, c3, d3, e3,clk);
+	round1 i3(a3, b3, c3, d3, e3, w3, k0r, a4, b4, c4, d4, e4,clk);
+	round1 i4(a4, b4, c4, d4, e4, w4, k0r, a5, b5, c5, d5, e5,clk);
+	round1 i5(a5, b5, c5, d5, e5, w5, k0r, a6, b6, c6, d6, e6,clk);
+	round1 i6(a6, b6, c6, d6, e6, w6, k0r, a7, b7, c7, d7, e7,clk);
+	round1 i7(a7, b7, c7, d7, e7, w7, k0r, a8, b8, c8, d8, e8,clk);
+	round1 i8(a8, b8, c8, d8, e8, w8, k0r, a9, b9, c9, d9, e9,clk);
+	round1 i9(a9, b9, c9, d9, e9, w9, k0r, a10, b10, c10, d10, e10,clk);
+	round1 i10(a10, b10, c10, d10, e10, w10, k0r, a11, b11, c11, d11, e11,clk);
+	round1 i11(a11, b11, c11, d11, e11, w11, k0r, a12, b12, c12, d12, e12,clk);
+	round1 i12(a12, b12, c12, d12, e12, w12, k0r, a13, b13, c13, d13, e13,clk);
+	round1 i13(a13, b13, c13, d13, e13, w13, k0r, a14, b14, c14, d14, e14,clk);
+	round1 i14(a14, b14, c14, d14, e14, w14, k0r, a15, b15, c15, d15, e15,clk);
+	round1 i15(a15, b15, c15, d15, e15, w15, k0r, a16, b16, c16, d16, e16,clk);
+	round1 i16(a16, b16, c16, d16, e16, w16, k0r, a17, b17, c17, d17, e17,clk);
+	round1 i17(a17, b17, c17, d17, e17, w17, k0r, a18, b18, c18, d18, e18,clk);
+	round1 i18(a18, b18, c18, d18, e18, w18, k0r, a19, b19, c19, d19, e19,clk);
+	round1 i19(a19, b19, c19, d19, e19, w19, k0r, a20, b20, c20, d20, e20,clk);
 	
 	//Round 2 (i = 20 through i = 39)
-	round2 i20(a20, b20, c20, d20, e20, w20, k1, a21, b21, c21, d21, e21);
-	round2 i21(a21, b21, c21, d21, e21, w21, k1, a22, b22, c22, d22, e22);
-	round2 i22(a22, b22, c22, d22, e22, w22, k1, a23, b23, c23, d23, e23);
-	round2 i23(a23, b23, c23, d23, e23, w23, k1, a24, b24, c24, d24, e24);
-	round2 i24(a24, b24, c24, d24, e24, w24, k1, a25, b25, c25, d25, e25);
-	round2 i25(a25, b25, c25, d25, e25, w25, k1, a26, b26, c26, d26, e26);
-	round2 i26(a26, b26, c26, d26, e26, w26, k1, a27, b27, c27, d27, e27);
-	round2 i27(a27, b27, c27, d27, e27, w27, k1, a28, b28, c28, d28, e28);
-	round2 i28(a28, b28, c28, d28, e28, w28, k1, a29, b29, c29, d29, e29);
-	round2 i29(a29, b29, c29, d29, e29, w29, k1, a30, b30, c30, d30, e30);
-	round2 i30(a30, b30, c30, d30, e30, w30, k1, a31, b31, c31, d31, e31);
-	round2 i31(a31, b31, c31, d31, e31, w31, k1, a32, b32, c32, d32, e32);
-	round2 i32(a32, b32, c32, d32, e32, w32, k1, a33, b33, c33, d33, e33);
-	round2 i33(a33, b33, c33, d33, e33, w33, k1, a34, b34, c34, d34, e34);
-	round2 i34(a34, b34, c34, d34, e34, w34, k1, a35, b35, c35, d35, e35);
-	round2 i35(a35, b35, c35, d35, e35, w35, k1, a36, b36, c36, d36, e36);
-	round2 i36(a36, b36, c36, d36, e36, w36, k1, a37, b37, c37, d37, e37);
-	round2 i37(a37, b37, c37, d37, e37, w37, k1, a38, b38, c38, d38, e38);
-	round2 i38(a38, b38, c38, d38, e38, w38, k1, a39, b39, c39, d39, e39);
-	round2 i39(a39, b39, c39, d39, e39, w39, k1, a40, b40, c40, d40, e40);
+	round2 i20(a20, b20, c20, d20, e20, w20, k1r, a21, b21, c21, d21, e21,clk);
+	round2 i21(a21, b21, c21, d21, e21, w21, k1r, a22, b22, c22, d22, e22,clk);
+	round2 i22(a22, b22, c22, d22, e22, w22, k1r, a23, b23, c23, d23, e23,clk);
+	round2 i23(a23, b23, c23, d23, e23, w23, k1r, a24, b24, c24, d24, e24,clk);
+	round2 i24(a24, b24, c24, d24, e24, w24, k1r, a25, b25, c25, d25, e25,clk);
+	round2 i25(a25, b25, c25, d25, e25, w25, k1r, a26, b26, c26, d26, e26,clk);
+	round2 i26(a26, b26, c26, d26, e26, w26, k1r, a27, b27, c27, d27, e27,clk);
+	round2 i27(a27, b27, c27, d27, e27, w27, k1r, a28, b28, c28, d28, e28,clk);
+	round2 i28(a28, b28, c28, d28, e28, w28, k1r, a29, b29, c29, d29, e29,clk);
+	round2 i29(a29, b29, c29, d29, e29, w29, k1r, a30, b30, c30, d30, e30,clk);
+	round2 i30(a30, b30, c30, d30, e30, w30, k1r, a31, b31, c31, d31, e31,clk);
+	round2 i31(a31, b31, c31, d31, e31, w31, k1r, a32, b32, c32, d32, e32,clk);
+	round2 i32(a32, b32, c32, d32, e32, w32, k1r, a33, b33, c33, d33, e33,clk);
+	round2 i33(a33, b33, c33, d33, e33, w33, k1r, a34, b34, c34, d34, e34,clk);
+	round2 i34(a34, b34, c34, d34, e34, w34, k1r, a35, b35, c35, d35, e35,clk);
+	round2 i35(a35, b35, c35, d35, e35, w35, k1r, a36, b36, c36, d36, e36,clk);
+	round2 i36(a36, b36, c36, d36, e36, w36, k1r, a37, b37, c37, d37, e37,clk);
+	round2 i37(a37, b37, c37, d37, e37, w37, k1r, a38, b38, c38, d38, e38,clk);
+	round2 i38(a38, b38, c38, d38, e38, w38, k1r, a39, b39, c39, d39, e39,clk);
+	round2 i39(a39, b39, c39, d39, e39, w39, k1r, a40, b40, c40, d40, e40,clk);
 
 	//Round 3 (i = 40 through i = 59)
-	round3 i40(a40, b40, c40, d40, e40, w40, k2, a41, b41, c41, d41, e41);
-	round3 i41(a41, b41, c41, d41, e41, w41, k2, a42, b42, c42, d42, e42);
-	round3 i42(a42, b42, c42, d42, e42, w42, k2, a43, b43, c43, d43, e43);
-	round3 i43(a43, b43, c43, d43, e43, w43, k2, a44, b44, c44, d44, e44);
-	round3 i44(a44, b44, c44, d44, e44, w44, k2, a45, b45, c45, d45, e45);
-	round3 i45(a45, b45, c45, d45, e45, w45, k2, a46, b46, c46, d46, e46);
-	round3 i46(a46, b46, c46, d46, e46, w46, k2, a47, b47, c47, d47, e47);
-	round3 i47(a47, b47, c47, d47, e47, w47, k2, a48, b48, c48, d48, e48);
-	round3 i48(a48, b48, c48, d48, e48, w48, k2, a49, b49, c49, d49, e49);
-	round3 i49(a49, b49, c49, d49, e49, w49, k2, a50, b50, c50, d50, e50);
-	round3 i50(a50, b50, c50, d50, e50, w50, k2, a51, b51, c51, d51, e51);
-	round3 i51(a51, b51, c51, d51, e51, w51, k2, a52, b52, c52, d52, e52);
-	round3 i52(a52, b52, c52, d52, e52, w52, k2, a53, b53, c53, d53, e53);
-	round3 i53(a53, b53, c53, d53, e53, w53, k2, a54, b54, c54, d54, e54);
-	round3 i54(a54, b54, c54, d54, e54, w54, k2, a55, b55, c55, d55, e55);
-	round3 i55(a55, b55, c55, d55, e55, w55, k2, a56, b56, c56, d56, e56);
-	round3 i56(a56, b56, c56, d56, e56, w56, k2, a57, b57, c57, d57, e57);
-	round3 i57(a57, b57, c57, d57, e57, w57, k2, a58, b58, c58, d58, e58);
-	round3 i58(a58, b58, c58, d58, e58, w58, k2, a59, b59, c59, d59, e59);
-	round3 i59(a59, b59, c59, d59, e59, w59, k2, a60, b60, c60, d60, e60);
+	round3 i40(a40, b40, c40, d40, e40, w40, k2r, a41, b41, c41, d41, e41,clk);
+	round3 i41(a41, b41, c41, d41, e41, w41, k2r, a42, b42, c42, d42, e42,clk);
+	round3 i42(a42, b42, c42, d42, e42, w42, k2r, a43, b43, c43, d43, e43,clk);
+	round3 i43(a43, b43, c43, d43, e43, w43, k2r, a44, b44, c44, d44, e44,clk);
+	round3 i44(a44, b44, c44, d44, e44, w44, k2r, a45, b45, c45, d45, e45,clk);
+	round3 i45(a45, b45, c45, d45, e45, w45, k2r, a46, b46, c46, d46, e46,clk);
+	round3 i46(a46, b46, c46, d46, e46, w46, k2r, a47, b47, c47, d47, e47,clk);
+	round3 i47(a47, b47, c47, d47, e47, w47, k2r, a48, b48, c48, d48, e48,clk);
+	round3 i48(a48, b48, c48, d48, e48, w48, k2r, a49, b49, c49, d49, e49,clk);
+	round3 i49(a49, b49, c49, d49, e49, w49, k2r, a50, b50, c50, d50, e50,clk);
+	round3 i50(a50, b50, c50, d50, e50, w50, k2r, a51, b51, c51, d51, e51,clk);
+	round3 i51(a51, b51, c51, d51, e51, w51, k2r, a52, b52, c52, d52, e52,clk);
+	round3 i52(a52, b52, c52, d52, e52, w52, k2r, a53, b53, c53, d53, e53,clk);
+	round3 i53(a53, b53, c53, d53, e53, w53, k2r, a54, b54, c54, d54, e54,clk);
+	round3 i54(a54, b54, c54, d54, e54, w54, k2r, a55, b55, c55, d55, e55,clk);
+	round3 i55(a55, b55, c55, d55, e55, w55, k2r, a56, b56, c56, d56, e56,clk);
+	round3 i56(a56, b56, c56, d56, e56, w56, k2r, a57, b57, c57, d57, e57,clk);
+	round3 i57(a57, b57, c57, d57, e57, w57, k2r, a58, b58, c58, d58, e58,clk);
+	round3 i58(a58, b58, c58, d58, e58, w58, k2r, a59, b59, c59, d59, e59,clk);
+	round3 i59(a59, b59, c59, d59, e59, w59, k2r, a60, b60, c60, d60, e60,clk);
 
 	//Round 4 (i = 60 through i = 79)
-	round4 i60(a60, b60, c60, d60, e60, w60, k3, a61, b61, c61, d61, e61);
-	round4 i61(a61, b61, c61, d61, e61, w61, k3, a62, b62, c62, d62, e62);
-	round4 i62(a62, b62, c62, d62, e62, w62, k3, a63, b63, c63, d63, e63);
-	round4 i63(a63, b63, c63, d63, e63, w63, k3, a64, b64, c64, d64, e64);
-	round4 i64(a64, b64, c64, d64, e64, w64, k3, a65, b65, c65, d65, e65);
-	round4 i65(a65, b65, c65, d65, e65, w65, k3, a66, b66, c66, d66, e66);
-	round4 i66(a66, b66, c66, d66, e66, w66, k3, a67, b67, c67, d67, e67);
-	round4 i67(a67, b67, c67, d67, e67, w67, k3, a68, b68, c68, d68, e68);
-	round4 i68(a68, b68, c68, d68, e68, w68, k3, a69, b69, c69, d69, e69);
-	round4 i69(a69, b69, c69, d69, e69, w69, k3, a70, b70, c70, d70, e70);
-	round4 i70(a70, b70, c70, d70, e70, w70, k3, a71, b71, c71, d71, e71);
-	round4 i71(a71, b71, c71, d71, e71, w71, k3, a72, b72, c72, d72, e72);
-	round4 i72(a72, b72, c72, d72, e72, w72, k3, a73, b73, c73, d73, e73);
-	round4 i73(a73, b73, c73, d73, e73, w73, k3, a74, b74, c74, d74, e74);
-	round4 i74(a74, b74, c74, d74, e74, w74, k3, a75, b75, c75, d75, e75);
-	round4 i75(a75, b75, c75, d75, e75, w75, k3, a76, b76, c76, d76, e76);
-	round4 i76(a76, b76, c76, d76, e76, w76, k3, a77, b77, c77, d77, e77);
-	round4 i77(a77, b77, c77, d77, e77, w77, k3, a78, b78, c78, d78, e78);
-	round4 i78(a78, b78, c78, d78, e78, w78, k3, a79, b79, c79, d79, e79);
-	round4 i79(a79, b79, c79, d79, e79, w79, k3, aF, bF, cF, dF, eF);
+	round4 i60(a60, b60, c60, d60, e60, w60, k3r, a61, b61, c61, d61, e61,clk);
+	round4 i61(a61, b61, c61, d61, e61, w61, k3r, a62, b62, c62, d62, e62,clk);
+	round4 i62(a62, b62, c62, d62, e62, w62, k3r, a63, b63, c63, d63, e63,clk);
+	round4 i63(a63, b63, c63, d63, e63, w63, k3r, a64, b64, c64, d64, e64,clk);
+	round4 i64(a64, b64, c64, d64, e64, w64, k3r, a65, b65, c65, d65, e65,clk);
+	round4 i65(a65, b65, c65, d65, e65, w65, k3r, a66, b66, c66, d66, e66,clk);
+	round4 i66(a66, b66, c66, d66, e66, w66, k3r, a67, b67, c67, d67, e67,clk);
+	round4 i67(a67, b67, c67, d67, e67, w67, k3r, a68, b68, c68, d68, e68,clk);
+	round4 i68(a68, b68, c68, d68, e68, w68, k3r, a69, b69, c69, d69, e69,clk);
+	round4 i69(a69, b69, c69, d69, e69, w69, k3r, a70, b70, c70, d70, e70,clk);
+	round4 i70(a70, b70, c70, d70, e70, w70, k3r, a71, b71, c71, d71, e71,clk);
+	round4 i71(a71, b71, c71, d71, e71, w71, k3r, a72, b72, c72, d72, e72,clk);
+	round4 i72(a72, b72, c72, d72, e72, w72, k3r, a73, b73, c73, d73, e73,clk);
+	round4 i73(a73, b73, c73, d73, e73, w73, k3r, a74, b74, c74, d74, e74,clk);
+	round4 i74(a74, b74, c74, d74, e74, w74, k3r, a75, b75, c75, d75, e75,clk);
+	round4 i75(a75, b75, c75, d75, e75, w75, k3r, a76, b76, c76, d76, e76,clk);
+	round4 i76(a76, b76, c76, d76, e76, w76, k3r, a77, b77, c77, d77, e77,clk);
+	round4 i77(a77, b77, c77, d77, e77, w77, k3r, a78, b78, c78, d78, e78,clk);
+	round4 i78(a78, b78, c78, d78, e78, w78, k3r, a79, b79, c79, d79, e79,clk);
+	round4 i79(a79, b79, c79, d79, e79, w79, k3r, aF, bF, cF, dF, eF,clk);
 	
 	//Calculate final hash
    // h0 = h0 + a
@@ -343,15 +389,26 @@ module SHA1(clk, L);
    // h2 = h2 + c
    // h3 = h3 + d
    // h4 = h4 + e
-	add_32 finalA(h0,aF,hash[159:128]);
-	add_32 finalB(h1,bF,hash[127:96]);
-	add_32 finalC(h2,cF,hash[95:64]);
-	add_32 finalD(h3,dF,hash[63:32]);
-	add_32 finalE(h4,eF,hash[31:0]);
+	add_32 finalA(h0,aF,tempA);
+	add_32 finalB(h1,bF,tempB);
+	add_32 finalC(h2,cF,tempC);
+	add_32 finalD(h3,dF,tempD);
+	add_32 finalE(h4,eF,tempE);
 	
-	parameter [159:0] expected_hash = 160'h86f7e437faa5a7fce15d1ddcb9eaeaea377667b8;
+	always @(*) begin
+		hash[159:128] = tempA;
+		hash[127:96] = tempB;
+		hash[95:64] = tempC;
+		hash[63:32] = tempD;
+		hash[31:0] = tempE;
+	end
 	
-	assign L = !(expected_hash ^ hash);
+	
+	
+	always @ (posedge clk)
+	begin
+		L = !(expected_hash ^ hash);
+	end
 
 endmodule
 
@@ -628,8 +685,8 @@ module f3(b, c, d, y);
 	
 endmodule
 
-module round1(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
-	input [31:0] a, b, c, d, e, w, k;
+module round1(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut,clk);
+	input [31:0] a, b, c, d, e, w, k, clk;
 	output reg [31:0] aOut, bOut, cOut, dOut, eOut;
 	
 	wire [31:0] f, t1, t2, t3, t4, t5, temp, ctemp;
@@ -645,7 +702,7 @@ module round1(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
 	
 	left_rotate30 rotateC(b,ctemp);
 	
-	always@(a or c or d or temp or ctemp)		
+	always@(*)		
 	begin	
 	
 		eOut = d;
@@ -658,8 +715,8 @@ module round1(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
 	
 endmodule
 
-module round2(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
-	input [31:0] a, b, c, d, e, w, k;
+module round2(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut,clk);
+	input [31:0] a, b, c, d, e, w, k, clk;
 	output reg [31:0] aOut, bOut, cOut, dOut, eOut;
 	
 	wire [31:0] f, t1, t2, t3, t4, t5, ctemp, temp;
@@ -675,7 +732,7 @@ module round2(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
 	
 	left_rotate30 rotateC(b,ctemp);
 	
-	always@(a or c or d or temp or ctemp)		
+	always@(*)		
 	begin	
 	
 		eOut = d;
@@ -688,8 +745,8 @@ module round2(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
 	
 endmodule
 
-module round3(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
-	input [31:0] a, b, c, d, e, w, k;
+module round3(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut,clk);
+	input [31:0] a, b, c, d, e, w, k,clk;
 	output reg [31:0] aOut, bOut, cOut, dOut, eOut;
 	
 	wire [31:0] f, t1, t2, t3, t4, t5, ctemp, temp;
@@ -705,7 +762,7 @@ module round3(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
 	
 	left_rotate30 rotateC(b,ctemp);
 	
-	always@(a or c or d or temp or ctemp)		
+	always@(*)		
 	begin	
 	
 		eOut = d;
@@ -718,8 +775,8 @@ module round3(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
 	
 endmodule
 
-module round4(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
-	input [31:0] a, b, c, d, e, w, k;
+module round4(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut,clk);
+	input [31:0] a, b, c, d, e, w, k,clk;
 	output reg [31:0] aOut, bOut, cOut, dOut, eOut;
 	
 	wire [31:0] f, t1, t2, t3, t4, t5, ctemp, temp;
@@ -735,7 +792,7 @@ module round4(a, b, c, d, e, w, k, aOut, bOut, cOut, dOut, eOut);
 	
 	left_rotate30 rotateC(b,ctemp);
 	
-	always@(a or c or d or temp or ctemp)		
+	always@(*)		
 	begin	
 	
 		eOut = d;

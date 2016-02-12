@@ -1,0 +1,3 @@
+NET "L" LOC = "M5";
+NET "clk" LOC = "B8"; #need clk pin
+NET "clk" PERIOD = 20ns;
