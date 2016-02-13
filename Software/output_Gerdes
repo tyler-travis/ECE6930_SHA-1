@@ -1,0 +1,13 @@
+-> ./pwck1_O1 bd38849ceb2bdfe7312d3d2724838f2b9b09c724
+argv[1] = bd38849ceb2bdfe7312d3d2724838f2b9b09c724
+Length: 1
+Length: 2
+Length: 3
+Length: 4
+Length: 5
+Length: 6
+Found match!
+Password: HeyHey
+SHA-1: bd38849ceb2bdfe7312d3d2724838f2b9b09c724
+TIME: 2478402586us
+
