@@ -131,32 +131,14 @@ The authors also took advantage of the $pthreads$ library in C.  Two different t
 
 \subsection{Results}
 
-%\begin{figure}[thpb]
-%	\centering
-%	\includegraphics[scale=1.0]{Graph1}
-%    \caption{An example graph where nodes $\{1,2\}$ are followers and nodes $\{3,4,5,6\}$ are leaders.}
-%\end{figure}
+To test our SHA1 password-cracker, we were given an unknown hash of bd38 849c eb2b dfe7 312d 3d27 2483 8f2b 9b09 c724.  After running the unknown hash, we were able to retrieve the password of "HeyHey".
 
-%$$
-%\mathcal{I}_f = \begin{bmatrix}
-%       				-1 & -1 & -1 & 0 & 0 \\
-%       				0 & 0 & 1 & -1 & -1 \\       				
-%     			\end{bmatrix} \eqno{(2)} 
-%$$         
-      
-
-%\subsection{Selecting a Template (Heading 2)}
-
-%Sub-section goes here...
-
-%\subsection{Maintaining the Integrity of the Specifications}
-
-%Other sub-section goes here...
+After benchmarking our code with the previously discussed optimizations, we were able to come up with the following results:
 
 \begin{center}
-    \begin{tabular}{| l | l |}
+    \begin{tabular}{| p{4cm} | l |}
         \hline
-        Optimization & Million Hashes per Second \\ \hline
+         Optimization & Million Hashes per Second \\ \hline
         Baseline (AVX + Loop Unrolling) & .73 \\ \hline
         Optimization 1 (Baseline + XOR exploit) & 3.45 \\ \hline
         Optimization 2 (Baseline + pthreads) & .80 \\ \hline
@@ -164,6 +146,10 @@ The authors also took advantage of the $pthreads$ library in C.  Two different t
         \hline
     \end{tabular}
 \end{center}
+
+\noindent
+\\
+The baseline implementation combined with the XOR exploit had the greatest results.  The multi-threaded version had slightly better results on average but sometimes it had worse results than the baseline.  Since the multi-threads split the candidate space in half, better efficiency is achieved if the password is located close to the thread's initial starting points.
 
 \section{HARDWARE IMPLEMENTATION}
 
@@ -192,28 +178,16 @@ We can see that the FPGA implementation generates better results then the softwa
 
 \begin{figure}[thpb]
 	\centering
-	\includegraphics[scale=.40]{tek00001}
-    \caption{An example table that shows how the password generation must generate passwords.}
+	\includegraphics[scale=.35]{tek00001}
+    \caption{The blue signal is when the program initiates. The yellow signal is when the hash has been computed and verified.}
 \end{figure} 
 
-%\noindent
-%If we check the rank of $\mathcal{C}$ and we find that $\mathcal{C}$ %is of rank $n$, we know that the system is controllable and that we %should be able to move the follower agents to a desired position.   
- 
-
-%\begin{itemize}
-%\item Bullet 1.
-%\item Bullet 2.
-%\item Bullet 3.
-%\end{itemize}
-
-%\begin{figure}[thpb]
-%      \centering 
-%      \includegraphics[scale=.5]{Figure2}
-%      \caption{(a) A 3D graph of the actual agent positions. Blue %dots are leaders and red dots are followers. (b) A plot of the sum of %followers' error magnitudes.}
-%\end{figure} 
 
 \section{CONCLUSION}
-  
+
+This paper gives an example of how software optimization and hardware implementations can improve the amount of hashes a password-cracker can compare.  It is important to understand the architecture of the hardware the program is being run on to fully take advantage of the speed available.
+
+From a security perspective, it is better for a hash algorithm to take a long time to ensure that a password-cracker will not have enough time to guess the desired password.  From a hacker's perspective, the quicker you can make your hashing algorithm, the more passwords you will be able to recover.
 
 \addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
                                   % on the last page of the document manually. It shortens
