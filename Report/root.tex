@@ -119,11 +119,15 @@ We did not look at the assembly of the code to validate and check the  optimizat
    
 \subsection{SIMD}
 
-Single Instruction Multiple Data (SIMD) is a feature provided by modern day processors to be able to compute operations on multiple data for the cost of a single instruction.  Specifically, our program uses SIMD features provided by Intel's Advanced Vector Extensions (AVX). AVX is a new set of high performance instructions similar to Intel's Streaming SIMD Extensions (SSE).  AVX introduced operations performed on 256-bit vector registers compared to the 128-bit registers of SSE.  It also introduced other features such as a more effecient way to store results from vector operations.  Instead of $A = A + B$, it is possible to compute $C = A + B$ which preserves vector $A$ and $B$ limiting memory read and writes [2].
+Single Instruction Multiple Data (SIMD) is a feature provided by modern day processors to be able to compute operations on multiple data for the cost of a single instruction.  Specifically, our program uses SIMD features provided by Intel's Advanced Vector Extensions (AVX). AVX is a new set of high performance instructions similar to Intel's Streaming SIMD Extensions (SSE).  AVX introduced operations performed on 256-bit vector registers compared to the 128-bit registers of SSE.  It also introduced other features such as a more effecient way to store results from vector operations.  Instead of $A = A + B$, it is possible to compute $C = A + B$ which preserves vector $A$ and $B$ limiting memory read and writes.  Unfortunately, AVX1 only does floating point operations using the 256-bit registers and the SHA1 algorithm works with integers.  Integer operations using 256-bit registers are implemented in AVX2 [2].
 
-    
+The AVX registers in our program are used to be able to compute four hashes in parallel.  In the SHA1 compression iteration four 32-bit words $a0, a1, a2, a3$ are stored into vector $A$, $b0, b1, b2, b3$ are stored into vector $B$, and so on.  We also make use of the $\_mm\_andnot\_si128()$ Intel Intrinsic function which eliminates one instruction.  Although the program is limited to using SSE Intrinsic instructions, the authors chose to use AVX to take advantage of AVX's ability to preserve registers.  The functions in the SHA1 compression algorithm re-use the same vectors multiple times.  Without the register preserve functionality of AVX, the program would receive a greater memory penalty.  
 
 \subsection{Parallel Computing}
+
+The password generation section of the code is written so it generates and checks four passwords at once.  We were able to notice a significant improvement than the single password generator.
+
+The authors also took advantage of the $pthreads$ library in C.  Two different threads were implemented to split up the password candidate space. 
 
 \subsection{Results}
 
@@ -150,6 +154,35 @@ Single Instruction Multiple Data (SIMD) is a feature provided by modern day proc
 %Other sub-section goes here...
 
 \section{HARDWARE IMPLEMENTATION}
+
+Based on the results of the software implementation, the SHA1 hashing algorithm does take some time to generate the results.  The paper will now discuss a hardware dedicated implementation of the SHA1 hash generation.  The FPGA used for the implementation is a Digilent BASYS 2 board.
+\subsection{Architecture}
+
+The authors decided to design a fully unrolled implementation of the system.  This decision was made so that a pipelined version could be easily added in the future.  The inputs to each round are $A$, $B$, $C$, $D$, $E$, $K$, $W$, and $CLK$.  The outputs to each round are $AOUT$, $BOUT$, $COUT$, $DOUT$, and $EOUT$.  Each round is comprised of 20 different iterations.  If there is not a lot of overhead in the design, this implementation should take around 80 cycles to compute a hash.
+
+\subsection{Benchmarking Results}
+
+The performance of the FPGA implementation was calculated using the following formula:
+
+$$
+Throughput = \frac{Block\ Size * Clock\ Frequency}{Cycles\ per\ Block}\eqno{(1)} 
+$$
+
+\noindent
+The block size is 512 (512-bits * 1 SHA1). The Clock frequency was set to the external oscillator of the FPGA of 50MHz.  The hash is produced in 93 cycles.  Using these numbers we come up with
+
+$$Throughput = \frac{512*50,000,000}{93} \approx 27.5Mbps$$
+
+\noindent
+or 27.5 Mega hashes per second.  These results were verified in hardware in Figure 3 using an oscilloscope.
+
+We can see that the FPGA implementation generates better results then the software implementation.  This number could be improved if a fully unrolled, pipelined version was developed.  Furthermore, according to the timing report given in Xilinx, we are able to increase the clock frequency but the authors chose to use the external oscillator of 50MHz.
+
+\begin{figure}[thpb]
+	\centering
+	\includegraphics[scale=.40]{tek00001}
+    \caption{An example table that shows how the password generation must generate passwords.}
+\end{figure} 
 
 %\noindent
 %If we check the rank of $\mathcal{C}$ and we find that $\mathcal{C}$ %is of rank $n$, we know that the system is controllable and that we %should be able to move the follower agents to a desired position.   
@@ -187,9 +220,9 @@ Single Instruction Multiple Data (SIMD) is a feature provided by modern day proc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{ACKNOWLEDGMENT}
+%\section*{ACKNOWLEDGMENT}
 
-The author would like to thank his instructor Dr. Rajnikant Sharma for his help in understanding control concepts.
+%The author would like to thank his instructor Dr. Rajnikant Sharma %for his help in understanding control concepts.
 
 
 
