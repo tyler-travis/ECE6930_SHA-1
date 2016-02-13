@@ -70,7 +70,7 @@ const char character_set[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
     'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
 
-#define N 52
+#define N 26
 #define string_size 10
 
 //********************************************************************
@@ -114,6 +114,16 @@ int main(int argc, char** argv)
     char password4[11];
 
     uint32_t i,j,k,l,m,n,o,p,q,r,s;
+    bool j1 = true;
+    bool k1 = true;
+    bool l1 = true;
+    bool m1 = true;
+    bool n1 = true;
+    bool o1 = true;
+    bool p1 = true;
+    bool q1 = true;
+    bool r1 = true;
+    bool s1 = true;
 
     for(i = 0; i < string_size; ++i)
     {
@@ -127,6 +137,11 @@ int main(int argc, char** argv)
             // If this is the first time here,
             if(i == 0)
             {
+                if(j1)
+                {
+                    printf("Length: 1\n");
+                    j1 = false;
+                }
                 password1[i] = character_set[j++];
                 password2[i] = character_set[j++];
                 password3[i] = character_set[j++];
@@ -181,6 +196,11 @@ int main(int argc, char** argv)
             {
                 if(i == 1)
                 {
+                    if(k1)
+                    {
+                        printf("Length: 2\n");
+                        k1 = false;
+                    }
                     password1[i - 1] = character_set[k++];
                     password2[i - 1] = character_set[k++];
                     password3[i - 1] = character_set[k++];
@@ -236,6 +256,11 @@ int main(int argc, char** argv)
                 {
                     if(i == 2)
                     {
+                        if(l1)
+                        {
+                            printf("Length: 3\n");
+                            l1 = false;
+                        }
                         password1[i - 2] = character_set[l++];
                         password2[i - 2] = character_set[l++];
                         password3[i - 2] = character_set[l++];
@@ -290,6 +315,11 @@ int main(int argc, char** argv)
                     {
                         if(i == 3)
                         {
+                            if(m1)
+                            {
+                                printf("Length: 4\n");
+                                m1 = false;
+                            }
                             password1[i - 3] = character_set[m++];
                             password2[i - 3] = character_set[m++];
                             password3[i - 3] = character_set[m++];
@@ -344,6 +374,11 @@ int main(int argc, char** argv)
                         {
                             if(i == 4)
                             {
+                                if(n1)
+                                {
+                                    printf("Length: 5\n");
+                                    n1 = false;
+                                }
                                 password1[i - 4] = character_set[n++];
                                 password2[i - 4] = character_set[n++];
                                 password3[i - 4] = character_set[n++];
@@ -398,6 +433,11 @@ int main(int argc, char** argv)
                             {
                                 if(i == 5)
                                 {
+                                    if(o1)
+                                    {
+                                        printf("Length: 6\n");
+                                        o1 = false;
+                                    }
                                     password1[i - 5] = character_set[o++];
                                     password2[i - 5] = character_set[o++];
                                     password3[i - 5] = character_set[o++];
@@ -452,6 +492,11 @@ int main(int argc, char** argv)
                                 {
                                     if(i == 6)
                                     {
+                                        if(p1)
+                                        {
+                                            printf("Length: 7\n");
+                                            p1 = false;
+                                        }
                                         password1[i - 6] = character_set[p++];
                                         password2[i - 6] = character_set[p++];
                                         password3[i - 6] = character_set[p++];

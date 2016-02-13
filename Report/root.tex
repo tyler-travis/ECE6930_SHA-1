@@ -153,6 +153,18 @@ The authors also took advantage of the $pthreads$ library in C.  Two different t
 
 %Other sub-section goes here...
 
+\begin{center}
+    \begin{tabular}{| l | l |}
+        \hline
+        Optimization & Million Hashes per Second \\ \hline
+        Baseline (AVX + Loop Unrolling) & .73 \\ \hline
+        Optimization 1 (Baseline + XOR exploit) & 3.45 \\ \hline
+        Optimization 2 (Baseline + pthreads) & .80 \\ \hline
+        Combined Optimization & .87 \\
+        \hline
+    \end{tabular}
+\end{center}
+
 \section{HARDWARE IMPLEMENTATION}
 
 Based on the results of the software implementation, the SHA1 hashing algorithm does take some time to generate the results.  The paper will now discuss a hardware dedicated implementation of the SHA1 hash generation.  The FPGA used for the implementation is a Digilent BASYS 2 board.
@@ -234,8 +246,8 @@ We can see that the FPGA implementation generates better results then the softwa
 
 \begin{thebibliography}{99}
 
-\bibitem{c1} Meng Ji, Abubakr Muhammad, and Magnus Egerstedt, ``Leader-Based Multi-Agent Coordination: Controllability and Optimal Control'', \emph{Proceedings of the 2006 American Control Conference} Minneapolis, Minnesota, USA, June14-16, 2006.
-\bibitem{c2} A.	Jadbabaie, J. Lin and A. S. Morse, ``Coordination of groups of mobile autonomous agents using nearest rules,'' \emph{IEEE Transaction on Automatic Control}, Vol. 48, No. 6, pp.988-1001, 2003.
+\bibitem{c1} Steube, Jens. (2012, Nov. 20). \emph{Exploiting a SHA1 Weakness In Password Cracking}[Online]. Available: http://hashcat.net/events/p12/
+\bibitem{c2} Lomont, Chris. (2011, June 21). \emph{Introduction to Intel Advanced Vector Extensions}[Online]. Available: https://software.intel.com/en-us/articles/introduction-to-intel-advanced-vector-extensions
  
 
 \end{thebibliography}
