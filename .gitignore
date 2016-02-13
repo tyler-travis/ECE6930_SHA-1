@@ -3,3 +3,5 @@ $GIT_DIR/Software/CMakeFiles
 $GIT_DIR/Software/Makefile
 $GIT_DIR/Software/cmake_install.cmake
 $GIT_DIR/Software/baselineSHA.o
+$GIT_DIR/*.zip
+

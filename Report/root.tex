@@ -64,7 +64,7 @@ This paper will describe two implementations of the SHA1 algorithm that were spe
 
 \subsection{SHA1 Algorithm Overview}
 
-To help the reader better understand the optimizations that are later discussed in the paper, the authors though it necessary to give a brief overview of how the SHA1 algorithm is implemented.
+To help the reader better understand the optimizations that are later discussed in the paper, the authors thought it necessary to give a brief overview of how the SHA1 algorithm is implemented.
 
 The SHA1 algorithm is similar to the MD5 algorithm invented by Ronald L. Rivest.  The SHA1 algorithm is able to take any message of size $n$ and splits that message into 512-bit chunks.  The last chunk will be padded starting with a bit 1 and will be padded with bits 0 until the size of the last chunk is 448 mod 512.  The last 64 bits will be used to append the size of the original message in bits.
 
@@ -96,7 +96,7 @@ The authors were able to notice that the SHA1 compression algorithm uses many le
 
 In 2011, Jens Steube was able to exploit a weakness found in the SHA1 algorithm. He claims that he is able to optimize the instruction count by $21.1\%$ [1].  The authors desired to learn more about the exploit and to see if the results from Jens Steube could be validated and replicated.
 
-As quick explanation, the weakness is due to the properties of the XOR operation.  Since a logical operation such as XOR cannot overflow, we can use this to our advantage.  In order to make this exploit work, the password generator has to create the password candidates in a specific way.  If the 512-bit chunks are made up of 16, 32-bit words defined as $w[0],w[1]...w[15]$, the password generator must keep $w[1] \-- w[15]$ constant while $w[0]$ iterates through the defined character set as shown in Figure 2.
+A quick explanation, the weakness is due to the properties of the XOR operation.  Since a logical operation such as XOR cannot overflow, we can use this to our advantage.  In order to make this exploit work, the password generator has to create the password candidates in a specific way.  If the 512-bit chunks are made up of 16, 32-bit words defined as $w[0],w[1]...w[15]$, the password generator must keep $w[1] \-- w[15]$ constant while $w[0]$ iterates through the defined character set as shown in Figure 2.
 
 \begin{figure}[thpb]
 	\centering
@@ -104,7 +104,7 @@ As quick explanation, the weakness is due to the properties of the XOR operation
     \caption{An example table that shows how the password generation must generate passwords.}
 \end{figure}
 
-If password candidates are generated in this manner, we are able to pre-compute words $w[1]\--w[15]$ and the expansion words $w^{'}[16]--w^{'}[79]$.  We then only have to compute $w[16]--w[79]$ by XORing with the dynamic variable $w[0]$.  An example is given as follows:
+If password candidates are generated in this manner, we are able to pre-compute words $w[1]\--w[15]$ and the expansion words $w^{'}[16]\--w^{'}[79]$.  We then only have to compute $w[16]\--w[79]$ by XORing with the dynamic variable $w[0]$.  An example is given as follows:
 
 
 $$w[16] = w^{'}[16]\ XOR\ w[0]\_1$$
@@ -121,13 +121,13 @@ We did not look at the assembly of the code to validate and check the  optimizat
 
 Single Instruction Multiple Data (SIMD) is a feature provided by modern day processors to be able to compute operations on multiple data for the cost of a single instruction.  Specifically, our program uses SIMD features provided by Intel's Advanced Vector Extensions (AVX). AVX is a new set of high performance instructions similar to Intel's Streaming SIMD Extensions (SSE).  AVX introduced operations performed on 256-bit vector registers compared to the 128-bit registers of SSE.  It also introduced other features such as a more effecient way to store results from vector operations.  Instead of $A = A + B$, it is possible to compute $C = A + B$ which preserves vector $A$ and $B$ limiting memory read and writes.  Unfortunately, AVX1 only does floating point operations using the 256-bit registers and the SHA1 algorithm works with integers.  Integer operations using 256-bit registers are implemented in AVX2 [2].
 
-The AVX registers in our program are used to be able to compute four hashes in parallel.  In the SHA1 compression iteration four 32-bit words $a0, a1, a2, a3$ are stored into vector $A$, $b0, b1, b2, b3$ are stored into vector $B$, and so on.  We also make use of the $\_mm\_andnot\_si128()$ Intel Intrinsic function which eliminates one instruction.  Although the program is limited to using SSE Intrinsic instructions, the authors chose to use AVX to take advantage of AVX's ability to preserve registers.  The functions in the SHA1 compression algorithm re-use the same vectors multiple times.  Without the register preserve functionality of AVX, the program would receive a greater memory penalty.  
+The AVX registers in our program are used to be able to compute four hashes in parallel.  In the SHA1 compression iteration four, 32-bit words $a0, a1, a2, a3$ are stored into vector $A$, $b0, b1, b2, b3$ are stored into vector $B$, and so on.  We also make use of the $\_mm\_andnot\_si128()$ Intel Intrinsic function which eliminates one instruction.  Although the program is limited to using SSE Intrinsic instructions, the authors chose to use AVX to take advantage of AVX's ability to preserve registers.  The functions in the SHA1 compression algorithm re-use the same vectors multiple times.  Without the register preserve functionality of AVX, the program would receive a greater memory penalty.  
 
 \subsection{Parallel Computing}
 
 The password generation section of the code is written so it generates and checks four passwords at once.  We were able to notice a significant improvement than the single password generator.
 
-The authors also took advantage of the $pthreads$ library in C.  Two different threads were implemented to split up the password candidate space. 
+The authors also took advantage of the $pthreads$ library in C.  Two different threads were implemented to split up the password candidate space in half to increase the operation speed. 
 
 \subsection{Results}
 
@@ -169,7 +169,7 @@ $$
 \noindent
 The block size is 512 (512-bits * 1 SHA1). The Clock frequency was set to the external oscillator of the FPGA of 50MHz.  The hash is produced in 93 cycles.  Using these numbers we come up with
 
-$$Throughput = \frac{512*50,000,000}{93} \approx 27.5Mbps$$
+$$Throughput = \frac{512*50,000,000}{93} \approx 27.5Mhps$$
 
 \noindent
 or 27.5 Mega hashes per second.  These results were verified in hardware in Figure 3 using an oscilloscope.
