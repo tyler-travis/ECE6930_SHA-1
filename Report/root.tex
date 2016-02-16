@@ -169,10 +169,10 @@ $$
 \noindent
 The block size is 512 (512-bits * 1 SHA1). The Clock frequency was set to the external oscillator of the FPGA of 50MHz.  The hash is produced in 93 cycles.  Using these numbers we come up with
 
-$$Throughput = \frac{512*50,000,000}{93} \approx 27.5Mhps$$
+$$Throughput = \frac{512*50,000,000}{93} \approx 275Mhps$$
 
 \noindent
-or 27.5 Mega hashes per second.  These results were verified in hardware in Figure 3 using an oscilloscope.
+or 275 Mega hashes per second.  These results were verified in hardware in Figure 3 using an oscilloscope.
 
 We can see that the FPGA implementation generates better results then the software implementation.  This number could be improved if a fully unrolled, pipelined version was developed.  Furthermore, according to the timing report given in Xilinx, we are able to increase the clock frequency but the authors chose to use the external oscillator of 50MHz.
 
